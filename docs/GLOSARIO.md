@@ -35,3 +35,31 @@
 | **Magnitud** | Escala de brillo invertida: número mayor = más débil; +5 magnitudes = 100 veces más débil |
 | **UA (unidad astronómica)** | Distancia Tierra–Sol (~150 millones de km) |
 | **Planet Nine / Planet X** | Planeta hipotético más allá de Neptuno; no observado |
+| **Pasada (visita)** | Grupo de imágenes de la misma zona tomadas en una misma ventana de observación (días a semanas). Entre dos pasadas hay >45 días; cada pasada es una época |
+| **MJD** | Fecha juliana modificada: número de días continuo (ej. 60801,5 = 6-may-2025). En SPHEREx usamos `MJD-AVG`, la mitad de la exposición |
+| **Época de referencia (J2016,0)** | Fecha a la que corresponde una posición de catálogo. Gaia DR3 da posiciones para 2016,0; hay que moverlas a la fecha de cada imagen |
+| **ICRS** | El sistema de coordenadas celestes estándar (RA/Dec) que usan SPHEREx y Gaia |
+| **Canal espectral** | Cada uno de los 17 "colores" por detector (102 en total) en que SPHEREx divide su rango |
+| **Poder resolutivo (R)** | Qué tan fino separa colores: R = λ/Δλ. SPHEREx: ~40 en D1–D4 y ~120 en D5–D6 |
+| **MJy/sr** | Unidad de brillo superficial (brillo por área de cielo) de las imágenes SPHEREx |
+| **Varianza (VARIANCE)** | Capa del FITS con la incertidumbre al cuadrado de cada píxel; su raíz es el error σ |
+| **SIP (TAN-SIP)** | Polinomio que corrige la deformación óptica de la imagen dentro del WCS |
+| **WCS-WAVE** | Tabla del FITS que dice qué longitud de onda ve cada píxel; aproximada (~1 nm) |
+| **PSF / FWHM** | La forma en que una estrella puntual se "mancha" en la imagen; FWHM es su ancho (~7,5–9″, 1,2–1,5 px en SPHEREx) |
+| **Saturación (OVERFLOW)** | Píxel tan iluminado que deja de medir bien; las estrellas muy brillantes se "queman" |
+| **Bloom** | Carga que se derrama de un píxel saturado a sus vecinos |
+| **Persistencia** | "Eco" de una estrella brillante que queda en el detector en la exposición siguiente |
+| **Snowball / halo** | Impacto de partícula muy energético que ilumina un grupo de píxeles y su alrededor |
+| **Diafonía (crosstalk)** | Copias falsas de una estrella brillante creadas por la electrónica de lectura |
+| **Dicroico** | Espejo que separa luz corta (D1–D3) y larga (D4–D6); sus bordes tienen poca sensibilidad |
+| **Airglow** | Brillo de la alta atmósfera (ej. helio a 1,083 µm) que contamina algunas imágenes |
+| **FINAST** | Indicador de calidad de la astrometría del FITS: 0 = buena; otro valor = no usar |
+| **Survey / PA** | SPHEREx gira 0° o 180° según la mitad de la órbita (Survey 1/3 vs 2/4); entre pasadas la imagen puede salir rotada |
+| **HEALPix** | Forma de dividir la esfera del cielo en celdas de igual área; base del HiPS |
+| **NHITS** | Capa del cubo HiPS: cuántos píxeles de imágenes originales se promediaron en cada píxel |
+| **Recorte (cutout)** | Trozo pequeño de una imagen grande, pedido por posición y tamaño |
+| **Lectura por rango (S3)** | Bajar solo unos bytes de un archivo grande en la nube, sin descargarlo entero |
+| **Magnitud AB / Vega** | Dos escalas de magnitud con distinto cero; hay que convertir antes de comparar |
+| **Variable Mira** | Estrella gigante que pulsa con periodo largo (meses) y gran cambio de brillo (ej. R Dra) |
+| **T Tauri** | Estrella muy joven rodeada de un disco de polvo que la tapa a ratos (ej. RW Aur) |
+| **Centroide** | Posición del "centro de luz" de una estrella; permite medir movimientos menores a 1 píxel |
