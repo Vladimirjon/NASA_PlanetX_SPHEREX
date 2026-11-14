@@ -3,7 +3,29 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "scripts": {"test": "vitest run", "lint": "tsc --noEmit", "build": "tsc --noEmit && vite build"},
-  "dependencies": {"react": "19.3.1", "react-dom": "19.3.1"},
-  "devDependencies": {"@types/react": "19.2.14", "@types/react-dom": "19.2.3", "typescript": "6.0.3", "vite": "8.3.8", "vitest": "5.1.0"}
+  "scripts": {
+    "test": "vitest run",
+    "lint": "tsc --noEmit && eslint src tests",
+    "build": "tsc --noEmit && vite build",
+    "dev": "vite",
+    "test:smoke": "node smoke.mjs"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "5.2.7",
+    "@fontsource/ibm-plex-sans": "5.2.8",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1",
+    "@types/node": "24.10.4",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "eslint": "9.39.2",
+    "fast-check": "4.5.3",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.2",
+    "vite": "8.3.8",
+    "vitest": "5.1.0"
+  }
 }

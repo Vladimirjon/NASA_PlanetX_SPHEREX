@@ -36,3 +36,19 @@ run = "uv run --locked --script scripts/generate-spherex-grid.py --output sphere
 [tasks.grid-test]
 description = "Test SPHEREx grid generation"
 run = "uv run --python 3.13 --with astropy==8.0.2 --with astropy-healpix==1.1.3 --with numpy==2.5.4 --with hpgeom==1.7.1 python -m unittest discover -s tests -p test_spherex_grid.py"
+
+[tasks.web-dev]
+description = "Run the sky viewer"
+run = ["pnpm --dir frontend dev"]
+
+[tasks.web-test]
+description = "Run sky viewer tests"
+run = ["pnpm --dir frontend test"]
+
+[tasks.web-build]
+description = "Build the sky viewer"
+run = ["pnpm --dir frontend build"]
+
+[tasks.web-lint]
+description = "Type-check and lint the sky viewer"
+run = ["pnpm --dir frontend lint"]
