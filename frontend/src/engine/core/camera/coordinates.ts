@@ -1,5 +1,10 @@
 export function coordinates(ra: number, dec: number): string {
-  const hours = ra / 15, h = Math.floor(hours), m = Math.floor((hours-h)*60), s = ((hours-h)*60-m)*60;
-  const abs = Math.abs(dec), d = Math.floor(abs), dm = Math.floor((abs-d)*60), ds = ((abs-d)*60-dm)*60;
-  return `${h}h ${String(m).padStart(2,'0')}m ${s.toFixed(1)}s  ${dec < 0 ? '−' : '+'}${d}° ${String(dm).padStart(2,'0')}′ ${ds.toFixed(1)}″  (${ra.toFixed(5)}°, ${dec.toFixed(5)}°)`;
+  const normalized=((ra%360)+360)%360;
+  const ticks=Math.round(normalized/15*36000)%864000;
+  const h=Math.floor(ticks/36000),m=Math.floor(ticks/600)%60,s=(ticks%600)/10;
+  const dticks=Math.round(Math.abs(dec)*36000),d=Math.floor(dticks/36000),dm=Math.floor(dticks/600)%60,ds=(dticks%600)/10;
+  const pad=(value:number):string=>String(value).padStart(2,'0');
+  const sec=(value:number):string=>value.toFixed(1).padStart(4,'0');
+  const decimalRa=(Math.round(normalized*100000)%36000000)/100000;
+  return `${pad(h)}h ${pad(m)}m ${sec(s)}s  ${dec<0 || Object.is(dec,-0)?'−':'+'}${pad(d)}° ${pad(dm)}′ ${sec(ds)}″  (${decimalRa.toFixed(5)}°, ${dec.toFixed(5)}°)`;
 }
