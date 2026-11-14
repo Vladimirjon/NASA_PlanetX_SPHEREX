@@ -37,5 +37,14 @@
 | **Gaia DR3** | Catálogo de la ESA con posiciones y movimientos de ~1800 millones de estrellas |
 | **JPL sb_ident** | Servicio de NASA/JPL que dice qué asteroides conocidos había en una zona y fecha |
 | **Magnitud** | Escala de brillo invertida: número mayor = más débil; +5 magnitudes = 100 veces más débil |
+| **Magnitud AB vs. Vega** | Dos "reglas" distintas para la misma escala; hay que convertir antes de comparar (ej. 2MASS K Vega + ~1,85 ≈ AB) |
+| **SNR (señal/ruido)** | Cuántas veces la señal supera al ruido; con SNR bajo no se puede medir nada fiable |
+| **Centroide** | El "centro de masa" de la luz de una estrella en la imagen; así se mide su posición con precisión menor que un píxel |
+| **PSF / ePSF** | Forma que toma un punto de luz en el detector. La ePSF es la versión oficial de SPHEREx, más detallada que un píxel |
+| **Fotometría de apertura** | Sumar la luz dentro de un círculo alrededor de la estrella y restar el fondo |
+| **Fotometría forzada** | Medir el flujo en una posición ya conocida, sin buscar la estrella; la usa la herramienta oficial de IRSA |
+| **Saturación** | La estrella es tan brillante que el detector "se llena"; su brillo y su posición dejan de ser fiables |
+| **Significancia (σ)** | Cuántas veces una diferencia es mayor que su incertidumbre; el umbral para decir "cambió" lo decide el rol de ciencia |
+| **FINAST** | Indicador de SPHEREx: 0 = la posición en el cielo (WCS) de esa imagen es buena |
 | **UA (unidad astronómica)** | Distancia Tierra–Sol (~150 millones de km) |
 | **Planet Nine / Planet X** | Planeta hipotético más allá de Neptuno; no observado |
