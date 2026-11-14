@@ -118,7 +118,7 @@ export class DemoSeriesSource implements SeriesSource {
       sourceKind: 'demo',
       resolve: entry.resolve,
       demoSlug: entry.slug,
-      notice: 'Showing recorded demo data (offline / API unreachable).',
+      notice: 'Recorded data (offline).',
     };
   }
 

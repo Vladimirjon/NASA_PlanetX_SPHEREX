@@ -15,7 +15,13 @@ export type LoadedSeries = {
 
 export type SeriesLookup =
   | { readonly kind: 'name'; readonly name: string }
-  | { readonly kind: 'coords'; readonly ra: number; readonly dec: number; readonly fov: number };
+  | {
+      readonly kind: 'coords';
+      readonly ra: number;
+      readonly dec: number;
+      readonly fov: number;
+      readonly motion?: components['schemas']['Motion'];
+    };
 
 export class SeriesSourceError extends Error {
   readonly status: number;
