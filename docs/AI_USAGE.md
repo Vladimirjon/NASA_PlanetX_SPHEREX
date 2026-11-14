@@ -16,3 +16,4 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-14 | Codex | Inventario de prototipos, datos locales y brecha frente a IRSA | Revisión humana y científica pendientes |
 | 2026-11-14 | Claude Code (Claude Opus 5.5) + agente físico | Verificación de épocas reales en IRSA (DR1+QR3) de los 5 objetos; ADR 0006, contrato OpenAPI v0.1, fichas 0002/0003; mapa de datos SPHEREx (docs/context/12) | Dax aprueba ADR y fichas; ciencia revisada por el rol de física |
 | 2026-11-14 | Cursor (Composer) | Implementación vista serie temporal SPHEREx (`frontend/src/series/`, demo+API, Canvas2D, ADR 0009) | Orquestador aprobó diseño; humano revisa capturas en docs/reviews/series-viewer/ |
+| 2026-11-14 | Cursor (Composer) | App integrada mapa+timeline+5 targets (`frontend/src/app/`), fix timeout 60s y slug→canónico | Orquestador aprobó ronda 2; humano revisa docs/reviews/app/ |
