@@ -1,6 +1,6 @@
 # Roles, flujo y pasos — Planet X and SPHEREx (equipo Na za)
 
-**Sábado 14 de noviembre de 2026, 10:45 (UTC−5).** Este documento manda sobre las secciones 5 y 6 de [plan_tecnico.md](plan_tecnico.md). Los cinco roles están **sin asignar**: la tabla de la sección 0 se llena en la reunión de las **11:00**. Las horas ya incluyen el retraso del reparto.
+**Sábado 14 de noviembre de 2026, 10:45 (UTC−5).** Este documento manda sobre las secciones 5 y 6 de [plan_tecnico.md](plan_tecnico.md). Los cinco roles **ya están asignados**: la tabla de reparto está al final de la sección 0. Las horas ya incluyen el retraso del reparto.
 
 **Nombre de la app: pendiente.** En los documentos se escribe `[nombre]`. En el código hay una sola constante, `APP_NAME` en `frontend/src/config.ts`, con el valor `"Name TBD"`; cambiar el nombre es cambiar esa línea.
 
@@ -23,17 +23,17 @@
 | **Carga más alta** | 12:00–19:00 | 16:00–19:00 y pitch | 12:00–19:00 | Todo el sábado | 12:45–17:30 (ruta crítica) y pitch |
 | **Pareja de apoyo** | E | E | D | C | A y B |
 
-| Rol | Persona | Usuario GitHub |
-| --- | --- | --- |
-| A | | |
-| B | | |
-| C | | |
-| D | | |
-| E | | |
+**Reparto acordado el sábado 14 a las 11:00:**
 
-Colaboradores: `Vladimirjon`, `cschavezv03-ops`, `danielife05`, `daxrpm`, `mateobtw`.
+| Rol | Persona | Usuario GitHub | Etiqueta de issues | Pareja de apoyo |
+| --- | --- | --- | --- | --- |
+| A. Datos y API | Johann | `Vladimirjon` | `rol-A` | Mateo (E) |
+| B. Ciencia y validación | Dax | `daxrpm` | `rol-B` | Mateo (E) |
+| C. Motor de imagen | Sebastián Chávez | `cschavezv03-ops` | `rol-C` | Daniel (D) |
+| D. Aplicación web | Daniel Flores | `danielife05` | `rol-D` | Sebastián (C) |
+| E. Pipeline y UX | Mateo Cumbal | `mateobtw` | `rol-E` | Johann (A) y Dax (B) |
 
-**Regla para repartir:** quienes dominan Python van a A, B y E; quienes dominan JavaScript, a C y D. El rol E está en la ruta crítica y además lleva la UX: va a la persona más organizada del grupo Python. El rol B necesita a quien mejor entienda la física.
+Johann (`Vladimirjon`) es además la persona administradora del repo (sección 2.3). Cada persona se asigna sus issues con su usuario de la tabla.
 
 ---
 
@@ -220,7 +220,7 @@ Cuando un paso desbloquea a otro rol, su dueño escribe en el grupo, con este fo
   - Quien necesite una librería nueva la pide a ese dueño. Así no hay conflictos en los archivos de bloqueo.
 - Nunca se suben tokens, archivos `.env` ni archivos FITS. El token de Hugging Face vive solo en la máquina de quien despliega.
 
-### 2.3 Persona administradora del repo (cuenta `Vladimirjon`)
+### 2.3 Persona administradora del repo (Johann, cuenta `Vladimirjon`)
 
 1. **11:20.** Settings → General → Danger Zone: el repo pasa a **público**. La entrega exige enlaces abiertos y así GitHub Pages es gratis.
 2. **11:20.** Settings → Pages → Source: **GitHub Actions**.

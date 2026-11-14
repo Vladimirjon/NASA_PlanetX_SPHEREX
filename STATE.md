@@ -5,7 +5,7 @@ Actualizado: sábado 14 de noviembre de 2026, 10:55.
 ## Dónde está el trabajo
 
 - `docs/ROLES.md` es el plan vigente. Contiene:
-  - los cinco roles (A datos y API, B ciencia, C motor de imagen, D app web, E pipeline y UX), todavía sin asignar;
+  - los cinco roles asignados: A Johann (`Vladimirjon`), B Dax (`daxrpm`), C Sebastián (`cschavezv03-ops`), D Daniel (`danielife05`) y E Mateo (`mateobtw`);
   - el mapa de dependencias (Mermaid), la ruta crítica y la matriz paso por paso, con su plan B;
   - las señales de entrega con hora, los contratos, el horario y la ficha a fondo de cada rol.
 - Documentos de referencia:
@@ -31,7 +31,7 @@ Actualizado: sábado 14 de noviembre de 2026, 10:55.
 
 ## Falta
 
-- Llenar la tabla de reparto (sección 0 de `ROLES.md`) a las 11:00.
+- Que cada persona cree y se asigne los issues de sus pasos (sección 2.1 de `ROLES.md`).
 - Que la cuenta `Vladimirjon` configure el repo según la sección 2.3 de `ROLES.md`.
 - Hacer commit de los cambios de las 10:55.
 

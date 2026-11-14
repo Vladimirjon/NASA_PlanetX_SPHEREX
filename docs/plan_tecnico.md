@@ -137,7 +137,7 @@ Repo público con issues, PR, Actions (CI) y Pages. El flujo exacto, la protecci
 
 ## 5 y 6. División del trabajo y cronograma
 
-Sustituidos por [ROLES.md](ROLES.md): cinco roles sin asignar, pasos exactos por rol, contratos y horario.
+Sustituidos por [ROLES.md](ROLES.md): cinco roles con su responsable, pasos exactos por rol, contratos y horario.
 
 ---
 
