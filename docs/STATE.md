@@ -19,8 +19,8 @@ Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o 
 
 ### Fichas y ramas del Ciclo 1 (todas en borrador)
 - Johann: ficha `0001` + schemas en `contracts/` (`mise run check-contracts`, 0 fallos). Falta la revisión de Mateo, Daniel, Sebastián y Dax (frontera `Region`).
-- Mateo: ficha `0010` (`AnalysisResult`), plan TDD `0011` y ADR `0010`, sin código. Criterios provisionales de Sebastián incorporados: R6 Δλ/min(CBAND) ≤ 0,02 (solo ε Indi B), SNR ≥ 5, ≥ 5σ con covarianza; ε Indi B = candidato (falta C1–C7). Falta la aprobación de Sebastián y Johann, y acordar la carpeta.
-- Sebastián: rama `scientific-rules` **sin PR y sin integrar** (fichas 0030–0033, ADR 0030, `science/validation.py`, `science_preview/`, tests). Va 50 commits por detrás de `main` y pone `science/` en la raíz, fuera de `backend/`. Decidir con Dax y Johann dónde vive antes del congelamiento.
+- Mateo: ficha `0010` (`AnalysisResult`), plan TDD `0011` y ADR `0010`, sin código. Criterios provisionales de Sebastián incorporados: R6 Δλ/min(CBAND) ≤ 0,02 (solo ε Indi B), SNR ≥ 5, ≥ 5σ con covarianza; ε Indi B = candidato (falta C1–C7). Falta la aprobación de Sebastián y Johann, y acordar la carpeta. Revisión en curso: PR #8 (`docs/analysis-review-fixes`).
+- Sebastián: PR #9 (`scientific-rules`) **abierto, sin integrar** (fichas 0030–0033, ADR 0030, `science/validation.py`, `science_preview/`, tests). Pone `science/` en la raíz, fuera de `backend/`. Decidir con Dax y Johann dónde vive antes del congelamiento.
 - Datos (Johann): contrastado con un producto DR1 real, el tiempo de la cabecera es UTC; `obs_id` no distingue detector ni versión; `em_min/em_max` cubren el detector entero; λ científica = `CWAVE`/`CBAND` y `WCS-WAVE` es aproximación para selección (D12 §2.2). Contradice `context/03` §3 y `context/06` §5.2, **aún sin corregir**.
 
 ### Pitch (Johann)
