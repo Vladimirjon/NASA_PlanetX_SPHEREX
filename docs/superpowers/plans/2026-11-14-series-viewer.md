@@ -8,7 +8,7 @@
 
 **Tech Stack:** React 19, TypeScript strict, Vite multi-page, Vitest + fast-check, Playwright, openapi-typescript, Canvas2D.
 
-**Spec:** User brief 2026-11-14 + `contracts/openapi.yaml` v0.2 + ADR 0008 + UI norm 07.
+**Spec:** User brief 2026-11-14 + `contracts/openapi.yaml` v0.2 + ADR 0041 + UI norm 07.
 
 ## Global Constraints
 
@@ -20,5 +20,5 @@
 2. Core TDD: decode, stretch, difference, colour, TAN, blink, URL
 3. Adapters: DemoSeriesSource, ApiSeriesSource, Canvas2D renderer
 4. React shell: series.html page with full UX/a11y
-5. Playwright smoke + screenshots; ADR 0009; frontend/AGENTS.md
+5. Playwright smoke + screenshots; ADR 0043; frontend/AGENTS.md
 6. Verify lint/test/build

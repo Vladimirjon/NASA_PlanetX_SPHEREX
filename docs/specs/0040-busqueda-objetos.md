@@ -2,7 +2,7 @@
 
 - Dueño humano: responsable de producto de SkyShift.
 - Estado: aprobada por Dax el 2026-11-14.
-- ADRs relacionados: 0006 y 0008; se propone 0044.
+- ADRs relacionados: 0040 y 0041; se propone 0044.
 
 ## 1. Objetivo funcional
 Encontrar regiones y objetos populares por sus nombres y variantes, tolerar errores de escritura y aceptar coordenadas. Consultar el catálogo local primero y CDS Sesame cuando no haya coincidencia suficientemente buena.

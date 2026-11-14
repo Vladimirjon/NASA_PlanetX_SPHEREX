@@ -2,7 +2,7 @@
 
 - Dueño humano: Dax
 - Estado: aprobada por Dax el 2026-11-14
-- ADRs relacionados: 0006 (arquitectura base), 0003 (stack, en lo que no contradiga a 0006)
+- ADRs relacionados: 0040 (arquitectura base), 0003 (stack, en lo que no contradiga a 0040)
 - Ejecutor propuesto: Codex en worktree propio, rama `feat/sky-engine`. Revisores: UI/UX, rendimiento, física (textos y coordenadas).
 
 ## 1. Objetivo funcional

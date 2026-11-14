@@ -1,4 +1,4 @@
-"""Read just the needed bytes of an L2 image, every range cached immutably (ADR 0006).
+"""Read just the needed bytes of an L2 image, every range cached immutably (ADR 0040).
 
 Headers are walked once per image (PRIMARY → IMAGE → FLAGS → VARIANCE → ZODI → EPSF →
 WCS-WAVE) and cached forever; the WCS-WAVE table is fixed per detector and product version

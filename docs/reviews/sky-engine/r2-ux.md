@@ -3,7 +3,7 @@
 **Veredicto: CAMBIOS REQUERIDOS**
 
 - Rama `feat/sky-engine` @ `0e5126f`, worktree `NASA_PlanetX_SPHEREX-sky-engine`. Revisión de solo lectura (2026-11-14).
-- Normas: `AGENTS.md` §4, §5, §7 · ficha `docs/specs/0003-visor-cielo-propio.md` · `docs/context/07-estandar-ui.md` (puerta §8) · `docs/context/04-vision-ux.md` §6 · ADR 0007. (No existe ADR 0008 en esta rama).
+- Normas: `AGENTS.md` §4, §5, §7 · ficha `docs/specs/0003-visor-cielo-propio.md` · `docs/context/07-estandar-ui.md` (puerta §8) · `docs/context/04-vision-ux.md` §6 · ADR 0042. (No existe ADR 0041 en esta rama).
 - Método: Vite en `127.0.0.1:5174`; Playwright 1.65.2 + Chromium 1228 (WebGL2 por SwiftShader/Vulkan); `axe-playwright-python`; contraste calculado con la fórmula WCAG sobre los colores computados; pellizco con eventos táctiles CDP; IRSA bloqueado con `page.route`. Skills aplicadas: `impeccable` (solo `audit`, nunca live), `web-design-guidelines`, `accessibility`.
 - Capturas: `docs/reviews/sky-engine/r2/` (lista al final).
 

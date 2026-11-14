@@ -2,7 +2,7 @@
 
 **Veredicto: CAMBIOS REQUERIDOS**
 
-Rama `feat/sky-engine` en `0e5126f`. Revisión de solo lectura: no se cambió código. Ficha 0003 §6, presupuesto en 06 §4, ADR 0006/0007. **No existe `docs/adr/0008`** en este worktree.
+Rama `feat/sky-engine` en `0e5126f`. Revisión de solo lectura: no se cambió código. Ficha 0003 §6, presupuesto en 06 §4, ADR 0040/0042. **No existe `docs/adr/0041`** en este worktree.
 
 ## Resumen
 

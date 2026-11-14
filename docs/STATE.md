@@ -10,15 +10,15 @@ Actualizado: sáb 14-nov-2026, tarde (UTC−5). Regla: cada sesión de agente o 
 - Mateo: borrador `docs/specs/0010-analysis-result.md` (`AnalysisResult`), alineado con `Observation` 0001; rama `docs/analysis-measurements`. Para cerrarla faltan los umbrales de Sebastián y la revisión de Johann. Rango de fichas de Mateo: 0010–0019.
 
 - 14-nov ~17:40: app integrada en `feat/series-viewer` (`index.html`: rail 5 targets + mapa + panel temporal con timeline). API live OK para los 5 (caché); timeout 60 s; slug→canónico. Capturas `docs/reviews/app/`. Andrómeda sin caché → 503 honesto mientras IRSA half_open. No tocar `engine/**` ni `ui/**`.
-- 14-nov ~17:30: vista serie temporal (`series/**` + ADR 0009). `series.html` ahora redirige al app.
+- 14-nov ~17:30: vista serie temporal (`series/**` + ADR 0043). `series.html` ahora redirige al app.
 - 14-nov ~16:45: analizador con dominio + SIA2 + lector FITS S3 + BuildSeries escritos (102 tests); FALTA test de punta a punta de BuildSeries, endpoints /series y /frames, prueba con los 5 objetos. Revisores del visor: R2 UX y R4 ciencia = CAMBIOS REQUERIDOS (B: cielo en espejo, este a la derecha; texto <16 px; sin botones táctiles); R1 y R3 en curso. Informes en rama feat/sky-engine docs/reviews/sky-engine/.
 - Mapa de datos físico listo (`docs/context/12`): reglas de pasadas (>45 d), tolerancia λ/(4R), máscara FLAGS, propagación de movimiento propio. **La demo vieja de WISE 0855 no contiene a WISE 0855** (posición de 2010) y sus pares no son comparables en λ: no usarla en el pitch.
 - Backend hexagonal con caché por capas y proxy HiPS (53 tests); visor propio dibuja (rama `feat/sky-engine`, en revisión). Ficha 0002 v2 espera aprobación.
-- **Fase 0 (bases)** en rama `feat/phase0-foundations`: ADR 0006 (dos pistas, caché local→IRSA, Rust/Redis solo si se mide), `contracts/openapi.yaml` v0.1 válido, fichas 0002 (analizador) y 0003 (visor propio, sin Aladin) en borrador; agente físico redacta `docs/context/12`.
+- **Fase 0 (bases)** en rama `feat/phase0-foundations`: ADR 0040 (dos pistas, caché local→IRSA, Rust/Redis solo si se mide), `contracts/openapi.yaml` v0.1 válido, fichas 0002 (analizador) y 0003 (visor propio, sin Aladin) en borrador; agente físico redacta `docs/context/12`.
 - Datos reales medidos hoy (SIA2): QR3 **sí** tiene datos de Barnard, Eps Indi B, RW Aur y R Dra (ago–oct 2026); WISE 0855 solo DR1. Cada objeto tiene 3–6 pasadas en 13–17 meses.
 
 - **Pista B / sky-engine** en `feat/sky-engine`: ronda 3 navegación Aladin-like — SIN máx. 180° (disco), sin auto-AIT; arrastre con punto bajo el puntero; zoom anclado + `flyTo`; inercia; tests + smoke GPU (p95 ~16,8 ms, 0 URL duplicadas).
-- **Fase 0 (bases)** también en docs: ADR 0006, `contracts/openapi.yaml` v0.1, fichas 0002/0003; agente físico `docs/context/12`.
+- **Fase 0 (bases)** también en docs: ADR 0040, `contracts/openapi.yaml` v0.1, fichas 0002/0003; agente físico `docs/context/12`.
 - Datos reales medidos (SIA2): QR3 **sí** tiene datos de Barnard, Eps Indi B, RW Aur y R Dra (ago–oct 2026); WISE 0855 solo DR1. Cada objeto tiene 3–6 pasadas en 13–17 meses.
 - Inventario y brecha frente a IRSA: `docs/context/11-inventario-prototipos-y-brecha-irsa.md`; sin paridad visual ni científica demostrada.
 - Globo celeste experimental propio en `~/Desktop/skyshift-demo/visor-propio.py` (puerto 8767): arrastre, rueda y HiPS órdenes 3–4; faltan orden 5 y serie temporal.

@@ -2,7 +2,7 @@
 
 - Dueño humano: Dax
 - Estado: borrador v2 (valores científicos incorporados; pendiente de aprobación de Dax)
-- ADRs relacionados: 0006 (caché por capas), 0008 (hexagonal)
+- ADRs relacionados: 0040 (caché por capas), 0041 (hexagonal)
 - Ejecutor: Claude Code con subagentes (TDD). Revisor obligatorio: agente físico (veto sobre ciencia y semáforo).
 - Base científica: `docs/context/12-mapa-de-datos-spherex.md` (en adelante **D12**). Cada regla cita su sección.
 
@@ -35,7 +35,7 @@ Contrato: `contracts/openapi.yaml` (`/resolve`, `/observations`, `/series`, `/se
 13. **Incertidumbre**: σ_D = √(VAR_A + VAR_B); z = D/σ_D (D12 §6.12).
 14. **Semáforo**: EVALUATED solo si se cumplen los 8 controles de D12 §6.13 (a–h); para movimiento, además coincidencia con lo predicho dentro de max(0,5″, 3σ). Si no, OBSERVED con los controles fallidos. Nunca CONFIRMED.
 
-## 5. Caché (ADR 0006)
+## 5. Caché (ADR 0040)
 - Claves: SIA = hash(RA/Dec redondeados a 1″, colecciones, versión), TTL 24 h; cabecera/recorte = hash(`obs_publisher_did`, caja, versión), inmutables; serie = hash(parámetros normalizados, versión del pipeline).
 - L1 memoria → precalculado (5 objetos) → L2 disco SHA-256 atómico → L3 IRSA; single-flight; circuit breaker; copia vencida servida con su fecha original si IRSA falla.
 - Falta implementar: cuota de disco con limpieza LRU de archivos propios; reintento con jitter en adaptadores.

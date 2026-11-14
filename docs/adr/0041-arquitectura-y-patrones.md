@@ -28,7 +28,7 @@ Opción 3, igual en backend y frontend.
 **Patrones elegidos y dónde:**
 - *Puerto + adaptador* para toda integración externa → nueva fuente = nuevo adaptador, cero cambios en el dominio.
 - *Strategy + registro* para proyecciones, fuentes de teselas, modos de comparación (blink, diferencia, compuesto) y almacenes de caché (disco, Redis).
-- *Caché por capas* como política de aplicación (`TieredResolver`: memoria → precalculado → disco → origen) con *single-flight* y *circuit breaker* (ADR 0006).
+- *Caché por capas* como política de aplicación (`TieredResolver`: memoria → precalculado → disco → origen) con *single-flight* y *circuit breaker* (ADR 0040).
 - *Núcleo funcional, cáscara imperativa*: cálculos como funciones puras y datos inmutables (`frozen dataclass`, `readonly`), efectos solo en adaptadores.
 - *Errores tipados* del dominio → mapeados una sola vez a RFC 9457 en la frontera HTTP.
 - *Uniones discriminadas* para estados (tesela `idle|loading|ready|failed`, nivel `OBSERVED|EVALUATED`) con `switch` exhaustivo.

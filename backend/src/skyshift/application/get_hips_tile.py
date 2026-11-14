@@ -1,4 +1,4 @@
-"""Use case: get one HiPS tile, local-first (ADR 0006). Knows only ports, never HTTP or disk."""
+"""Use case: get one HiPS tile, local-first (ADR 0040). Knows only ports, never HTTP or disk."""
 
 from dataclasses import dataclass
 

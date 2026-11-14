@@ -1,4 +1,4 @@
-"""ADR 0008: dependency rule domain ← application ← adapters/api, enforced by import scanning."""
+"""ADR 0041: dependency rule domain ← application ← adapters/api, enforced by import scanning."""
 
 import ast
 import sys

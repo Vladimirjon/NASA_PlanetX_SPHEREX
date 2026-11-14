@@ -1,6 +1,6 @@
 # backend/ — SkyShift API (Python 3.13, FastAPI, uv)
 
-Arquitectura obligatoria: ADR 0008 (hexagonal). Caché por capas: ADR 0006. Contrato: `contracts/openapi.yaml`.
+Arquitectura obligatoria: ADR 0041 (hexagonal). Caché por capas: ADR 0040. Contrato: `contracts/openapi.yaml`.
 
 ```
 src/skyshift/

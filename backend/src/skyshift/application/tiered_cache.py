@@ -1,4 +1,4 @@
-"""Tiered resolver ("redireccionador", ADR 0006): memory → precomputed → local disk → origin.
+"""Tiered resolver ("redireccionador", ADR 0040): memory → precomputed → local disk → origin.
 
 Guarantees:
 - One origin call per key at a time (single-flight), however many concurrent requests.

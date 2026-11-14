@@ -13,7 +13,7 @@ El núcleo del reto es ver épocas SPHEREx “como un video” y entender el cam
 3. Dos apps separadas mapa vs serie — no resuelve “dónde están las 5 regiones / la línea temporal”.
 
 ## Decisión
-Opción 2. Capas ADR 0008. Timeout API 60 s (primer análisis 8–20 s); slug → nombre canónico antes de `/resolve`; motion al `/series`. `series.html` redirige al app. Semáforo solo OBSERVED/EVALUATED.
+Opción 2. Capas ADR 0041. Timeout API 60 s (primer análisis 8–20 s); slug → nombre canónico antes de `/resolve`; motion al `/series`. `series.html` redirige al app. Semáforo solo OBSERVED/EVALUATED.
 
 ## Consecuencias
 Gana: un flujo claro challenge → vuelo → timeline → cutout. Cuesta: shell nuevo que hay que mantener alineado con la API pública del motor. Extender: nuevo `SeriesSource` o `MapController` nativo con `flyTo` sin cambiar el shell.

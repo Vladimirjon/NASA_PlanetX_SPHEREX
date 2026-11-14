@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search targets by name or coordinates, using a local catalog and CDS Sesame. */
+        get: operations["searchTargets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/resolve": {
         parameters: {
             query?: never;
@@ -132,6 +149,12 @@ export interface components {
             sha256?: string;
             /** @description SkyShift processing version that produced derived data. */
             pipeline_version?: string;
+            /** @description CDS resolver identifier. */
+            resolver?: string;
+            /** @description Position reference bibcode. */
+            reference?: string;
+            /** @description Source of a verified astrometry override. */
+            astrometry_source?: string;
         };
         Health: {
             /** @enum {string} */
@@ -143,6 +166,20 @@ export interface components {
                  */
                 irsa: "closed" | "open" | "half_open";
             };
+        };
+        SearchSuggestion: {
+            name: string;
+            /** @enum {string} */
+            kind: "target" | "coordinates" | "resolver";
+            ra: number;
+            dec: number;
+            coordinate_epoch?: string;
+            motion?: components["schemas"]["Motion"];
+            object_type?: string;
+            description?: string;
+            matched_alias?: string;
+            score: number;
+            provenance: components["schemas"]["Provenance"];
         };
         ResolvedName: {
             query: string;
@@ -335,6 +372,31 @@ export interface operations {
                     "application/json": components["schemas"]["Health"];
                 };
             };
+        };
+    };
+    searchTargets: {
+        parameters: {
+            query: {
+                q: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ranked suggestions with source provenance. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchSuggestion"][];
+                };
+            };
+            422: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
         };
     };
     resolveName: {

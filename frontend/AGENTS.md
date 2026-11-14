@@ -10,13 +10,13 @@ En Fedora o Windows, instalar Node 22 o 24 y pnpm; desde `frontend/` ejecutar `p
 - Una proyección se describe con la interfaz `Projection` y puede registrarse con `createProjectionRegistry(extra)`. La conexión de estrategias al shader aún está pendiente: las tres proyecciones actuales tienen implementaciones explícitas.
 - Para otra encuesta HiPS hay que proporcionar fuente de teselas y metadatos verificados (órdenes, dimensiones, frame y planos); los límites y longitudes de onda actuales corresponden específicamente a SPHEREx DR1 y no se pueden reutilizar sin cambiarlos.
 
-Limitaciones actuales y evidencia: `docs/reviews/sky-engine/perf.md` y `docs/adr/0007-motor-cielo-webgl2.md`.
+Limitaciones actuales y evidencia: `docs/reviews/sky-engine/perf.md` y `docs/adr/0042-motor-cielo-webgl2.md`.
 
 Para verificar con GPU real y capturas: iniciar `pnpm dev` en `frontend/`, volver a la raíz y ejecutar `node frontend/smoke.mjs`; el navegador debe disponer de `CHROME_PATH` si no está en `/usr/bin/google-chrome`. `node frontend/ui-regression.mjs` comprueba canales vacíos, controles y recuperación de red.
 
 **Do not modify `src/engine/**` or `src/ui/**` from app/series work.** Public engine API only: `createSkyEngine`, `setView`, `getView`, `setPlane`, `setProjection`, `on('pick'|'viewchange'|…)`, `destroy` (see `engine.ts`).
 
-Limitaciones del motor: `docs/reviews/sky-engine/perf.md` y `docs/adr/0007-motor-cielo-webgl2.md`.
+Limitaciones del motor: `docs/reviews/sky-engine/perf.md` y `docs/adr/0042-motor-cielo-webgl2.md`.
 
 ## Integrated app (primary)
 
@@ -34,7 +34,7 @@ Single product at `/` (`index.html` → `src/main.tsx` → `src/app/`). Left rai
 
 **URL state:** `?target=` or `?ra=&dec=&fov=&plane=&t=&mode=&proj=`.
 
-ADR: `docs/adr/0009-vista-serie-temporal.md`.
+ADR: `docs/adr/0043-vista-serie-temporal.md`.
 
 ## Series module (library)
 
