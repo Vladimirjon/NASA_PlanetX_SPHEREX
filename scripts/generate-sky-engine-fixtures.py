@@ -1,9 +1,14 @@
+# /// script
+# requires-python = ">=3.13"
+# dependencies = ["astropy==8.0.2", "astropy-healpix==1.1.3", "numpy==2.5.4"]
+# ///
 """Generate deterministic HEALPix reference points for the browser engine."""
 import json
 from pathlib import Path
 import numpy as np
 import astropy.units as u
 from astropy_healpix import HEALPix
+from astropy.wcs import WCS
 
 rng = np.random.default_rng(1842)
 rows = []
@@ -41,3 +46,17 @@ with warnings.catch_warnings():
     warnings.simplefilter('ignore', RuntimeWarning)
     all_neighbours = hp.neighbours(np.arange(12288)).T.astype('<i2')
 Path('frontend/tests/fixtures/healpix-neighbours.bin').write_bytes(all_neighbours.tobytes())
+
+# ICRS positions obtained from independent FITS WCS with east to the left.
+wcs_samples = []
+for projection in ("SIN", "TAN", "AIT"):
+    for ra0, dec0 in ((10., 20.), (359.9, 0.), (30., 89.), (125., -89.)):
+        wcs = WCS(naxis=2)
+        wcs.wcs.ctype = [f"RA---{projection}", f"DEC--{projection}"]
+        wcs.wcs.crval = [ra0, dec0]
+        wcs.wcs.crpix = [1., 1.]
+        wcs.wcs.cdelt = [-1., 1.]
+        for px, py in ((1., 0.), (-1., 0.), (0., 1.), (0., -1.), (1., 1.)):
+            ra, dec = wcs.all_pix2world([[px, py]], 0)[0]
+            wcs_samples.append({"projection": projection, "center": [ra0, dec0], "pixel": [px, py], "sky": [ra, dec]})
+Path('frontend/tests/fixtures/wcs-orientation.json').write_text(json.dumps(wcs_samples, separators=(',', ':')) + '\n', encoding='utf-8')

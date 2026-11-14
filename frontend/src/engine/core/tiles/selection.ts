@@ -10,7 +10,7 @@ export function pointAt(view: Readonly<ViewState>, x: number, y: number, width: 
   const projection = view.proj === 'SIN' && view.fov > 180 ? 'AIT' : view.proj;
   const fov = view.fov * Math.PI / 180;
   const scale = projection === 'SIN' ? Math.sin(Math.min(fov, Math.PI) / 2) : projection === 'TAN' ? Math.tan(Math.min(fov, 2.6) / 2) : 2 * Math.SQRT2 * Math.min(fov / (2 * Math.PI), 1);
-  return unproject(projection, (2*x/width-1)*scale, (1-2*y/height)*scale*height/width, view.ra, view.dec);
+  return unproject(projection, (1-2*x/width)*scale, (1-2*y/height)*scale*height/width, view.ra, view.dec);
 }
 export interface VisibleCell { readonly order:number; readonly npix:number; readonly distance:number }
 /** Sampling approximation; this is not a complete cell intersection test. */

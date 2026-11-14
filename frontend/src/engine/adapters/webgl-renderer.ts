@@ -37,7 +37,7 @@ void main(){
  float fov=camera.z*PI/180.; float aspect=camera.w; vec2 p=screen*vec2(1.,1./aspect);
  int pr=projection; if(pr==0 && fov>PI) pr=2;
  float scale=pr==0?sin(min(fov,PI)*.5):(pr==1?tan(min(fov,2.6)*.5):2.82842712*min(fov/(2.*PI),1.));
- p*=scale; float c,e,n;
+ p*=scale; p.x=-p.x; float c,e,n;
  if(pr==0){float r=dot(p,p);if(r>1.){color=vec4(0.,0.,0.,1.);return;}c=sqrt(1.-r);e=p.x;n=p.y;}
  else if(pr==1){c=inversesqrt(1.+dot(p,p));e=p.x*c;n=p.y*c;}
  else {if(p.x*p.x/8.+p.y*p.y/2.>1.){color=vec4(0.,0.,0.,1.);return;}float z=sqrt(max(0.,1.-p.x*p.x/16.-p.y*p.y/4.));float lon=2.*atan(z*p.x,2.*(2.*z*z-1.));float lat=asin(clamp(z*p.y,-1.,1.));c=cos(lat)*cos(lon);e=cos(lat)*sin(lon);n=sin(lat);}
