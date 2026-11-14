@@ -1,7 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createBackendTileSource, createIrsaTileSource } from '../src/engine/tile-source';
+import { selectTileSource } from '../src/engine/adapters/tile-source';
 
 describe('tile sources', () => {
+  it('selects the backend when health responds and IRSA only when unreachable', async () => {
+    expect(await selectTileSource(vi.fn().mockResolvedValue(new Response(null, { status: 503 })))).toBe('backend');
+    expect(await selectTileSource(vi.fn().mockRejectedValue(new TypeError('offline')))).toBe('irsa');
+  });
   it('uses the documented HiPS frame naming and directory', () => {
     const source = createIrsaTileSource();
     expect(source.url(5, 10226, 0)).toContain('/Norder5/Dir10000/Npix10226.png');

@@ -1,5 +1,9 @@
 import { expect, it } from 'vitest';
-import { updateRequests, type PendingRequest } from '../src/engine/core/tiles/request-policy';
+import { motionOrder, updateRequests, type PendingRequest } from '../src/engine/core/tiles/request-policy';
+it('limits intermediate detail while moving and restores it after settling', () => {
+  expect(motionOrder(5, 2, true)).toBe(2);
+  expect(motionOrder(5, 2, false)).toBe(5);
+});
 it('does not cancel transiently hidden tiles during a five-second circular drag', () => {
   let pending = new Map<string, PendingRequest>([['3/424/19', {order:3, outsideSince:null}]]);
   let aborts = 0;

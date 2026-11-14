@@ -1,4 +1,7 @@
 export interface PendingRequest { readonly order:number; readonly outsideSince:number|null }
+export function motionOrder(order: number, coarsest: number, moving: boolean): number {
+  return moving ? Math.min(order, coarsest) : order;
+}
 export function updateRequests(pending: ReadonlyMap<string,PendingRequest>, expanded: ReadonlySet<string>, now:number): {pending:Map<string,PendingRequest>;abort:string[]} {
   const next=new Map<string,PendingRequest>(),abort:string[]=[];
   for(const [key,state] of pending) {

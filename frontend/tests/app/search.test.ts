@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { parseSearchQuery } from '../../src/app/core/search';
+import { parseSearchQuery, searchApi } from '../../src/app/core/search';
+import { vi } from 'vitest';
+
+it('requests typeahead suggestions from the API', async () => {
+  const request = vi.fn().mockResolvedValue(new Response(JSON.stringify([{ name: 'M31', ra: 10, dec: 41 }])));
+  expect(await searchApi('M31', new AbortController().signal, request)).toMatchObject([{ name: 'M31' }]);
+  expect(request.mock.calls[0]?.[0]).toBe('/api/v1/search?q=M31&limit=10');
+});
 
 describe('parseSearchQuery', () => {
   it('recognises challenge names and slugs', () => {
