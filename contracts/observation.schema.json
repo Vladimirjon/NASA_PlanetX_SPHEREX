@@ -1,0 +1,443 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:skyshift:contract:observation:0.1-draft",
+  "title": "Observation (SkyShift contract, DRAFT 0.1)",
+  "description": "One versioned native SPHEREx Level 2 spectral image file (one acquisition, one detector, one processing version) with its metadata, references and derived products. DRAFT: proposed in docs/specs/0001-arquitectura-observation.md, not yet approved by its consumers. An Observation is NOT an astronomical object, an epoch, a detection or a scientific approval. null means unknown, never zero, false or approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "observation_id", "identity_status", "mission", "instrument",
+    "source", "detector", "product_type", "product_subtype", "calibration_level",
+    "region_refs", "time", "coverage", "spatial_wcs", "spectral", "quality",
+    "ancillary", "products", "metadata_stage", "availability", "issues", "provenance"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1-draft" },
+    "observation_id": {
+      "description": "Record ID. Resolved: spherex:<release>:<obs_id>:D<detector>:<process>-v<version>-<processing_date>, built from the official file path (spec 0001 §3.1). Unresolved: unresolved:<first 16 hex of sha256(access_url or publisher_did)>. Synthetic fixtures: synthetic:<name>.",
+      "$ref": "#/$defs/ObservationId"
+    },
+    "identity_status": { "enum": ["resolved", "unresolved"] },
+    "mission": { "const": "SPHEREx" },
+    "instrument": { "type": ["string", "null"], "minLength": 1 },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["collection", "archive_collection", "obs_id", "publisher_did", "acquisition_id"],
+      "properties": {
+        "collection": { "description": "COLLECTION parameter used in the SIA2 query.", "$ref": "#/$defs/Collection" },
+        "archive_collection": { "description": "obs_collection returned by the archive.", "type": ["string", "null"], "minLength": 1 },
+        "obs_id": { "description": "SIA obs_id: the pointing, shared by up to 6 detectors.", "type": ["string", "null"], "minLength": 1 },
+        "publisher_did": { "description": "SIA obs_publisher_did: pointing + detector, no processing version.", "type": ["string", "null"], "minLength": 1 },
+        "acquisition_id": { "description": "FITS OBSID, or obs_id parsed from a validated file name.", "type": ["string", "null"], "minLength": 1 }
+      }
+    },
+    "detector": { "type": ["integer", "null"], "minimum": 1, "maximum": 6 },
+    "product_type": { "type": ["string", "null"], "minLength": 1 },
+    "product_subtype": { "type": ["string", "null"], "minLength": 1 },
+    "calibration_level": { "type": ["integer", "null"], "minimum": 0 },
+    "region_refs": {
+      "description": "Opaque Region IDs this product was associated with. Not a statement of full coverage. Region schema is owned by Dax.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/OpaqueId" },
+      "uniqueItems": true
+    },
+    "time": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["samples", "exposure_s", "release_date"],
+      "properties": {
+        "samples": { "type": "array", "items": { "$ref": "#/$defs/TimeSample" } },
+        "exposure_s": { "description": "Integration time (SIA t_exptime or FITS XPOSURE), seconds. Not TELAPSE.", "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "release_date": { "description": "Archive publication date as returned (SIA obs_release_date). Never an acquisition time.", "type": ["string", "null"], "minLength": 1 }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["center", "footprint"],
+      "properties": {
+        "center": { "oneOf": [{ "$ref": "#/$defs/SkyPosition" }, { "type": "null" }] },
+        "footprint": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["value", "format", "frame"],
+              "properties": {
+                "value": { "description": "Footprint text exactly as returned (SIA s_region).", "type": "string", "minLength": 1 },
+                "format": { "enum": ["stc-s"] },
+                "frame": { "type": ["string", "null"], "minLength": 1 }
+              }
+            },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "spatial_wcs": {
+      "description": "Reference to the full spatial WCS (TAN-SIP) in a FITS header actually read. Central RA/Dec never replaces it.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["product_id", "hdu", "header_ref"],
+          "properties": {
+            "product_id": { "$ref": "#/$defs/ProductId" },
+            "hdu": { "type": "string", "minLength": 1 },
+            "header_ref": { "description": "Locator of the stored header evidence.", "type": "string", "minLength": 1 }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "spectral": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["search_range_m", "local"],
+      "properties": {
+        "search_range_m": {
+          "description": "SIA em_min/em_max in metres: the whole-detector range. NOT the wavelength at any position.",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["min", "max"],
+              "properties": {
+                "min": { "type": "number", "exclusiveMinimum": 0 },
+                "max": { "type": "number", "exclusiveMinimum": 0 }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "local": { "oneOf": [{ "$ref": "#/$defs/LocalSpectral" }, { "type": "null" }] }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["flags", "variance", "pipeline_assessment", "review_ref"],
+      "properties": {
+        "flags": { "oneOf": [{ "$ref": "#/$defs/HduRef" }, { "type": "null" }] },
+        "variance": { "oneOf": [{ "$ref": "#/$defs/HduRef" }, { "type": "null" }] },
+        "pipeline_assessment": {
+          "description": "Pipeline outcome kept as provenance only. Every archived image has L2DQA=PASS and FINAST=0 (Explanatory Supplement 2.1 §3.2.12): this is NOT a SkyShift comparability assessment.",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["l1_dqa", "l2_dqa", "fine_astrometry", "source_locator"],
+              "properties": {
+                "l1_dqa": { "type": ["string", "null"], "minLength": 1 },
+                "l2_dqa": { "type": ["string", "null"], "minLength": 1 },
+                "fine_astrometry": { "type": ["integer", "null"], "minimum": 0 },
+                "source_locator": { "type": "string", "minLength": 1 }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "review_ref": { "description": "Opaque reference to an executed review record. Owned by the comparability contract (Sebastián).", "oneOf": [{ "$ref": "#/$defs/OpaqueId" }, { "type": "null" }] }
+      }
+    },
+    "ancillary": { "type": "array", "items": { "$ref": "#/$defs/HduRef" } },
+    "products": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["native", "calibrations", "derived", "display"],
+      "properties": {
+        "native": { "$ref": "#/$defs/ProductRef" },
+        "calibrations": { "type": "array", "items": { "$ref": "#/$defs/ProductRef" } },
+        "derived": { "type": "array", "items": { "$ref": "#/$defs/DerivedRef" } },
+        "display": { "type": "array", "items": { "$ref": "#/$defs/DisplayRef" } }
+      }
+    },
+    "metadata_stage": { "enum": ["discovery", "file_inspected", "calibration_linked"] },
+    "availability": {
+      "description": "Operational access states. They expire and say nothing about scientific quality.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["native", "prepared", "display", "offline"],
+      "properties": {
+        "native": { "enum": ["unverified", "reachable", "unavailable"] },
+        "prepared": { "enum": ["not_prepared", "available", "unavailable"] },
+        "display": { "enum": ["not_prepared", "available", "unavailable"] },
+        "offline": { "enum": ["not_prepared", "available", "incomplete"] }
+      }
+    },
+    "issues": { "type": "array", "items": { "$ref": "#/$defs/ObservationIssue" } },
+    "provenance": { "$ref": "#/$defs/Provenance" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "identity_status": { "const": "resolved" } } },
+      "then": {
+        "properties": {
+          "observation_id": { "pattern": "^spherex:" },
+          "detector": { "type": "integer" },
+          "source": { "properties": { "obs_id": { "type": "string" } } },
+          "products": {
+            "properties": {
+              "native": {
+                "properties": {
+                  "product_id": { "pattern": "^spherex-file:" },
+                  "filename": { "type": "string" },
+                  "version": { "type": "string" },
+                  "processing_date": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": { "properties": { "observation_id": { "pattern": "^(unresolved|synthetic):" } } }
+    },
+    {
+      "description": "discovery = file not opened yet: nothing that requires reading the FITS may be filled in.",
+      "if": { "properties": { "metadata_stage": { "const": "discovery" } } },
+      "then": {
+        "properties": {
+          "spatial_wcs": { "type": "null" },
+          "quality": { "properties": { "flags": { "type": "null" }, "variance": { "type": "null" }, "pipeline_assessment": { "type": "null" } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "metadata_stage": { "enum": ["file_inspected", "calibration_linked"] } } },
+      "then": { "properties": { "spatial_wcs": { "type": "object" } } }
+    },
+    {
+      "description": "Science-grade wavelength needs the Spectral WCS link (spec 0001 section 3.5).",
+      "if": {
+        "properties": { "spectral": { "properties": { "local": { "type": "object", "required": ["method"], "properties": { "method": { "const": "cwave_cband" } } } } } }
+      },
+      "then": { "properties": { "metadata_stage": { "const": "calibration_linked" } } }
+    },
+    {
+      "if": { "properties": { "availability": { "properties": { "prepared": { "const": "available" } } } } },
+      "then": { "properties": { "products": { "properties": { "derived": { "minItems": 1 } } } } }
+    },
+    {
+      "if": { "properties": { "availability": { "properties": { "display": { "const": "available" } } } } },
+      "then": { "properties": { "products": { "properties": { "display": { "minItems": 1 } } } } }
+    },
+    {
+      "if": { "properties": { "metadata_stage": { "const": "calibration_linked" } } },
+      "then": { "properties": { "products": { "properties": { "calibrations": { "minItems": 1 } } } } }
+    },
+    {
+      "if": { "properties": { "availability": { "properties": { "native": { "const": "reachable" } } } } },
+      "then": { "properties": { "products": { "properties": { "native": { "properties": { "uri": { "type": "string" } } } } } } }
+    }
+  ],
+  "$defs": {
+    "OpaqueId": { "type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\s]+$" },
+    "ObservationId": {
+      "type": "string",
+      "pattern": "^(spherex:[a-z0-9]+:[A-Za-z0-9_]+:D[1-6]:[a-z0-9_]+-v[0-9]+-[0-9]{4}-[0-9]{3}|unresolved:[0-9a-f]{16}|synthetic:[A-Za-z0-9._-]+)$"
+    },
+    "ProductId": {
+      "description": "spherex-file:<object key in the official archive, e.g. dr1/level2/...fits> | derived:<sha256 of content> | display:<sha256 of content> | synthetic:<name>",
+      "type": "string",
+      "pattern": "^(spherex-file:(?!\\.{1,2}/)(?!.*/\\.{1,2}/)[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*\\.fits|derived:[0-9a-f]{64}|display:[0-9a-f]{64}|synthetic:[A-Za-z0-9._-]+)$"
+    },
+    "Collection": {
+      "description": "SIA2 collections documented by IRSA for SPHEREx spectral images. The cube collection is a different product and is excluded on purpose.",
+      "enum": ["spherex_dr1", "spherex_dr1_deep", "spherex_qr3", "spherex_qr3_deep"]
+    },
+    "UtcTimestamp": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$" },
+    "SkyPosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ra_deg", "dec_deg", "frame"],
+      "properties": {
+        "ra_deg": { "type": "number", "minimum": 0, "exclusiveMaximum": 360 },
+        "dec_deg": { "type": "number", "minimum": -90, "maximum": 90 },
+        "frame": { "const": "ICRS" }
+      }
+    },
+    "TimeSample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "value", "format", "scale", "reference_position", "source_locator"],
+      "properties": {
+        "role": { "enum": ["start", "midpoint", "end", "observation"] },
+        "value": { "type": ["number", "string"] },
+        "format": { "enum": ["MJD", "ISO8601"] },
+        "scale": { "description": "Time scale as declared by the source (e.g. FITS TIMESYS). null for SIA rows: neither the VOTable nor ObsCore declares it.", "type": ["string", "null"], "minLength": 1 },
+        "reference_position": { "type": ["string", "null"], "minLength": 1 },
+        "source_locator": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        { "if": { "properties": { "format": { "const": "MJD" } } }, "then": { "properties": { "value": { "type": "number" } } } },
+        { "if": { "properties": { "format": { "const": "ISO8601" } } }, "then": { "properties": { "value": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?$" } } } }
+      ]
+    },
+    "HduRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_id", "extname", "unit"],
+      "properties": {
+        "product_id": { "$ref": "#/$defs/ProductId" },
+        "extname": { "type": "string", "minLength": 1 },
+        "unit": { "description": "BUNIT as read; null for dimensionless bitmaps or not yet read.", "type": ["string", "null"] }
+      }
+    },
+    "LocalSpectral": {
+      "description": "Wavelength at ONE fixed reference position (e.g. a region centre) on the ORIGINAL detector grid, for preselection and display. NOT the wavelength of a measurement: for a moving target AnalysisResult reads CWAVE/CBAND at the measured pixel via products.calibrations (spec 0010 annex E). A single point does not characterise a whole Region.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sky_position", "original_pixel", "central_um", "bandwidth_um", "method", "resources", "transform_ref"],
+      "properties": {
+        "sky_position": { "$ref": "#/$defs/SkyPosition" },
+        "original_pixel": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["x", "y", "origin"],
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "origin": { "enum": [0, 1] }
+          }
+        },
+        "central_um": { "type": "number", "exclusiveMinimum": 0 },
+        "bandwidth_um": { "type": "number", "exclusiveMinimum": 0 },
+        "method": { "description": "cwave_cband = science (Spectral WCS calibration); wcs_wave_approximation = display only.", "enum": ["cwave_cband", "wcs_wave_approximation"] },
+        "resources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/HduRef" } },
+        "transform_ref": { "type": ["string", "null"], "minLength": 1 }
+      },
+      "if": { "properties": { "method": { "const": "cwave_cband" } } },
+      "then": {
+        "properties": {
+          "resources": {
+            "allOf": [
+              { "contains": { "properties": { "extname": { "const": "CWAVE" } } } },
+              { "contains": { "properties": { "extname": { "const": "CBAND" } } } }
+            ]
+          }
+        }
+      }
+    },
+    "ProductRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_id", "uri", "format", "filename", "version", "processing_date", "sha256"],
+      "properties": {
+        "product_id": { "$ref": "#/$defs/ProductId" },
+        "uri": { "type": ["string", "null"], "minLength": 1 },
+        "format": { "type": ["string", "null"], "minLength": 1 },
+        "filename": { "type": ["string", "null"], "minLength": 1 },
+        "version": { "description": "Full processing tag as in the file name, e.g. l2b-v27 or l2b_retry-v27.", "type": ["string", "null"], "minLength": 1 },
+        "processing_date": { "description": "Year-day code from the file name (YYYY-DDD). Not an acquisition time.", "type": ["string", "null"], "pattern": "^[0-9]{4}-[0-9]{3}$" },
+        "sha256": { "description": "Computed after download; never invented.", "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "Transformation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation", "method", "software", "parameters", "executed_at", "evidence_ref"],
+      "properties": {
+        "operation": { "enum": ["cutout", "reprojection", "mask", "background_subtraction", "normalization", "colormap", "resample_display", "format_conversion"] },
+        "method": { "type": "string", "minLength": 1 },
+        "software": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version"],
+          "properties": { "name": { "type": "string", "minLength": 1 }, "version": { "type": "string", "minLength": 1 } }
+        },
+        "parameters": { "description": "Explicit parameters with units in their names (e.g. size_deg).", "type": "object" },
+        "executed_at": { "$ref": "#/$defs/UtcTimestamp" },
+        "evidence_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "DerivedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset", "parent_product_ids", "transformations", "wcs_ref", "quality_refs", "scientific_unit"],
+      "properties": {
+        "asset": { "$ref": "#/$defs/ProductRef" },
+        "parent_product_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/ProductId" } },
+        "transformations": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/Transformation" } },
+        "wcs_ref": { "type": ["string", "null"], "minLength": 1 },
+        "quality_refs": { "type": "array", "items": { "$ref": "#/$defs/HduRef" } },
+        "scientific_unit": { "type": ["string", "null"], "minLength": 1 }
+      }
+    },
+    "DisplayRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset", "source_product_id", "transformations", "purpose"],
+      "properties": {
+        "asset": { "$ref": "#/$defs/ProductRef" },
+        "source_product_id": { "$ref": "#/$defs/ProductId" },
+        "transformations": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/Transformation" } },
+        "purpose": { "const": "display_only" }
+      }
+    },
+    "ObservationIssueCode": {
+      "description": "Closed list of observation-level issue codes. UI text is written by the UI owner (Daniel), keyed by code. Search-, pair- and package-level codes live elsewhere.",
+      "enum": [
+        "metadata_pending",
+        "metadata_missing",
+        "required_metadata_missing",
+        "file_not_inspected",
+        "time_conflict",
+        "identity_unresolved",
+        "calibration_unresolved",
+        "asset_unavailable",
+        "provenance_incomplete",
+        "integrity_mismatch"
+      ]
+    },
+    "SearchIssueCode": {
+      "description": "Reserved for the future search response envelope (its shape is decided together with the API).",
+      "enum": ["upstream_timeout", "upstream_unavailable", "upstream_query_error", "invalid_upstream_response", "search_truncated", "no_results"]
+    },
+    "ObservationIssue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "paths", "detail"],
+      "properties": {
+        "code": { "$ref": "#/$defs/ObservationIssueCode" },
+        "paths": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^/" } },
+        "detail": { "type": "string", "minLength": 1 }
+      }
+    },
+    "FieldSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["paths", "kind", "reference", "locator"],
+      "properties": {
+        "paths": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^/" } },
+        "kind": { "enum": ["sia", "fits_header", "calibration", "derivation", "documentation", "synthetic"] },
+        "reference": { "type": "string", "minLength": 1 },
+        "locator": { "type": "string", "minLength": 1 }
+      }
+    },
+    "Provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["query_uri", "retrieved_at", "raw_metadata_ref", "calibration_history", "field_sources"],
+      "properties": {
+        "query_uri": { "type": ["string", "null"], "minLength": 1 },
+        "retrieved_at": { "oneOf": [{ "$ref": "#/$defs/UtcTimestamp" }, { "type": "null" }] },
+        "raw_metadata_ref": { "type": ["string", "null"], "minLength": 1 },
+        "calibration_history": {
+          "description": "Copy of HISTORY [CALIB] <kind> <uuid> lines of the MEF. Does not by itself resolve the calibration file.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "uuid"],
+            "properties": {
+              "kind": { "type": "string", "minLength": 1 },
+              "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" }
+            }
+          }
+        },
+        "field_sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/FieldSource" } }
+      }
+    }
+  }
+}
