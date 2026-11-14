@@ -110,3 +110,13 @@ async def test_health_reports_breaker_state(client: httpx.AsyncClient):
     r = await client.get("/api/v1/health")
     assert r.status_code == 200
     assert r.json() == {"status": "ok", "upstream": {"irsa": "closed"}}
+
+
+async def test_tile_failures_do_not_open_the_catalog_breaker(
+    client: httpx.AsyncClient, upstream: Upstream
+):
+    upstream.handler = lambda _: httpx.Response(502)
+    for n in range(8):
+        await client.get(f"/api/v1/hips/4/0/{100 + n}")
+    r = await client.get("/api/v1/health")
+    assert r.json()["upstream"]["irsa"] == "closed"  # health tracks the catalog (SIA) breaker

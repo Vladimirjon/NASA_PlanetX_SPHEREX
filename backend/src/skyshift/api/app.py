@@ -103,23 +103,35 @@ def create_app(
             follow_redirects=False,
             headers={"User-Agent": "SkyShift/0.1 (NASA Space Apps 2026)"},
         ) as client:
+            # One circuit breaker PER upstream: a burst of S3 or tile errors must never
+            # block catalog queries (and vice versa). All share the same disk store.
+            store = FilesystemBlobStore(cfg.cache_dir)
             precomputed = FilesystemBlobStore(cfg.precomputed_dir) if cfg.precomputed_dir else None
-            resolver = TieredResolver(
-                FilesystemBlobStore(cfg.cache_dir),
-                precomputed=precomputed,
-                memory_max_bytes=cfg.memory_cache_mb * 1024 * 1024,
+            memory = cfg.memory_cache_mb * 1024 * 1024
+
+            def resolver(share: float) -> TieredResolver:
+                return TieredResolver(
+                    store, precomputed=precomputed, memory_max_bytes=int(memory * share)
+                )
+
+            hips, sia, s3, names, derived = (
+                resolver(0.35),
+                resolver(0.05),
+                resolver(0.35),
+                resolver(0.01),
+                resolver(0.24),
             )
             app.state.services = Services(
-                resolver=resolver,
-                get_hips_tile=GetHipsTile(resolver, IrsaHipsTiles(client, cfg.hips_base_url)),
+                resolver=sia,
+                get_hips_tile=GetHipsTile(hips, IrsaHipsTiles(client, cfg.hips_base_url)),
             )
-            list_observations = ListObservations(resolver, IrsaSia2Catalog(client))
+            list_observations = ListObservations(sia, IrsaSia2Catalog(client))
             app.state.series_services = SeriesServices(
-                resolve_name=ResolveName(resolver, SesameResolver(client)),
+                resolve_name=ResolveName(names, SesameResolver(client)),
                 list_observations=list_observations,
                 get_series=GetSeries(
-                    BuildSeries(list_observations, FrameReader(resolver, S3ImageArchive(client))),
-                    resolver,
+                    BuildSeries(list_observations, FrameReader(s3, S3ImageArchive(client))),
+                    derived,
                     present_series,
                 ),
             )
