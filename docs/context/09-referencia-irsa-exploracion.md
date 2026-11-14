@@ -31,7 +31,7 @@ El suplemento oficial indica que se usaron **más de 1,2 millones de imágenes i
 3. **Separar funciones:** mapa acumulado y sus teselas; selección de RA/Dec y campo angular; consulta de observaciones; selección de épocas y λ; reproyección y controles; visualización; caché. Documentar entradas, salidas, unidades y fallos. No inferir arquitectura interna no observada.
 4. **Comparar opciones de interacción:** proyección plana y esfera celeste interactiva; evaluar legibilidad, teclado/táctil, orientación, móvil, rendimiento, mareo y alternativa accesible. No confundir atractivo visual con profundidad científica.
 5. **Investigar la comparación:** casos del reto y regiones libres; misma región, fecha, λ local mediante WCS-WAVE, WCS espacial, FLAGS, incertidumbre y procedencia. Etiquetar las diferencias como aparentes hasta que pasen controles. No exigir ni prometer cambios donde no se han verificado.
-6. **Caché:** documentar jerarquía local/IRSA, límites, caducidad, integridad, trabajo concurrente y opciones de compartir datos entre computadoras; diferenciar caché del navegador, del backend y almacenamiento compartido. Ver `docs/specs/0001-exploracion-cache-borrador.md`.
+6. **Caché:** documentar jerarquía local/IRSA, límites, caducidad, integridad, trabajo concurrente y opciones de compartir datos entre computadoras; diferenciar caché del navegador, del backend y almacenamiento compartido. Ver `docs/specs/0004-exploracion-cache-borrador.md`.
 7. **Entregar al equipo:** matriz de funciones de IRSA (observado/documentado/no verificado), opciones de mejora con ventajas y límites, capturas y fuentes, riesgos científicos y una propuesta de ficha para cada módulo. Humanos eligen y aprueban; no asumir que esta guía aprueba implementación.
 
 ## Fuentes

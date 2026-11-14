@@ -3,6 +3,7 @@
 Actualizado: sáb 14-nov-2026, tarde (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- 14-nov: integración documental de main; fichas 0001 y 0010 revisadas en `docs/reviews/2026-11-14-triage-specs-main.md`; revisión humana y científica pendiente.
 - 14-nov ~16:45: analizador con dominio + SIA2 + lector FITS S3 + BuildSeries escritos (102 tests); FALTA test de punta a punta de BuildSeries, endpoints /series y /frames, prueba con los 5 objetos. Revisores del visor: R2 UX y R4 ciencia = CAMBIOS REQUERIDOS (B: cielo en espejo, este a la derecha; texto <16 px; sin botones táctiles); R1 y R3 en curso. Informes en rama feat/sky-engine docs/reviews/sky-engine/.
 - Mapa de datos físico listo (`docs/context/12`): reglas de pasadas (>45 d), tolerancia λ/(4R), máscara FLAGS, propagación de movimiento propio. **La demo vieja de WISE 0855 no contiene a WISE 0855** (posición de 2010) y sus pares no son comparables en λ: no usarla en el pitch.
 - Backend hexagonal con caché por capas y proxy HiPS (53 tests); visor propio dibuja (rama `feat/sky-engine`, en revisión). Ficha 0002 v2 espera aprobación.
@@ -14,7 +15,7 @@ Actualizado: sáb 14-nov-2026, tarde (UTC−5). Regla: cada sesión de agente o 
 - Cuadrícula DR1 reproducible: `mise run grid-spherex` y `mise run grid-test`; geometría de 12.288 celdas, datos espectrales y visor aún no incluidos.
 - Protocolo experimental HiPS: `docs/context/10-protocolo-hips-reproducible.md`; 4 millones de posiciones comparadas sin discrepancias; un cubo FITS descargado y verificado; índice temporal y visor pendientes.
 - Índice experimental HiPS: 12.288 celdas geométricas fuera del repo; cubos agregados, no índice temporal; detalles en `docs/context/09-referencia-irsa-exploracion.md`.
-- Exploración de todo el cielo y análisis de IRSA: `docs/context/09-referencia-irsa-exploracion.md`; ficha base aprobada por Dax `docs/specs/0001-exploracion-cache-borrador.md`. WISE es un ejemplo, con validación pendiente.
+- Exploración de todo el cielo y análisis de IRSA: `docs/context/09-referencia-irsa-exploracion.md`; ficha base aprobada por Dax `docs/specs/0004-exploracion-cache-borrador.md`. WISE es un ejemplo, con validación pendiente.
 - Fase: **investigación y estándares** (sin código de producto todavía).
 - Contexto para agentes listo: `AGENTS.md`, `docs/context/00–05`, `docs/GLOSARIO.md`, 14 skills en `.agents/skills/`.
 - Investigación hecha: reto + rúbrica oficial (01), ciencia simple (02), APIs medidas en vivo (03), UX y competidores (04), estándares de agentes (05).
@@ -22,6 +23,9 @@ Actualizado: sáb 14-nov-2026, tarde (UTC−5). Regla: cada sesión de agente o 
 - Guía de onboarding del equipo integrada en AGENTS.md (decisiones acordadas, semáforo, ficha de tarea).
 - Siguiente: el equipo lee onboarding + 01–04 + 07 y decide visión, stack (ADR 0003) y roles. Cada persona instala mise (`08` §1).
 - Plan anterior del 13-nov archivado en `docs/archive/v0-2026-11-13/` (no es fuente de verdad).
+- Ciclo 1 (rama `docs/arquitectura-observation`): **borrador** `docs/specs/0001-arquitectura-observation.md` (flujo de datos, `Observation` propuesto, matriz de interfaces, fallos). Johann lo propone; roles y contrato **sin ratificar**. Falta la revisión de Mateo y Daniel, de Sebastián (requisitos científicos) y de Dax (frontera `Region`).
+- Contrastado con un producto DR1 real: el tiempo de la cabecera es UTC; `obs_id` no distingue detector ni versión; `em_min/em_max` cubren el detector entero; λ científica = `CWAVE`/`CBAND`; `WCS-WAVE` es aproximación para selección según D12 §2.2. Esto contradice `context/03` §3 y `context/06` §5.2, que aún no se corrigen.
+- Mateo: borrador `docs/specs/0010-analysis-result.md` (`AnalysisResult`), alineado con `Observation` 0001; rama `docs/analysis-measurements`. Para cerrarla faltan los umbrales de Sebastián y la revisión de Johann. Rango de fichas de Mateo: 0010–0019.
 
 ## Hitos (Ecuador, UTC−5)
 | Hora | Hito |
@@ -49,7 +53,10 @@ Actualizado: sáb 14-nov-2026, tarde (UTC−5). Regla: cada sesión de agente o 
 
 ## Bloqueos y riesgos
 - Resuelto 14-nov tarde: QR3 vacío solo en WISE 0855; los otros 4 objetos suman una pasada QR3 (ver Ahora).
+- [medido 14-nov, Mateo] Épocas DR1+QR3: WISE 0855 3 (QR3 vacío), Barnard 3, ε Indi B 4, RW Aur 3, R Dra 4 grupos exploratorios (D12 §5.2 agrupa 3 pasadas con >45 días). Detalle: `docs/specs/0010-analysis-result.md` anexo B. ε Indi B resuelto con 2MASS (IRSA Gator) sin SIMBAD.
+- [medido] Barnard, RW Aur y R Dra **saturan** SPHEREx; WISE 0855 es demasiado débil en una exposición (SNR ≤ 4,7). Solo ε Indi B es medible (movimiento ~1 px en 1,4 años, medido). Falta una variable no saturada → Sebastián.
 - IRSA TAP muy lento hoy (315 s / 502): usar SIA2.
+- 14-nov tarde, comprobado (ficha 0001 §7.4): QR3 está vacío en WISE 0855, pero añade fechas posteriores a DR1 en Barnard, RW Aur y R Dra. WISE 0855 tiene 3 grupos de fechas en DR1 y un par D3 may-2025/may-2026 con la misma λ en el punto (candidato, sin evaluar). IRSA da 502 intermitentes, con o sin `TIME`. ~~Pendiente: resolver Epsilon Indi B cuando SIMBAD vuelva.~~ Resuelto (ficha 0010). Ojo: WISE 0855 no se detecta en una exposición (ficha 0010 B.4), así que ese par D3 no es medible.
 
 ## Preguntas para mentores (Bloque 4)
 - Duración exacta del pitch y del Q&A.
