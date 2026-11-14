@@ -1,0 +1,8 @@
+# Revisión diferencial de seguridad y ciencia
+
+- Alcance: contrato, generador de catálogo, búsqueda, cargador, adaptador Sesame y API; revisión propia, sin auditor independiente. `git blame` del adaptador: base `2da755a`; 23 referencias textuales a resolvedor/carga/caso de uso en backend y pruebas (no son llamadas únicas).
+- Riesgo principal: entrada pública activa llamadas externas. El destino inicial es fijo; la redirección solo acepta HTTPS, tres hosts conocidos, puerto 443 y ruta Sesame. `MockTransport` prueba mirror permitido y host rechazado. El límite de consulta es 64 caracteres y de resultados 20; no se añadió rate limiting global. Un servicio remoto caído devuelve 503, no una ausencia falsa.
+- El XML externo usa `defusedxml`; el cargador valida coordenadas y tamaño de descripción. Las coordenadas introducidas pasan validación de rango. Los casos de uso no importan adaptadores; arquitectura verificada por tests.
+- Se eliminó la época inventada 2000.0 del movimiento del resolvedor: el marco de coordenadas no establece la época de la posición. Los cinco objetivos conservan su fuente y época verificadas. Falta revisión científica humana del catálogo.
+- El script ejecutado manualmente sigue redirecciones del servidor para descargar datos; es una herramienta de generación, no una ruta HTTP pública. Una respuesta tardía o sin resultado se omite y se documenta. 2MASS J0415-0935 quedó omitido por timeout.
+- No se verificaron contra fuentes independientes todas las descripciones o denominaciones. Los metadatos de Sesame se conservan sin inferir descubrimientos; empates y errores tipográficos son inherentemente ambiguos.
