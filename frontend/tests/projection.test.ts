@@ -13,8 +13,8 @@ describe.each<Projection>(['SIN', 'TAN', 'AIT'])('%s projection', (projection) =
       const sky = unproject(projection, x, y, 359.99, 89.999);
       if (!sky) continue;
       const point = project(projection, sky.ra, sky.dec, 359.99, 89.999);
-      expect(point).not.toBeNull();
-      expect(Math.hypot(point!.x - x, point!.y - y) * 1000).toBeLessThan(0.01);
+      if (!point) throw new Error('Projected point is missing');
+      expect(Math.hypot(point.x - x, point.y - y) * 1000).toBeLessThan(0.01);
       checked++;
     }
     expect(checked).toBeGreaterThan(5000);
