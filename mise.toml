@@ -1,0 +1,30 @@
+# Single entry point for tools and tasks on Fedora and Windows.
+# Install mise once (docs/context/08-entorno-y-comandos.md), then:
+#   mise trust && mise install && mise run setup
+# Rules: tasks are arrays of single commands (Windows runs them with `cmd /c`):
+# no `&&`, pipes or $VARS. Any logic goes in a Python script under scripts/.
+
+[tools]
+uv = "0.13.8"
+node = "24.22.3"
+pnpm = "12.18.0"
+lefthook = "2.2.2"
+
+[env]
+PYTHONUTF8 = "1"
+UV_LINK_MODE = "copy"
+
+[tasks.setup]
+description = "Prepare the repo after cloning (idempotent)"
+run = ["uv run --no-project python scripts/sync_skills.py"]
+
+[tasks.sync-skills]
+description = "Copy .agents/skills -> .claude/skills (Claude Code)"
+run = "uv run --no-project python scripts/sync_skills.py"
+
+[tasks.check-skills]
+description = "Fail if .claude/skills is out of sync"
+run = "uv run --no-project python scripts/sync_skills.py --check"
+
+# Added when the stack is approved and frontend/ + backend/ exist (see docs/context/08):
+# dev, dev:api, dev:web, test, lint, fmt, build, gen-api, precompute
