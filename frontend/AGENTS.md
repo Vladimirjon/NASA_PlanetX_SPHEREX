@@ -6,8 +6,10 @@ En Fedora o Windows, instalar Node 22 o 24 y pnpm; desde `frontend/` ejecutar `p
 
 - `src/engine/core/` contiene matemáticas y selección puras; no importa adaptadores ni accede al navegador. La prueba `architecture.test.ts` comprueba la frontera.
 - `ports/` define interfaces; `adapters/` realiza E/S y dibujado. `engine.ts` conecta las dependencias y emite eventos; React solo presenta controles y llama al motor.
-- Una fuente adicional implementa `TileSource.fetch(order, npix, plane, signal)` y se inyecta al crear el motor; el adaptador debe respetar cancelación y cerrar los bitmaps cuando se descarten.
+- Una fuente adicional implementa `TileSource.fetch(order, npix, plane, signal)` y se inyecta al crear el motor; el adaptador debe respetar la cancelación. El renderizador sube las imágenes en R8 y cierra cada bitmap; la caché de GPU se limita por `cacheSize`. Los adaptadores conservan bytes PNG comprimidos durante la sesión para evitar nuevas peticiones tras el desalojo de GPU.
 - Una proyección se describe con la interfaz `Projection` y puede registrarse con `createProjectionRegistry(extra)`. La conexión de estrategias al shader aún está pendiente: las tres proyecciones actuales tienen implementaciones explícitas.
 - Para otra encuesta HiPS hay que proporcionar fuente de teselas y metadatos verificados (órdenes, dimensiones, frame y planos); los límites y longitudes de onda actuales corresponden específicamente a SPHEREx DR1 y no se pueden reutilizar sin cambiarlos.
 
 Limitaciones actuales y evidencia: `docs/reviews/sky-engine/perf.md` y `docs/adr/0007-motor-cielo-webgl2.md`.
+
+Para verificar con GPU real y capturas: iniciar `pnpm dev` en `frontend/`, volver a la raíz y ejecutar `node frontend/smoke.mjs`; el navegador debe disponer de `CHROME_PATH` si no está en `/usr/bin/google-chrome`. `node frontend/ui-regression.mjs` comprueba canales vacíos, controles y recuperación de red.

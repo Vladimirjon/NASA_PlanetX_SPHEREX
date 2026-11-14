@@ -1,0 +1,213 @@
+{
+ "mode": "angle-gl",
+ "renderer": "ANGLE (AMD, AMD Radeon 780M Graphics (radeonsi phoenix ACO), OpenGL 4.6)",
+ "cold_allsky": {
+  "full_frame_ms": 3605.6,
+  "domContentLoaded": 50.8,
+  "requests": 12,
+  "unique": 12,
+  "duplicateUrls": 0,
+  "duplicateExtra": 0,
+  "aborted": 0,
+  "maxInflight": 12,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 11,
+   "texSubImage3D": 12,
+   "getUniformLocation": 24,
+   "drawArrays": 11,
+   "uniform": 11,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 19.69999999552965,
+   "lookupMs": 1
+  },
+  "bitmapsLive": 12,
+  "bitmapsCreated": 12,
+  "longtasks": 3,
+  "longtaskMax": 132,
+  "coverage": 0.602734375
+ },
+ "warm_allsky": {
+  "full_frame_ms": 147.9,
+  "requests": 12,
+  "unique": 12,
+  "duplicateUrls": 0,
+  "duplicateExtra": 0,
+  "aborted": 0,
+  "maxInflight": 12,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 4,
+   "texSubImage3D": 12,
+   "getUniformLocation": 10,
+   "drawArrays": 4,
+   "uniform": 4,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 19.700000002980232,
+   "lookupMs": 0.4000000059604645
+  },
+  "bitmapsLive": 12,
+  "bitmapsCreated": 12,
+  "longtasks": 2,
+  "longtaskMax": 60,
+  "coverage": 0.602734375
+ },
+ "drag_5s": {
+  "pointer_moves": 182,
+  "frame_interval_ms": {
+   "n": 319,
+   "p50": 16.7,
+   "p95": 16.7,
+   "p99": 16.8,
+   "max": 16.8
+  },
+  "fps_p95_equiv": 59.9,
+  "frames_over_18ms": 0,
+  "gpu_draw_ms": {
+   "n": 182,
+   "p50": 0.34,
+   "p95": 0.41,
+   "p99": 0.54,
+   "max": 0.57
+  },
+  "texImage2D_lookup_uploads": 182,
+  "lookup_upload_cpu_ms": 4.8,
+  "texSubImage3D": 5,
+  "getUniformLocation_calls": 364,
+  "drawArrays": 182,
+  "script_ms": 374.9,
+  "task_ms": 697.3,
+  "layout_count": 183,
+  "recalc_style": 3,
+  "longtasks": 1,
+  "requests": 51,
+  "unique": 43,
+  "duplicateUrls": 4,
+  "duplicateExtra": 8,
+  "aborted": 11,
+  "maxInflight": 16,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 211,
+   "texSubImage3D": 40,
+   "getUniformLocation": 424,
+   "drawArrays": 211,
+   "uniform": 211,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 37.70000000298023,
+   "lookupMs": 5.600000001490116
+  },
+  "bitmapsLive": 40,
+  "bitmapsCreated": 40,
+  "longtaskMax": 64,
+  "coverage": 0.45
+ },
+ "zoom_180_to_0.5": {
+  "wheel_steps": 148,
+  "duration_ms": 7444,
+  "frame_interval_ms": {
+   "n": 445,
+   "p50": 16.7,
+   "p95": 16.7,
+   "p99": 16.8,
+   "max": 16.8
+  },
+  "fps_p95_equiv": 59.9,
+  "gpu_draw_ms": {
+   "n": 158,
+   "p50": 0.36,
+   "p95": 0.52,
+   "p99": 0.77,
+   "max": 0.88
+  },
+  "settle_after_last_wheel_ms": -2377.8,
+  "requests_during": 98,
+  "requests": 110,
+  "unique": 108,
+  "duplicateUrls": 2,
+  "duplicateExtra": 2,
+  "aborted": 58,
+  "maxInflight": 16,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 161,
+   "texSubImage3D": 51,
+   "getUniformLocation": 324,
+   "drawArrays": 161,
+   "uniform": 161,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 54.80000001192093,
+   "lookupMs": 7.300000011920929
+  },
+  "bitmapsLive": 51,
+  "bitmapsCreated": 52,
+  "longtasks": 2,
+  "longtaskMax": 121,
+  "coverage": 0.16171875
+ },
+ "fast_pan_away": {
+  "requests": 20,
+  "unique": 20,
+  "duplicateUrls": 0,
+  "duplicateExtra": 0,
+  "aborted": 0,
+  "maxInflight": 16,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 63,
+   "texSubImage3D": 20,
+   "getUniformLocation": 128,
+   "drawArrays": 63,
+   "uniform": 63,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 21.00000000745058,
+   "lookupMs": 4.1999999806284904
+  },
+  "bitmapsLive": 20,
+  "bitmapsCreated": 20,
+  "longtasks": 1,
+  "longtaskMax": 124,
+  "coverage": 0.177734375,
+  "dupe_examples": []
+ }
+}

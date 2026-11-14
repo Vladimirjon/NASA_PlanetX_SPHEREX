@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createSkyEngine, coordinates, parseTarget, TARGETS, WAVELENGTHS, type SkyEngine } from '../engine/engine';
-import { parseViewState, type Projection, type ViewState } from '../engine/view-state';
+import { DEFAULT_VIEW, parseViewState, type Projection, type ViewState } from '../engine/view-state';
 
 const initial = parseViewState(window.location.search);
 export function App() {
@@ -17,9 +17,10 @@ export function App() {
     let sky: SkyEngine;
     try { sky = createSkyEngine(canvas.current, {initialView: initial.view,capture:new URLSearchParams(window.location.search).has('capture')}); }
     catch (error) { setStatus(error instanceof Error ? error.message : 'Sky renderer unavailable'); return; }
-    engine.current = sky; let timer: ReturnType<typeof setTimeout>; let uiFrame=0; let latest=initial.view;
-    sky.on('viewchange', next => { latest=next; if(!uiFrame) uiFrame=requestAnimationFrame(()=>{uiFrame=0;setView(latest);}); clearTimeout(timer); timer=setTimeout(() => { setAnnouncement(`Center ${coordinates(next.ra,next.dec)}. Field of view ${next.fov.toFixed(2)} degrees. Channel ${next.plane+1}, ${WAVELENGTHS[next.plane].toFixed(3)} micrometres.`); }, 400); });
-    sky.on('cursor', setCursor); sky.on('status', setStatus);
+    engine.current = sky; let timer: ReturnType<typeof setTimeout>; let uiFrame=0; let latest=initial.view; let latestCursor:{ra:number;dec:number}|null=null;
+    const scheduleUi=():void=>{if(!uiFrame)uiFrame=requestAnimationFrame(()=>{uiFrame=0;setView(latest);setCursor(latestCursor);});};
+    sky.on('viewchange', next => { latest=next; scheduleUi(); clearTimeout(timer); timer=setTimeout(() => { setAnnouncement(`Center ${coordinates(next.ra,next.dec)}. Field of view ${next.fov.toFixed(2)} degrees. Channel ${next.plane+1}, ${WAVELENGTHS[next.plane].toFixed(3)} micrometres.`); }, 400); });
+    sky.on('cursor', next=>{latestCursor=next;scheduleUi();}); sky.on('status', setStatus);
     sky.on('pick', p => { setSelected(p); setAnnouncement(`Selected ${coordinates(p.ra,p.dec)}`); });
     return () => { clearTimeout(timer); cancelAnimationFrame(uiFrame); sky.destroy(); engine.current = null; };
   }, []);
@@ -36,7 +37,7 @@ export function App() {
     <footer><div className="controls" role="group" aria-label="Sky navigation">
       <button type="button" onClick={() => engine.current?.setView({fov:Math.max(0.05,view.fov/1.4)})} aria-label="Zoom in">+</button>
       <button type="button" onClick={() => engine.current?.setView({fov:Math.min(360,view.fov*1.4)})} aria-label="Zoom out">−</button>
-      <button type="button" onClick={() => engine.current?.setView(initial.view)}>Reset view</button>
+      <button type="button" onClick={() => engine.current?.setView(DEFAULT_VIEW)}>Reset view</button>
       <label>Go to <input list="sky-targets" value={target} onChange={e=> { setTarget(e.target.value); }} placeholder="RA Dec or object" /></label>
       <datalist id="sky-targets">{TARGETS.map(t=><option key={t.name} value={t.name}>{t.epoch}</option>)}</datalist>
       <button type="button" onClick={()=>{const point=parseTarget(target);if(point){engine.current?.setView({...point,fov:1});setStatus('Reference position selected; catalogue epochs vary.');}else setStatus('Enter RA and Dec in degrees or sexagesimal, or select an object.');}}>Go</button>

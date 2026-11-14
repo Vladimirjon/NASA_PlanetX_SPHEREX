@@ -1,0 +1,208 @@
+{
+ "mode": "swiftshader",
+ "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+ "cold_allsky": {
+  "full_frame_ms": 2678.3,
+  "domContentLoaded": 37.5,
+  "requests": 12,
+  "unique": 12,
+  "duplicateUrls": 0,
+  "duplicateExtra": 0,
+  "aborted": 0,
+  "maxInflight": 12,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 11,
+   "texSubImage3D": 12,
+   "getUniformLocation": 24,
+   "drawArrays": 11,
+   "uniform": 11,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 13.599999994039536,
+   "lookupMs": 0.6000000014901161
+  },
+  "bitmapsLive": 12,
+  "bitmapsCreated": 12,
+  "longtasks": 1,
+  "longtaskMax": 178,
+  "coverage": 0.5984375
+ },
+ "warm_allsky": {
+  "full_frame_ms": 232.8,
+  "requests": 12,
+  "unique": 12,
+  "duplicateUrls": 0,
+  "duplicateExtra": 0,
+  "aborted": 0,
+  "maxInflight": 12,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 3,
+   "texSubImage3D": 12,
+   "getUniformLocation": 8,
+   "drawArrays": 3,
+   "uniform": 3,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 13.199999995529652,
+   "lookupMs": 0.3999999910593033
+  },
+  "bitmapsLive": 12,
+  "bitmapsCreated": 12,
+  "longtasks": 1,
+  "longtaskMax": 152,
+  "coverage": 0.5984375
+ },
+ "drag_dupes": [
+  [
+   "Norder3/Dir0/Npix424_19.png",
+   3,
+   [
+    "aborted",
+    "aborted",
+    "aborted"
+   ]
+  ],
+  [
+   "Norder4/Dir0/Npix2548_19.png",
+   2,
+   [
+    "aborted",
+    200
+   ]
+  ],
+  [
+   "Norder4/Dir0/Npix1698_19.png",
+   3,
+   [
+    "aborted",
+    "aborted",
+    "aborted"
+   ]
+  ]
+ ],
+ "drag_5s": {
+  "pointer_moves": 95,
+  "frame_interval_ms": {
+   "n": 297,
+   "p50": 16.7,
+   "p95": 33.3,
+   "p99": 33.4,
+   "max": 33.5
+  },
+  "fps_p95_equiv": 30.0,
+  "frames_over_18ms": 21,
+  "gpu_draw_ms": {
+   "n": 0,
+   "p50": null,
+   "p95": null,
+   "p99": null,
+   "max": null
+  },
+  "texImage2D_lookup_uploads": 98,
+  "lookup_upload_cpu_ms": 2.4,
+  "texSubImage3D": 5,
+  "getUniformLocation_calls": 196,
+  "drawArrays": 98,
+  "script_ms": 182.4,
+  "task_ms": 3223.4,
+  "layout_count": 96,
+  "recalc_style": 3,
+  "longtasks": 1,
+  "requests": 48,
+  "unique": 43,
+  "duplicateUrls": 3,
+  "duplicateExtra": 5,
+  "aborted": 8,
+  "maxInflight": 16,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 129,
+   "texSubImage3D": 40,
+   "getUniformLocation": 260,
+   "drawArrays": 129,
+   "uniform": 129,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 34.20000001043081,
+   "lookupMs": 3.400000035762787
+  },
+  "bitmapsLive": 40,
+  "bitmapsCreated": 40,
+  "longtaskMax": 169,
+  "coverage": 0.4484375
+ },
+ "zoom_180_to_0.5": {
+  "wheel_steps": 148,
+  "duration_ms": 8367,
+  "frame_interval_ms": {
+   "n": 472,
+   "p50": 16.7,
+   "p95": 33.3,
+   "p99": 33.4,
+   "max": 33.4
+  },
+  "fps_p95_equiv": 30.0,
+  "gpu_draw_ms": {
+   "n": 0,
+   "p50": null,
+   "p95": null,
+   "p99": null,
+   "max": null
+  },
+  "settle_after_last_wheel_ms": -2907.3,
+  "requests_during": 103,
+  "requests": 115,
+  "unique": 113,
+  "duplicateUrls": 2,
+  "duplicateExtra": 2,
+  "aborted": 51,
+  "maxInflight": 16,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 168,
+   "texSubImage3D": 64,
+   "getUniformLocation": 338,
+   "drawArrays": 168,
+   "uniform": 168,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 68.50000001490116,
+   "lookupMs": 4
+  },
+  "bitmapsLive": 64,
+  "bitmapsCreated": 64,
+  "longtasks": 2,
+  "longtaskMax": 208,
+  "coverage": 0.136328125
+ }
+}

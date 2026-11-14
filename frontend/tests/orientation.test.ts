@@ -23,3 +23,11 @@ it('moves sky under a horizontal drag in the same direction as the finger', asyn
   if (!before || !after) throw new Error('No sky');
   expect(Math.abs(before.ra-after.ra)).toBeLessThan(0.01);
 });
+it('keeps the same sky point under a vertical drag', async () => {
+  const { pan } = await import('../src/engine/core/camera/camera');
+  const view={...DEFAULT_VIEW,ra:10,dec:0,fov:10};
+  const before=pointAt(view,400,300,800,600);
+  const after=pointAt(pan(view,0,40,800),400,340,800,600);
+  if(!before || !after) throw new Error('No sky');
+  expect(Math.abs(before.dec-after.dec)).toBeLessThan(.01);
+});

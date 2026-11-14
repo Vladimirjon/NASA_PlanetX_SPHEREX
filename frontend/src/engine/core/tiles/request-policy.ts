@@ -3,7 +3,7 @@ export function updateRequests(pending: ReadonlyMap<string,PendingRequest>, expa
   const next=new Map<string,PendingRequest>(),abort:string[]=[];
   for(const [key,state] of pending) {
     const outsideSince=expanded.has(key)?null:state.outsideSince ?? now;
-    if(state.order>2 && outsideSince!==null && now-outsideSince>=400) abort.push(key);
+    if(state.order>2 && outsideSince!==null && now-outsideSince>=500) abort.push(key);
     else next.set(key,{...state,outsideSince});
   }
   return {pending:next,abort};

@@ -13,6 +13,6 @@ it('does not cancel transiently hidden tiles during a five-second circular drag'
 it('only cancels deep tiles after the grace interval outside the expanded view', () => {
   const initial=new Map([['a',{order:3,outsideSince:null}],['b',{order:2,outsideSince:null}]]);
   const outside=updateRequests(initial,new Set(),100);
-  expect(updateRequests(outside.pending,new Set(),499).abort).toEqual([]);
-  expect(updateRequests(outside.pending,new Set(),501).abort).toEqual(['a']);
+  expect(updateRequests(outside.pending,new Set(),599).abort).toEqual([]);
+  expect(updateRequests(outside.pending,new Set(),601).abort).toEqual(['a']);
 });

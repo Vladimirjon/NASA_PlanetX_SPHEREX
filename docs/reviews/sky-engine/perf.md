@@ -1,9 +1,6 @@
-# Rendimiento del visor
+# Rendimiento del visor · revisión 1
 
-- Entorno: Chromium headless, SwiftShader, 1280×800, red real IRSA; no representa GPU integrada.
-- Primer píxel no negro, carga fría: 2778 ms.
-- Doce respuestas de orden 0 y dos cuadros posteriores: 2802 ms en frío, 287 ms tras recarga con caché. No verifica que cada imagen tenga datos no negros.
-- Intervalo p95 de cuadros durante arrastre: 16.70 ms (59.9 fps equivalentes).
-- Peticiones HiPS entre tres vistas y una recarga: 61; repetidas durante arrastre y zoom de una sesión: 0.
-- Errores de consola: 0.
-- Falta medir cuadro completo en laptop con GPU integrada y verificar calidad visual de todas las teselas.
+- Chromium con --use-angle=gl --enable-gpu --ignore-gpu-blocklist: ANGLE (AMD, AMD Radeon 780M Graphics (radeonsi phoenix ACO), OpenGL ES 3.2). Ventana 1280×800; red real IRSA.
+- Fotograma con red sin peticiones activas durante 600 ms y dos cuadros posteriores: frío 4286 ms; caliente 737 ms.
+- Arrastre circular de 5 s y zoom: intervalo p95 16.70 ms; 31 peticiones, 0 URL repetidas, 0 peticiones abortadas.
+- Errores de consola: 0. La medición no incluye el escenario de dos minutos ni calcula el porcentaje de abortos.
