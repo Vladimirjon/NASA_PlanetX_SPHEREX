@@ -15,8 +15,13 @@ from typing import cast
 
 import numpy as np
 import numpy.typing as npt
+from astropy import log as astropy_log
 from astropy.io import fits
 from astropy.wcs import WCS, FITSFixedWarning
+
+# The W (wavelength) axis deliberately inherits SIP keywords that we drop (sip = None, D12 §2.2);
+# astropy logs an INFO about it on every WCS build. It is expected, so keep the log quiet.
+astropy_log.setLevel("WARNING")
 
 BLOCK = 2880
 CARD = 80

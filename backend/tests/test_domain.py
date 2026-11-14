@@ -55,3 +55,12 @@ class TestHipsTileAddress:
         with pytest.raises(InvalidTileAddress):
             HipsTileAddress.from_path(order=5, dir_=0, npix=12000, plane=0)
         assert HipsTileAddress.from_path(order=5, dir_=10000, npix=12000, plane=1).npix == 12000
+
+
+def test_challenge_targets_resolve_by_common_aliases():
+    from skyshift.domain.targets import find_known
+
+    assert find_known("WISE 0855" + chr(0x2212) + "0714") is not None  # Unicode minus
+    assert find_known("  barnard's   STAR ") is not None
+    assert find_known("R_Dra") is not None
+    assert find_known("Planet Nine") is None

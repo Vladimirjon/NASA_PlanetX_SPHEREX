@@ -5,6 +5,7 @@ description = "SkyShift backend: temporal SPHEREx series with local-first tiered
 requires-python = ">=3.13"
 dependencies = [
     "astropy==8.0.2",
+    "defusedxml==0.7.1",
     "fastapi==0.163.0",
     "httpx==0.28.1",
     "numpy==2.5.4",

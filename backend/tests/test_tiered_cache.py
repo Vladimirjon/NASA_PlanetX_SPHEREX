@@ -187,3 +187,11 @@ async def test_blob_store_keys_cannot_escape_root(store: FilesystemBlobStore, tm
     written = [p for p in tmp_path.rglob("*") if p.is_file()]
     assert written
     assert all((tmp_path / "cache") in p.parents for p in written)
+
+
+async def test_put_then_peek_without_origin(resolver: TieredResolver):
+    await resolver.put("derived", b"frame", "skyshift:pipeline/0.2.0")
+    got = await resolver.peek("derived")
+    assert got is not None
+    assert got.data == b"frame"
+    assert await resolver.peek("missing") is None

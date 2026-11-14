@@ -74,9 +74,11 @@ class FrameReader:
         raise ValueError(f"FITS header too large at {start} in {obs.obs_did}")
 
     async def image_header(self, obs: Observation) -> tuple[bytes, HduInfo]:
-        primary = await self._header_at(obs, 0)
-        start = hdu_info(primary, 0).next_header_start
-        image = await self._header_at(obs, start)
+        """PRIMARY + IMAGE headers usually fit in the first 32 KB: one range request."""
+        first = await self._header_at(obs, 0)
+        start = hdu_info(first, 0).next_header_start
+        tail = first[start:]
+        image = tail if find_header_end(tail) is not None else await self._header_at(obs, start)
         return image, hdu_info(image, start)
 
     async def chain(self, obs: Observation) -> HeaderChain:

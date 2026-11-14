@@ -162,6 +162,38 @@ class TieredResolver:
             task.add_done_callback(lambda _: self._inflight.pop(key, None))
         return await asyncio.shield(task)
 
+    async def put(
+        self, key: str, data: bytes, source_url: str, *, ttl: timedelta | None = None
+    ) -> BlobMeta:
+        """Store data we produced ourselves (derived products), with the same guarantees."""
+        now = self._clock()
+        meta = BlobMeta(
+            source_url=source_url,
+            retrieved_at=now,
+            sha256=hashlib.sha256(data).hexdigest(),
+            expires_at=now + ttl if ttl is not None else None,
+        )
+        await self._store.put(key, data, meta)
+        self._memory.put(key, StoredBlob(data, meta))
+        return meta
+
+    async def peek(self, key: str) -> Resolved | None:
+        """Cached copy only (memory → precomputed → disk); never contacts the origin."""
+        cached = self._memory.get(key)
+        if cached is not None:
+            return Resolved(cached.data, CacheLayer.MEMORY, cached.meta)
+        for store, layer in (
+            (self._precomputed, CacheLayer.PRECOMPUTED),
+            (self._store, CacheLayer.LOCAL),
+        ):
+            if store is None:
+                continue
+            blob = await store.get(key)
+            if blob is not None:
+                self._memory.put(key, blob)
+                return Resolved(blob.data, layer, blob.meta)
+        return None
+
     def _is_fresh(self, meta: BlobMeta) -> bool:
         return meta.expires_at is None or self._clock() < meta.expires_at
 

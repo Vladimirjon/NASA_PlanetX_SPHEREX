@@ -12,8 +12,19 @@ from pydantic import BaseModel
 
 from skyshift.adapters.fs_blob_store import FilesystemBlobStore
 from skyshift.adapters.irsa_hips import IrsaHipsTiles
+from skyshift.adapters.irsa_sia import IrsaSia2Catalog
+from skyshift.adapters.s3_archive import S3ImageArchive
+from skyshift.adapters.sesame import SesameResolver
 from skyshift.api.problems import install_problem_handlers
+from skyshift.api.schemas import present_series
+from skyshift.api.series_routes import SeriesServices
+from skyshift.api.series_routes import router as series_router
+from skyshift.application.build_series import BuildSeries
+from skyshift.application.frame_reader import FrameReader
 from skyshift.application.get_hips_tile import GetHipsTile
+from skyshift.application.get_series import GetSeries
+from skyshift.application.list_observations import ListObservations
+from skyshift.application.resolve_name import ResolveName
 from skyshift.application.tiered_cache import TieredResolver
 from skyshift.config import Settings
 from skyshift.domain.hips import CUBE_DEPTH, MAX_ORDER, HipsTileAddress
@@ -102,6 +113,16 @@ def create_app(
                 resolver=resolver,
                 get_hips_tile=GetHipsTile(resolver, IrsaHipsTiles(client, cfg.hips_base_url)),
             )
+            list_observations = ListObservations(resolver, IrsaSia2Catalog(client))
+            app.state.series_services = SeriesServices(
+                resolve_name=ResolveName(resolver, SesameResolver(client)),
+                list_observations=list_observations,
+                get_series=GetSeries(
+                    BuildSeries(list_observations, FrameReader(resolver, S3ImageArchive(client))),
+                    resolver,
+                    present_series,
+                ),
+            )
             yield
 
     app = FastAPI(title="SkyShift API", version="0.1.0", lifespan=lifespan)
@@ -114,4 +135,5 @@ def create_app(
         )
     install_problem_handlers(app)
     app.include_router(router)
+    app.include_router(series_router)
     return app

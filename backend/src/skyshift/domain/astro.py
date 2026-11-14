@@ -3,6 +3,8 @@
 # objects; it exposes plain float signatures so the rest of the code stays strict.
 """Typed boundary over astropy (anti-corruption layer)."""
 
+from datetime import UTC, datetime
+
 import numpy as np
 from astropy import units as u
 from astropy.coordinates import get_body_barycentric_posvel
@@ -24,3 +26,9 @@ def earth_barycentric_au(mjd: float) -> tuple[float, float, float]:
         raise RuntimeError("astropy returned no Earth position")
     xyz = np.asarray(u.Quantity(position.get_xyz(), u.AU).value, dtype=np.float64)
     return float(xyz[0]), float(xyz[1]), float(xyz[2])
+
+
+def mjd_to_datetime(mjd: float) -> datetime:
+    """UTC datetime of an MJD (SPHEREx MJD-AVG is UTC, TIMESYS='UTC')."""
+    iso = str(Time(mjd, format="mjd", scale="utc").isot)
+    return datetime.fromisoformat(iso).replace(tzinfo=UTC)
