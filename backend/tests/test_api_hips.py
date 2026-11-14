@@ -1,3 +1,4 @@
+import asyncio
 import struct
 import zlib
 from collections.abc import AsyncIterator, Callable
@@ -57,9 +58,46 @@ async def test_tile_is_fetched_once_then_served_from_cache(
     second = await client.get("/api/v1/hips/3/0/10", params={"plane": 19})
     assert first.status_code == 200
     assert first.headers["content-type"] == "image/png"
+    assert first.headers["cache-control"] == "public, max-age=604800"
     assert first.headers["x-cache-layer"] == "origin"
     assert second.headers["x-cache-layer"] == "memory"
     assert upstream.requests == [f"{BASE}/Norder3/Dir0/Npix10_19.png"]
+
+
+async def test_transient_failures_retry_then_cache(client: httpx.AsyncClient, upstream: Upstream):
+    upstream.handler = lambda _: (
+        httpx.Response(503) if len(upstream.requests) < 3 else httpx.Response(200, content=png())
+    )
+    first = await client.get("/api/v1/hips/3/0/11")
+    second = await client.get("/api/v1/hips/3/0/11")
+    assert first.status_code == 200
+    assert second.headers["x-cache-layer"] == "memory"
+    assert len(upstream.requests) == 3
+
+
+async def test_upstream_concurrency_is_bounded(tmp_path: Path):
+    active = 0
+    maximum = 0
+
+    async def handler(_: httpx.Request) -> httpx.Response:
+        nonlocal active, maximum
+        active += 1
+        maximum = max(maximum, active)
+        await asyncio.sleep(0.02)
+        active -= 1
+        return httpx.Response(200, content=png())
+
+    app = create_app(
+        Settings(cache_dir=tmp_path, hips_max_parallel=2),
+        upstream_transport=httpx.MockTransport(handler),
+    )
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t") as c,
+    ):
+        responses = await asyncio.gather(*(c.get(f"/api/v1/hips/3/0/{n}") for n in range(8)))
+    assert all(response.status_code == 200 for response in responses)
+    assert maximum == 2
 
 
 async def test_invalid_address_is_422_problem(client: httpx.AsyncClient, upstream: Upstream):

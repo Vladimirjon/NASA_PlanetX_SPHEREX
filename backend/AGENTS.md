@@ -21,7 +21,7 @@ mise run api-lint
 ```
 Sin mise: `uv run --directory backend pytest` (y equivalentes del `mise.toml`).
 
-Variables: `SKYSHIFT_CACHE_DIR` (por defecto `.cache/skyshift`), `SKYSHIFT_PRECOMPUTED_DIR`, `SKYSHIFT_CORS_ORIGINS` (JSON, ej. `["http://localhost:5173"]`), `SKYSHIFT_UPSTREAM_TIMEOUT_S`, `SKYSHIFT_MEMORY_CACHE_MB`.
+Variables: `SKYSHIFT_CACHE_DIR` (por defecto `.cache/skyshift`), `SKYSHIFT_PRECOMPUTED_DIR`, `SKYSHIFT_CORS_ORIGINS` (JSON, ej. `["http://localhost:5173"]`), `SKYSHIFT_UPSTREAM_TIMEOUT_S`, `SKYSHIFT_MEMORY_CACHE_MB`, `SKYSHIFT_HIPS_MAX_PARALLEL` (1–32, por defecto 6).
 
 ## Cómo extender
 - Nueva fuente: puerto en `ports/` (si no existe) + adaptador en `adapters/` + conexión en `create_app`. El dominio no se toca.
