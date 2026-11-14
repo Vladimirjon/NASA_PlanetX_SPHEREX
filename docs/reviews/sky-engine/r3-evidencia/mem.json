@@ -1,0 +1,73 @@
+{
+ "mode": "angle-gl",
+ "memory_random_pan": {
+  "seconds": 120.0,
+  "heap_MB_gc_bitmapsLive": [
+   [
+    0,
+    1.91,
+    32
+   ],
+   [
+    30,
+    3.47,
+    86
+   ],
+   [
+    60,
+    3.53,
+    111
+   ],
+   [
+    90,
+    3.59,
+    169
+   ],
+   [
+    120,
+    3.65,
+    238
+   ],
+   [
+    "end",
+    3.65,
+    238
+   ]
+  ],
+  "dom": {
+   "documents": 1,
+   "nodes": 1015,
+   "jsEventListeners": 168
+  },
+  "requests": 675,
+  "unique": 388,
+  "duplicateUrls": 175,
+  "duplicateExtra": 287,
+  "aborted": 437,
+  "maxInflight": 16,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 3017,
+   "texSubImage3D": 568,
+   "getUniformLocation": 6036,
+   "drawArrays": 3017,
+   "uniform": 3017,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 512.2000000029802,
+   "lookupMs": 94.79999993741512
+  },
+  "bitmapsLive": 238,
+  "bitmapsCreated": 238,
+  "longtasks": 1,
+  "longtaskMax": 57,
+  "coverage": 0.39765625
+ }
+}

@@ -1,0 +1,262 @@
+[
+ {
+  "view": "allsky",
+  "ours_canvas": [
+   0,
+   65,
+   1200,
+   676
+  ],
+  "irsa_canvas": [
+   92,
+   80,
+   1102,
+   720
+  ],
+  "irsa_fov_label": "180.0\u00b0",
+  "crop_deg": 52.922,
+  "ssim_fair": 0.007,
+  "ssim_fair_flipEW": 0.005,
+  "ssim_flipNS": 0.006,
+  "ours_orders": [
+   "0"
+  ],
+  "irsa_orders": [
+   "0"
+  ],
+  "irsa_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder0/Dir0/Npix11_19.png",
+  "ours_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder0/Dir0/Npix0_19.png"
+ },
+ {
+  "view": "wise0855",
+  "ours_canvas": [
+   0,
+   65,
+   1200,
+   676
+  ],
+  "irsa_canvas": [
+   92,
+   80,
+   1102,
+   720
+  ],
+  "irsa_fov_label": "60.00'",
+  "crop_deg": 0.294,
+  "ssim_fair": 0.399,
+  "ssim_fair_flipEW": 0.702,
+  "ssim_flipNS": 0.391,
+  "ours_orders": [
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "irsa_orders": [
+   "5"
+  ],
+  "irsa_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder5/Dir10000/Npix10226_19.png",
+  "ours_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder0/Dir0/Npix0_19.png"
+ },
+ {
+  "view": "barnard",
+  "ours_canvas": [
+   0,
+   65,
+   1200,
+   676
+  ],
+  "irsa_canvas": [
+   92,
+   80,
+   1102,
+   720
+  ],
+  "irsa_fov_label": "60.00'",
+  "crop_deg": 0.294,
+  "ssim_fair": 0.171,
+  "ssim_fair_flipEW": 0.91,
+  "ssim_flipNS": 0.167,
+  "ours_orders": [
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "irsa_orders": [
+   "2",
+   "5"
+  ],
+  "irsa_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder5/Dir0/Npix7948_19.png",
+  "ours_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder0/Dir0/Npix0_19.png"
+ },
+ {
+  "view": "eps-indi-b",
+  "ours_canvas": [
+   0,
+   65,
+   1200,
+   676
+  ],
+  "irsa_canvas": [
+   92,
+   80,
+   1102,
+   720
+  ],
+  "irsa_fov_label": "60.00'",
+  "crop_deg": 0.294,
+  "ssim_fair": 0.173,
+  "ssim_fair_flipEW": 0.675,
+  "ssim_flipNS": 0.173,
+  "ours_orders": [
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "irsa_orders": [
+   "2",
+   "5"
+  ],
+  "irsa_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder5/Dir10000/Npix11391_19.png",
+  "ours_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder0/Dir0/Npix0_19.png"
+ },
+ {
+  "view": "rw-aur",
+  "ours_canvas": [
+   0,
+   65,
+   1200,
+   676
+  ],
+  "irsa_canvas": [
+   92,
+   80,
+   1102,
+   720
+  ],
+  "irsa_fov_label": "60.00'",
+  "crop_deg": 0.294,
+  "ssim_fair": 0.058,
+  "ssim_fair_flipEW": 0.054,
+  "ssim_flipNS": 0.073,
+  "ours_orders": [
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "irsa_orders": [
+   "5"
+  ],
+  "irsa_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder5/Dir0/Npix279_19.png",
+  "ours_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder0/Dir0/Npix0_19.png"
+ },
+ {
+  "view": "r-dra",
+  "ours_canvas": [
+   0,
+   65,
+   1200,
+   676
+  ],
+  "irsa_canvas": [
+   92,
+   80,
+   1102,
+   720
+  ],
+  "irsa_fov_label": "60.00'",
+  "crop_deg": 0.294,
+  "ssim_fair": 0.388,
+  "ssim_fair_flipEW": 0.435,
+  "ssim_flipNS": 0.38,
+  "ours_orders": [
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "irsa_orders": [
+   "5"
+  ],
+  "irsa_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder5/Dir0/Npix2928_19.png",
+  "ours_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder0/Dir0/Npix0_19.png"
+ },
+ {
+  "view": "north-pole",
+  "ours_canvas": [
+   0,
+   65,
+   1200,
+   676
+  ],
+  "irsa_canvas": [
+   92,
+   80,
+   1102,
+   720
+  ],
+  "irsa_fov_label": "10.00\u00b0",
+  "crop_deg": 2.94,
+  "ssim_fair": 0.013,
+  "ssim_fair_flipEW": 0.111,
+  "ssim_flipNS": 0.013,
+  "ours_orders": [
+   "0",
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  "irsa_orders": [
+   "4"
+  ],
+  "irsa_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder4/Dir0/Npix1023_19.png",
+  "ours_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder0/Dir0/Npix0_19.png"
+ },
+ {
+  "view": "ra-wrap",
+  "ours_canvas": [
+   0,
+   65,
+   1200,
+   676
+  ],
+  "irsa_canvas": [
+   92,
+   80,
+   1102,
+   720
+  ],
+  "irsa_fov_label": "5.000\u00b0",
+  "crop_deg": 1.47,
+  "ssim_fair": 0.258,
+  "ssim_fair_flipEW": 0.605,
+  "ssim_flipNS": 0.247,
+  "ours_orders": [
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "irsa_orders": [
+   "5"
+  ],
+  "irsa_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder5/Dir0/Npix4866_60.png",
+  "ours_tile_example": "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/Norder0/Dir0/Npix0_60.png"
+ }
+]

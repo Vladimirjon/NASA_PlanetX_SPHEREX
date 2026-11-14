@@ -1,0 +1,242 @@
+[
+ {
+  "view": "allsky",
+  "crop_deg": 47.042,
+  "asis": {
+   "ssim": 0.011,
+   "shift_px_400": [
+    -64.1,
+    -150.1
+   ],
+   "shift_arcsec": [
+    -27138.4,
+    -63548.7
+   ],
+   "ssim_registered": 0.015,
+   "ssim_blur2": 0.17
+  },
+  "patched": {
+   "ssim": 0.006,
+   "shift_px_400": [
+    -29.0,
+    -74.8
+   ],
+   "shift_arcsec": [
+    -12277.9,
+    -31668.5
+   ],
+   "ssim_registered": 0.003,
+   "ssim_blur2": 0.19
+  }
+ },
+ {
+  "view": "wise0855",
+  "crop_deg": 0.261,
+  "asis": {
+   "ssim": 0.45,
+   "shift_px_400": [
+    -2.2,
+    0.0
+   ],
+   "shift_arcsec": [
+    -5.2,
+    0.0
+   ],
+   "ssim_registered": 0.446,
+   "ssim_blur2": 0.379
+  },
+  "patched": {
+   "ssim": 0.754,
+   "shift_px_400": [
+    -2.2,
+    -0.3
+   ],
+   "shift_arcsec": [
+    -5.2,
+    -0.7
+   ],
+   "ssim_registered": 0.958,
+   "ssim_blur2": 0.844
+  }
+ },
+ {
+  "view": "barnard",
+  "crop_deg": 0.261,
+  "asis": {
+   "ssim": 0.219,
+   "shift_px_400": [
+    -0.8,
+    0.0
+   ],
+   "shift_arcsec": [
+    -1.9,
+    0.0
+   ],
+   "ssim_registered": 0.228,
+   "ssim_blur2": 0.33
+  },
+  "patched": {
+   "ssim": 0.885,
+   "shift_px_400": [
+    0.0,
+    -0.7
+   ],
+   "shift_arcsec": [
+    0.0,
+    -1.6
+   ],
+   "ssim_registered": 0.943,
+   "ssim_blur2": 0.972
+  }
+ },
+ {
+  "view": "eps-indi-b",
+  "crop_deg": 0.261,
+  "asis": {
+   "ssim": 0.23,
+   "shift_px_400": [
+    5.4,
+    -146.0
+   ],
+   "shift_arcsec": [
+    12.7,
+    -343.4
+   ],
+   "ssim_registered": 0.124,
+   "ssim_blur2": 0.291
+  },
+  "patched": {
+   "ssim": 0.743,
+   "shift_px_400": [
+    3.5,
+    -0.4
+   ],
+   "shift_arcsec": [
+    8.2,
+    -0.9
+   ],
+   "ssim_registered": 0.971,
+   "ssim_blur2": 0.866
+  }
+ },
+ {
+  "view": "rw-aur",
+  "crop_deg": 0.261,
+  "asis": {
+   "ssim": 0.086,
+   "shift_px_400": [
+    -7.9,
+    0.0
+   ],
+   "shift_arcsec": [
+    -18.6,
+    0.0
+   ],
+   "ssim_registered": 0.086,
+   "ssim_blur2": 0.174
+  },
+  "patched": {
+   "ssim": 0.087,
+   "shift_px_400": [
+    -7.6,
+    1.9
+   ],
+   "shift_arcsec": [
+    -17.9,
+    4.5
+   ],
+   "ssim_registered": 0.931,
+   "ssim_blur2": 0.211
+  }
+ },
+ {
+  "view": "r-dra",
+  "crop_deg": 0.261,
+  "asis": {
+   "ssim": 0.445,
+   "shift_px_400": [
+    11.7,
+    0.1
+   ],
+   "shift_arcsec": [
+    27.5,
+    0.2
+   ],
+   "ssim_registered": 0.493,
+   "ssim_blur2": 0.536
+  },
+  "patched": {
+   "ssim": 0.503,
+   "shift_px_400": [
+    12.5,
+    0.1
+   ],
+   "shift_arcsec": [
+    29.4,
+    0.2
+   ],
+   "ssim_registered": 0.962,
+   "ssim_blur2": 0.575
+  }
+ },
+ {
+  "view": "north-pole",
+  "crop_deg": 2.613,
+  "asis": {
+   "ssim": 0.019,
+   "shift_px_400": [
+    113.9,
+    158.0
+   ],
+   "shift_arcsec": [
+    2679.0,
+    3716.3
+   ],
+   "ssim_registered": 0.022,
+   "ssim_blur2": 0.188
+  },
+  "patched": {
+   "ssim": 0.202,
+   "shift_px_400": [
+    -0.5,
+    -0.6
+   ],
+   "shift_arcsec": [
+    -11.8,
+    -14.1
+   ],
+   "ssim_registered": 0.263,
+   "ssim_blur2": 0.678
+  }
+ },
+ {
+  "view": "ra-wrap",
+  "crop_deg": 1.307,
+  "asis": {
+   "ssim": 0.345,
+   "shift_px_400": [
+    -0.1,
+    -30.0
+   ],
+   "shift_arcsec": [
+    -1.2,
+    -352.8
+   ],
+   "ssim_registered": 0.345,
+   "ssim_blur2": 0.437
+  },
+  "patched": {
+   "ssim": 0.671,
+   "shift_px_400": [
+    -0.7,
+    -0.6
+   ],
+   "shift_arcsec": [
+    -8.2,
+    -7.1
+   ],
+   "ssim_registered": 0.768,
+   "ssim_blur2": 0.866
+  }
+ }
+]

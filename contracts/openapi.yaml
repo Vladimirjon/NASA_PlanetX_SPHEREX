@@ -1,0 +1,430 @@
+openapi: 3.1.0
+info:
+  title: SkyShift API
+  version: 0.3.0
+  summary: Temporal SPHEREx series for any sky position, with local-first caching and full provenance.
+  description: |
+    Contract-first source of truth (AGENTS.md rule 7). Frontend types are generated from this file.
+    Every response that carries data also carries provenance (where it came from, when, which cache layer).
+    Interpretation levels are OBSERVED or EVALUATED only; the software never assigns CONFIRMED.
+    Errors use RFC 9457 problem+json.
+  license:
+    name: MIT
+    identifier: MIT
+servers:
+  - url: /api/v1
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Liveness plus upstream (IRSA) circuit state.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+
+  /search:
+    get:
+      operationId: searchTargets
+      summary: Search targets by name or coordinates, using a local catalog and CDS Sesame.
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, minLength: 1, maxLength: 64 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 20, default: 10 }
+      responses:
+        "200":
+          description: Ranked suggestions with source provenance.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SearchSuggestion" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "503": { $ref: "#/components/responses/Problem" }
+
+  /resolve:
+    get:
+      operationId: resolveName
+      summary: Resolve an object name (e.g. "Barnard's Star") to ICRS coordinates via CDS Sesame.
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema: { type: string, minLength: 1, maxLength: 64 }
+      responses:
+        "200":
+          description: Resolved position.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ResolvedName" }
+        "404": { $ref: "#/components/responses/Problem" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "503": { $ref: "#/components/responses/Problem" }
+
+  /observations:
+    get:
+      operationId: listObservations
+      summary: SPHEREx images covering a position, grouped into visits. Metadata only, no pixels.
+      parameters:
+        - $ref: "#/components/parameters/Ra"
+        - $ref: "#/components/parameters/Dec"
+      responses:
+        "200":
+          description: Visits with their observations.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ObservationIndex" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "503": { $ref: "#/components/responses/Problem" }
+
+  /series:
+    get:
+      operationId: buildSeries
+      summary: Build (or fetch from cache) a temporal series of aligned cutouts, one frame per comparable visit.
+      parameters:
+        - $ref: "#/components/parameters/Ra"
+        - $ref: "#/components/parameters/Dec"
+        - name: fov_arcmin
+          in: query
+          description: Square field of view side, arcminutes.
+          schema: { type: number, minimum: 1, maximum: 30, default: 5 }
+        - name: detector
+          in: query
+          description: SPHEREx detector array 1-6. Omit to let the server choose the best-covered one.
+          schema: { type: integer, minimum: 1, maximum: 6 }
+        - name: wavelength_um
+          in: query
+          description: Target wavelength at the target position, micrometers. Omit to pick the pair minimising the wavelength difference.
+          schema: { type: number, minimum: 0.7, maximum: 5.1 }
+        - $ref: "#/components/parameters/PmRa"
+        - $ref: "#/components/parameters/PmDec"
+        - $ref: "#/components/parameters/Parallax"
+        - $ref: "#/components/parameters/RefEpoch"
+      responses:
+        "200":
+          description: Series metadata. Pixel data is fetched per frame from data_url.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Series" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "503": { $ref: "#/components/responses/Problem" }
+
+  /series/{series_id}/frames/{index}:
+    get:
+      operationId: getFrameData
+      summary: Raw Float32 pixels of one aligned frame (row-major, little-endian, NaN = masked).
+      parameters:
+        - name: series_id
+          in: path
+          required: true
+          schema: { type: string, pattern: "^[a-f0-9]{16,64}$" }
+        - name: index
+          in: path
+          required: true
+          schema: { type: integer, minimum: 0, maximum: 255 }
+      responses:
+        "200":
+          description: Float32 array of shape Series.grid.shape, units MJy/sr (see frame.unit).
+          headers:
+            Cache-Control: { schema: { type: string }, description: "public, max-age=31536000, immutable" }
+            X-Cache-Layer: { schema: { $ref: "#/components/schemas/CacheLayer" } }
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        "404": { $ref: "#/components/responses/Problem" }
+
+  /hips/{order}/{dir}/{npix}:
+    get:
+      operationId: getHipsTile
+      summary: Local-first proxy of a SPHEREx DR1 HiPS cube PNG tile (visualization only, never for measurement).
+      parameters:
+        - name: order
+          in: path
+          required: true
+          schema: { type: integer, minimum: 0, maximum: 5 }
+        - name: dir
+          in: path
+          required: true
+          schema: { type: integer, minimum: 0 }
+        - name: npix
+          in: path
+          required: true
+          schema: { type: integer, minimum: 0, maximum: 12287 }
+        - name: plane
+          in: query
+          description: Spectral plane index 0-101 of the HiPS cube.
+          schema: { type: integer, minimum: 0, maximum: 101, default: 0 }
+      responses:
+        "200":
+          description: PNG tile, 512x512.
+          headers:
+            X-Cache-Layer: { schema: { $ref: "#/components/schemas/CacheLayer" } }
+          content:
+            image/png:
+              schema: { type: string, format: binary }
+        "404": { $ref: "#/components/responses/Problem" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "503":
+          description: IRSA unreachable with no cached copy, or IRSA returned an invalid tile (never cached).
+          content:
+            application/problem+json:
+              schema: { $ref: "#/components/schemas/Problem" }
+
+components:
+  parameters:
+    Ra:
+      name: ra
+      in: query
+      required: true
+      description: ICRS right ascension, degrees, [0, 360).
+      schema: { type: number, minimum: 0, exclusiveMaximum: 360 }
+    Dec:
+      name: dec
+      in: query
+      required: true
+      description: ICRS declination, degrees, [-90, 90].
+      schema: { type: number, minimum: -90, maximum: 90 }
+
+    PmRa:
+      name: pm_ra_masyr
+      in: query
+      description: Proper motion in RA including cos(dec) (mu_alpha*), mas/yr. Requires pm_dec_masyr and ref_epoch_jyear.
+      schema: { type: number, minimum: -20000, maximum: 20000 }
+    PmDec:
+      name: pm_dec_masyr
+      in: query
+      schema: { type: number, minimum: -20000, maximum: 20000 }
+    Parallax:
+      name: parallax_mas
+      in: query
+      schema: { type: number, minimum: 0, maximum: 1000 }
+    RefEpoch:
+      name: ref_epoch_jyear
+      in: query
+      description: Julian year of the reference position (e.g. 2016.0 for Gaia DR3).
+      schema: { type: number, minimum: 1990, maximum: 2100 }
+
+  responses:
+    Problem:
+      description: RFC 9457 problem details.
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+
+  schemas:
+    CacheLayer:
+      type: string
+      enum: [memory, local, origin, precomputed]
+
+    Provenance:
+      type: object
+      required: [source_url, retrieved_at, cache_layer]
+      properties:
+        source_url: { type: string, format: uri, description: Official upstream URL (IRSA/CDS). }
+        collection: { type: string, examples: [spherex_dr1, spherex_qr3] }
+        retrieved_at: { type: string, format: date-time, description: When the upstream data was fetched. }
+        cache_layer: { $ref: "#/components/schemas/CacheLayer" }
+        sha256: { type: string, pattern: "^[a-f0-9]{64}$" }
+        pipeline_version: { type: string, description: SkyShift processing version that produced derived data. }
+        resolver: { type: string, description: CDS resolver identifier. }
+        reference: { type: string, description: Position reference bibcode. }
+        astrometry_source: { type: string, description: Source of a verified astrometry override. }
+
+    Health:
+      type: object
+      required: [status, upstream]
+      properties:
+        status: { type: string, enum: [ok, degraded] }
+        upstream:
+          type: object
+          required: [irsa]
+          properties:
+            irsa: { type: string, enum: [closed, open, half_open], description: Circuit breaker state. }
+
+    SearchSuggestion:
+      type: object
+      required: [name, kind, ra, dec, score, provenance]
+      properties:
+        name: { type: string }
+        kind: { type: string, enum: [target, coordinates, resolver] }
+        ra: { type: number, minimum: 0, exclusiveMaximum: 360 }
+        dec: { type: number, minimum: -90, maximum: 90 }
+        coordinate_epoch: { type: string }
+        motion: { $ref: "#/components/schemas/Motion" }
+        object_type: { type: string }
+        description: { type: string, maxLength: 60 }
+        matched_alias: { type: string }
+        score: { type: number, minimum: 0, maximum: 1 }
+        provenance: { $ref: "#/components/schemas/Provenance" }
+
+    ResolvedName:
+      type: object
+      required: [query, ra, dec, provenance]
+      properties:
+        query: { type: string }
+        canonical_name: { type: string }
+        ra: { type: number }
+        dec: { type: number }
+        coordinate_epoch: { type: string, description: Epoch of the catalog position, e.g. J2000.0 / J2016.0. }
+        motion: { $ref: "#/components/schemas/Motion" }
+        provenance: { $ref: "#/components/schemas/Provenance" }
+
+    Motion:
+      type: object
+      description: Astrometric motion used to propagate the target position to each image date.
+      required: [pm_ra_masyr, pm_dec_masyr, ref_epoch_jyear]
+      properties:
+        pm_ra_masyr: { type: number }
+        pm_dec_masyr: { type: number }
+        parallax_mas: { type: number }
+        ref_epoch_jyear: { type: number }
+
+    Observation:
+      type: object
+      required: [obs_id, collection, t_mid, detector, wavelength_min_um, wavelength_max_um, access_url]
+      properties:
+        obs_id: { type: string }
+        collection: { type: string }
+        t_mid: { type: string, format: date-time }
+        mjd_mid: { type: number }
+        detector: { type: integer, minimum: 1, maximum: 6 }
+        wavelength_min_um: { type: number }
+        wavelength_max_um: { type: number }
+        access_url: { type: string, format: uri }
+
+    Visit:
+      type: object
+      required: [visit_id, t_start, t_end, observations]
+      properties:
+        visit_id: { type: string }
+        t_start: { type: string, format: date-time }
+        t_end: { type: string, format: date-time }
+        observations:
+          type: array
+          items: { $ref: "#/components/schemas/Observation" }
+
+    ObservationIndex:
+      type: object
+      required: [ra, dec, visits, provenance]
+      properties:
+        ra: { type: number }
+        dec: { type: number }
+        visits:
+          type: array
+          items: { $ref: "#/components/schemas/Visit" }
+        provenance: { $ref: "#/components/schemas/Provenance" }
+
+    Grid:
+      type: object
+      description: Common TAN grid all frames were reprojected onto.
+      required: [shape, crval_deg, pixel_scale_arcsec, projection]
+      properties:
+        shape: { type: array, items: { type: integer }, minItems: 2, maxItems: 2, description: "[height, width]" }
+        crval_deg: { type: array, items: { type: number }, minItems: 2, maxItems: 2, description: "[ra, dec] of grid center" }
+        pixel_scale_arcsec: { type: number }
+        projection: { type: string, const: TAN }
+
+    FrameStats:
+      type: object
+      required: [p01, p50, p99, masked_fraction]
+      properties:
+        p01: { type: number }
+        p50: { type: number }
+        p99: { type: number }
+        masked_fraction: { type: number, minimum: 0, maximum: 1, description: Fraction of pixels masked (FLAGS, NaN, outside coverage). }
+
+    Frame:
+      type: object
+      required: [index, visit_id, obs_id, t_mid, detector, wavelength_um, unit, data_url, stats, provenance]
+      properties:
+        index: { type: integer }
+        visit_id: { type: string }
+        obs_id: { type: string }
+        t_mid: { type: string, format: date-time }
+        mjd_mid: { type: number }
+        detector: { type: integer, minimum: 1, maximum: 6 }
+        wavelength_um: { type: number, description: Wavelength at the target position in this image (from the LVF map). }
+        bandwidth_um: { type: number }
+        wavelength_delta_nm: { type: number, description: "|lambda - reference lambda| at the target, nm." }
+        survey_epa_deg: { type: integer, enum: [0, 180], description: SPS_EPA; images rotate 180 deg between surveys. }
+        predicted_position:
+          type: object
+          description: Target position propagated to this image date (equals target when no motion given).
+          required: [ra, dec]
+          properties:
+            ra: { type: number }
+            dec: { type: number }
+        unit: { type: string, examples: [MJy/sr] }
+        data_url: { type: string, description: Relative URL of the Float32 pixel data. }
+        stats: { $ref: "#/components/schemas/FrameStats" }
+        provenance: { $ref: "#/components/schemas/Provenance" }
+
+    Comparability:
+      type: object
+      required: [level, checks]
+      properties:
+        level:
+          type: string
+          enum: [OBSERVED, EVALUATED]
+          description: OBSERVED = apparent difference only. EVALUATED = passed all quality checks. CONFIRMED is never assigned by software.
+        checks:
+          type: array
+          items:
+            type: object
+            required: [name, passed, detail]
+            properties:
+              name: { type: string, examples: [same_detector, wavelength_within_tolerance, flags_masked, aligned_to_common_grid, distinct_visits] }
+              passed: { type: boolean }
+              detail: { type: string }
+
+    Series:
+      type: object
+      required: [series_id, target, fov_arcmin, grid, frames, rejected, comparability, provenance]
+      properties:
+        series_id: { type: string }
+        target:
+          type: object
+          required: [ra, dec]
+          properties:
+            ra: { type: number }
+            dec: { type: number }
+        fov_arcmin: { type: number }
+        detector: { type: integer, minimum: 1, maximum: 6 }
+        reference_wavelength_um: { type: number }
+        wavelength_tolerance_nm: { type: number, description: "lambda/(4R) for this detector." }
+        motion: { $ref: "#/components/schemas/Motion" }
+        warnings: { type: array, items: { type: string } }
+        grid: { $ref: "#/components/schemas/Grid" }
+        frames:
+          type: array
+          items: { $ref: "#/components/schemas/Frame" }
+        rejected:
+          type: array
+          description: Visits/images excluded from the series, always with the reason.
+          items:
+            type: object
+            required: [obs_id, reason, detail]
+            properties:
+              obs_id: { type: string }
+              reason:
+                type: string
+                enum: [quality_flag, near_detector_edge, wavelength_mismatch, wrong_detector, no_coverage, fetch_failed]
+              detail: { type: string, description: Human-readable reason with numbers, e.g. "delta lambda 12.7 nm > 6.2 nm". }
+        comparability: { $ref: "#/components/schemas/Comparability" }
+        provenance: { $ref: "#/components/schemas/Provenance" }
+
+    Problem:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string, format: uri-reference }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string }

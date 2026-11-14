@@ -1,0 +1,213 @@
+{
+ "series_id": "3304865d988e38206854f25c",
+ "target": {
+  "ra": 248.16737837,
+  "dec": 66.75500675
+ },
+ "fov_arcmin": 5.0,
+ "detector": 1,
+ "reference_wavelength_um": 0.96357,
+ "wavelength_tolerance_nm": 6.18,
+ "motion": {
+  "pm_ra_masyr": -20.643,
+  "pm_dec_masyr": 6.149,
+  "parallax_mas": 1.251,
+  "ref_epoch_jyear": 2016.0
+ },
+ "warnings": [],
+ "grid": {
+  "shape": [
+   49,
+   49
+  ],
+  "crval_deg": [
+   248.16723325756075,
+   66.7550238456906
+  ],
+  "pixel_scale_arcsec": 6.15,
+  "projection": "TAN"
+ },
+ "frames": [
+  {
+   "index": 0,
+   "visit_id": "v60811.956",
+   "obs_id": "ivo://irsa.ipac/spherex_dr1?2025W28_1B_0100_1/D1",
+   "t_mid": "2025-07-07T10:59:08.527000Z",
+   "mjd_mid": 60863.457737578,
+   "detector": 1,
+   "wavelength_um": 0.96299,
+   "bandwidth_um": 0.02465,
+   "wavelength_delta_nm": 0.58,
+   "survey_epa_deg": 180,
+   "predicted_position": {
+    "ra": 248.16723962873772,
+    "dec": 66.75502329108522
+   },
+   "unit": "MJy / sr",
+   "data_url": "demo/r-draconis/frame-0.f32",
+   "stats": {
+    "p01": 0.010481326058506966,
+    "p50": 0.5288701057434082,
+    "p99": 10.308903732299795,
+    "masked_fraction": 0.2224073302790504
+   },
+   "provenance": {
+    "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W28_1B/l2b-v27-2026-215/1/level2_2025W28_1B_0100_1D1_spx_l2b-v27-2026-215.fits",
+    "collection": "spherex_dr1",
+    "retrieved_at": "2026-11-14T22:18:38.320573Z",
+    "cache_layer": "origin",
+    "sha256": null,
+    "pipeline_version": "0.2.0"
+   }
+  },
+  {
+   "index": 1,
+   "visit_id": "v60965.615",
+   "obs_id": "ivo://irsa.ipac/spherex_dr1?2025W42_2A_0526_3/D1",
+   "t_mid": "2025-10-19T01:00:31.923000Z",
+   "mjd_mid": 60967.042036143,
+   "detector": 1,
+   "wavelength_um": 0.96372,
+   "bandwidth_um": 0.02497,
+   "wavelength_delta_nm": 0.14,
+   "survey_epa_deg": 0,
+   "predicted_position": {
+    "ra": 248.1672354151863,
+    "dec": 66.75502323994681
+   },
+   "unit": "MJy / sr",
+   "data_url": "demo/r-draconis/frame-1.f32",
+   "stats": {
+    "p01": 0.010481326058506966,
+    "p50": 0.5288701057434082,
+    "p99": 10.308903732299795,
+    "masked_fraction": 0.1241149521032903
+   },
+   "provenance": {
+    "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W42_2A/l2b-v27-2026-243/1/level2_2025W42_2A_0526_3D1_spx_l2b-v27-2026-243.fits",
+    "collection": "spherex_dr1",
+    "retrieved_at": "2026-11-14T22:18:38.320573Z",
+    "cache_layer": "origin",
+    "sha256": null,
+    "pipeline_version": "0.2.0"
+   }
+  },
+  {
+   "index": 2,
+   "visit_id": "v61152.331",
+   "obs_id": "ivo://irsa.ipac/spherex_qr3?2026W29_1A_0364_1/D1",
+   "t_mid": "2026-07-14T21:41:40.921000Z",
+   "mjd_mid": 61235.903945842,
+   "detector": 1,
+   "wavelength_um": 0.96357,
+   "bandwidth_um": 0.02453,
+   "wavelength_delta_nm": 0.0,
+   "survey_epa_deg": 180,
+   "predicted_position": {
+    "ra": 248.16722472875762,
+    "dec": 66.75502500603943
+   },
+   "unit": "MJy / sr",
+   "data_url": "demo/r-draconis/frame-2.f32",
+   "stats": {
+    "p01": 0.010481326058506966,
+    "p50": 0.5288701057434082,
+    "p99": 10.308903732299795,
+    "masked_fraction": 0.13785922532278216
+   },
+   "provenance": {
+    "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W29_1A/l2b-v27-2026-276/1/level2_2026W29_1A_0364_1D1_spx_l2b-v27-2026-276.fits",
+    "collection": "spherex_qr3",
+    "retrieved_at": "2026-11-14T22:18:38.320573Z",
+    "cache_layer": "origin",
+    "sha256": null,
+    "pipeline_version": "0.2.0"
+   }
+  }
+ ],
+ "rejected": [
+  {
+   "obs_id": "ivo://irsa.ipac/spherex_dr1?2025W27_2A_0331_1/D1",
+   "reason": "near_detector_edge",
+   "detail": "target at pixel (1175, 9), < 15 px from edge"
+  },
+  {
+   "obs_id": "ivo://irsa.ipac/spherex_dr1?2025W29_2A_0733_1/D1",
+   "reason": "near_detector_edge",
+   "detail": "target at pixel (203, 1), < 15 px from edge"
+  },
+  {
+   "obs_id": "ivo://irsa.ipac/spherex_dr1?2025W45_1A_0067_1/D1",
+   "reason": "near_detector_edge",
+   "detail": "target at pixel (983, 2030), < 15 px from edge"
+  },
+  {
+   "obs_id": "ivo://irsa.ipac/spherex_dr1?2025W46_2A_0002_4/D1",
+   "reason": "near_detector_edge",
+   "detail": "target at pixel (2030, 1989), < 15 px from edge"
+  },
+  {
+   "obs_id": "ivo://irsa.ipac/spherex_dr1?2025W46_2A_0163_1/D1",
+   "reason": "near_detector_edge",
+   "detail": "target at pixel (2027, 1874), < 15 px from edge"
+  },
+  {
+   "obs_id": "ivo://irsa.ipac/spherex_dr1?2025W46_2A_0163_2/D1",
+   "reason": "near_detector_edge",
+   "detail": "target at pixel (2025, 1760), < 15 px from edge"
+  },
+  {
+   "obs_id": "ivo://irsa.ipac/spherex_qr3?2026W29_2A_0079_3/D1",
+   "reason": "near_detector_edge",
+   "detail": "target at pixel (134, 4), < 15 px from edge"
+  }
+ ],
+ "comparability": {
+  "level": "OBSERVED",
+  "checks": [
+   {
+    "name": "distinct_visits",
+    "passed": true,
+    "detail": "3 visit(s) separated by > 45 days"
+   },
+   {
+    "name": "same_detector",
+    "passed": true,
+    "detail": "one detector"
+   },
+   {
+    "name": "wavelength_within_tolerance",
+    "passed": true,
+    "detail": "max |delta lambda| 0.6 nm <= 6.2 nm"
+   },
+   {
+    "name": "quality_flags",
+    "passed": true,
+    "detail": "FINAST = 0 and L2DQA = Pass for every frame"
+   },
+   {
+    "name": "flags_clear_at_target",
+    "passed": false,
+    "detail": "masked pixels near target in frame(s) [0, 1, 2]"
+   },
+   {
+    "name": "aligned_to_common_grid",
+    "passed": true,
+    "detail": "TAN north-up 6.15 arcsec/px, bilinear"
+   },
+   {
+    "name": "change_significance",
+    "passed": false,
+    "detail": "not computed in pipeline 0.2 (needs |z| >= 5 at target): level stays OBSERVED"
+   }
+  ]
+ },
+ "provenance": {
+  "source_url": "skyshift:pipeline/0.2.0",
+  "collection": null,
+  "retrieved_at": "2026-11-14T22:18:38.320573Z",
+  "cache_layer": "origin",
+  "sha256": null,
+  "pipeline_version": "0.2.0"
+ }
+}

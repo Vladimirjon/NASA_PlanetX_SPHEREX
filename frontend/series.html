@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkyShift · redirect</title>
+    <script>
+      (function () {
+        var q = window.location.search || '';
+        var params = new URLSearchParams(q);
+        if (params.has('name') && !params.has('target')) {
+          params.set('target', params.get('name'));
+          params.delete('name');
+        }
+        var next = params.toString();
+        window.location.replace('/' + (next ? '?' + next : ''));
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to SkyShift…</p>
+  </body>
+</html>

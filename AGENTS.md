@@ -31,7 +31,7 @@ Nunca separar una imagen de sus metadatos de procedencia (archivo, fecha, banda/
 | `docs/context/08-entorno-y-comandos.md` | Instalar y correr todo igual en Fedora y Windows |
 | `docs/GLOSARIO.md` | Términos de astronomía en lenguaje simple |
 | `docs/fuentes/` | Rúbrica oficial de Sangolquí (PDF) y otras fuentes primarias |
-| `docs/adr/` | Decisiones tomadas. No propongas lo contrario sin leer el ADR |
+| `docs/adr/` | Decisiones tomadas. No propongas lo contrario sin leer el ADR. Rangos de 10 por integrante (Dax: 0040–0049; 0000–0005 compartidos) |
 
 `docs/archive/` es material viejo: **no es fuente de verdad**; úsalo solo como referencia y verifica todo dato que tomes de ahí.
 

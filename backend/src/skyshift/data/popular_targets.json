@@ -1,0 +1,3282 @@
+[
+  {
+    "name": "Crab Nebula",
+    "aliases": [
+      "M1",
+      "Crab Nebula",
+      "M 1"
+    ],
+    "ra": 83.6324,
+    "dec": 22.0174,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "SNR",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2022A&A...661A..38P",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M1"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M2",
+    "aliases": [
+      "M2",
+      "M 2"
+    ],
+    "ra": 323.362583,
+    "dec": -0.82325,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M2"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 3.51,
+      "dec": -2.16
+    },
+    "parallax_mas": 0.082
+  },
+  {
+    "name": "M3",
+    "aliases": [
+      "M3",
+      "M 3"
+    ],
+    "ra": 205.548417,
+    "dec": 28.377278,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M3"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.14,
+      "dec": -2.64
+    },
+    "parallax_mas": 0.11
+  },
+  {
+    "name": "M4",
+    "aliases": [
+      "M4",
+      "M 4"
+    ],
+    "ra": 245.89675,
+    "dec": -26.52575,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M4"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -12.48,
+      "dec": -18.99
+    },
+    "parallax_mas": 0.556
+  },
+  {
+    "name": "M5",
+    "aliases": [
+      "M5",
+      "M 5"
+    ],
+    "ra": 229.638417,
+    "dec": 2.081028,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M5"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 4.06,
+      "dec": -9.89
+    },
+    "parallax_mas": 0.141
+  },
+  {
+    "name": "M6",
+    "aliases": [
+      "M6",
+      "NGC 6405"
+    ],
+    "ra": 265.06042,
+    "dec": -32.23778,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M6"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -1.3662,
+      "dec": -5.8063
+    },
+    "parallax_mas": 2.1626
+  },
+  {
+    "name": "M7",
+    "aliases": [
+      "M7",
+      "NGC 6475"
+    ],
+    "ra": 268.43375,
+    "dec": -34.82667,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M7"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 3.0722,
+      "dec": -5.3157
+    },
+    "parallax_mas": 3.5704
+  },
+  {
+    "name": "M8",
+    "aliases": [
+      "M8",
+      "M 8"
+    ],
+    "ra": 270.9042,
+    "dec": -24.3867,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": null,
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M8"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M9",
+    "aliases": [
+      "M9",
+      "M 9"
+    ],
+    "ra": 259.799083,
+    "dec": -18.51625,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2002MNRAS.332..441F",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M9"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -2.21,
+      "dec": -3.21
+    },
+    "parallax_mas": 0.135
+  },
+  {
+    "name": "M10",
+    "aliases": [
+      "M10",
+      "M 10"
+    ],
+    "ra": 254.287708,
+    "dec": -4.100306,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M10"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -4.72,
+      "dec": -6.54
+    },
+    "parallax_mas": 0.196
+  },
+  {
+    "name": "M11",
+    "aliases": [
+      "M11",
+      "NGC 6705"
+    ],
+    "ra": 282.76542,
+    "dec": -6.27167,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M11"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -1.568,
+      "dec": -4.144
+    },
+    "parallax_mas": 0.427
+  },
+  {
+    "name": "M12",
+    "aliases": [
+      "M12",
+      "M 12"
+    ],
+    "ra": 251.809083,
+    "dec": -1.948528,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M12"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.15,
+      "dec": -6.77
+    },
+    "parallax_mas": 0.208
+  },
+  {
+    "name": "M13",
+    "aliases": [
+      "M13",
+      "M 13"
+    ],
+    "ra": 250.423475,
+    "dec": 36.4613194,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M13"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3.18,
+      "dec": -2.56
+    },
+    "parallax_mas": 0.127
+  },
+  {
+    "name": "M14",
+    "aliases": [
+      "M14",
+      "M 14"
+    ],
+    "ra": 264.400625,
+    "dec": -3.245917,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006MNRAS.365.1357D",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M14"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3.66,
+      "dec": -5.03
+    },
+    "parallax_mas": 0.129
+  },
+  {
+    "name": "M15",
+    "aliases": [
+      "M15",
+      "M 15"
+    ],
+    "ra": 322.493042,
+    "dec": 12.167,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M15"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.63,
+      "dec": -3.8
+    },
+    "parallax_mas": 0.097
+  },
+  {
+    "name": "M16",
+    "aliases": [
+      "M16",
+      "M 16"
+    ],
+    "ra": 274.688,
+    "dec": -13.792,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2021A&A...647A..19T",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M16"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.178,
+      "dec": -1.576
+    },
+    "parallax_mas": 0.566
+  },
+  {
+    "name": "M17",
+    "aliases": [
+      "M17",
+      "NGC 6618"
+    ],
+    "ra": 275.1958,
+    "dec": -16.1717,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2009MNRAS.399.2146W",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M17"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 1.51,
+      "dec": -1.74
+    },
+    "parallax_mas": 0.6
+  },
+  {
+    "name": "M18",
+    "aliases": [
+      "M18",
+      "M 18"
+    ],
+    "ra": 274.98417,
+    "dec": -17.0725,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M18"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.508,
+      "dec": -0.917
+    },
+    "parallax_mas": 0.64
+  },
+  {
+    "name": "M19",
+    "aliases": [
+      "M19",
+      "M 19"
+    ],
+    "ra": 255.657042,
+    "dec": -26.267944,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006MNRAS.365.1357D",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M19"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3.23,
+      "dec": 1.66
+    },
+    "parallax_mas": 0.142
+  },
+  {
+    "name": "M20",
+    "aliases": [
+      "M20",
+      "M 20"
+    ],
+    "ra": 270.675,
+    "dec": -22.9717,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2009MNRAS.399.2146W",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M20"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.41,
+      "dec": -1.69
+    },
+    "parallax_mas": 0.79
+  },
+  {
+    "name": "M21",
+    "aliases": [
+      "M21",
+      "M 21"
+    ],
+    "ra": 271.04208,
+    "dec": -22.5,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M21"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.525,
+      "dec": -1.521
+    },
+    "parallax_mas": 0.798
+  },
+  {
+    "name": "M22",
+    "aliases": [
+      "M22",
+      "M 22"
+    ],
+    "ra": 279.09975,
+    "dec": -23.90475,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M22"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 9.82,
+      "dec": -5.54
+    },
+    "parallax_mas": 0.306
+  },
+  {
+    "name": "M23",
+    "aliases": [
+      "M23",
+      "M 23"
+    ],
+    "ra": 269.23417,
+    "dec": -18.9725,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M23"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.284,
+      "dec": -1.809
+    },
+    "parallax_mas": 1.354
+  },
+  {
+    "name": "M24",
+    "aliases": [
+      "M24",
+      "M 24"
+    ],
+    "ra": 274.2,
+    "dec": -18.55,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "As*",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2004yCat.7239....0C",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M24"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M25",
+    "aliases": [
+      "M25",
+      "IC 4725"
+    ],
+    "ra": 277.94792,
+    "dec": -19.12694,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M25"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -1.7201,
+      "dec": -6.101
+    },
+    "parallax_mas": 1.5043
+  },
+  {
+    "name": "M26",
+    "aliases": [
+      "M26",
+      "M 26"
+    ],
+    "ra": 281.32,
+    "dec": -9.38722,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M26"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.144,
+      "dec": -1.411
+    },
+    "parallax_mas": 0.524
+  },
+  {
+    "name": "M27",
+    "aliases": [
+      "M27",
+      "M 27"
+    ],
+    "ra": 299.90151327087,
+    "dec": 22.72119779431999,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "PN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M27"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 10.52,
+      "dec": 3.699
+    },
+    "parallax_mas": 2.57
+  },
+  {
+    "name": "M28",
+    "aliases": [
+      "M28",
+      "M 28"
+    ],
+    "ra": 276.137042,
+    "dec": -24.869833,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006MNRAS.365.1357D",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M28"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.33,
+      "dec": -8.92
+    },
+    "parallax_mas": 0.2
+  },
+  {
+    "name": "M29",
+    "aliases": [
+      "M29",
+      "M 29"
+    ],
+    "ra": 305.92875,
+    "dec": 38.49028,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M29"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3.409,
+      "dec": -5.771
+    },
+    "parallax_mas": 0.553
+  },
+  {
+    "name": "M30",
+    "aliases": [
+      "M30",
+      "M 30"
+    ],
+    "ra": 325.092167,
+    "dec": -23.179861,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M30"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.73,
+      "dec": -7.24
+    },
+    "parallax_mas": 0.136
+  },
+  {
+    "name": "Andromeda Galaxy",
+    "aliases": [
+      "M31",
+      "Andromeda Galaxy",
+      "Andromeda",
+      "NGC 224",
+      "M 31"
+    ],
+    "ra": 10.6847083,
+    "dec": 41.26875,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "AGN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M31"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M32",
+    "aliases": [
+      "M32",
+      "M 32"
+    ],
+    "ra": 10.67427,
+    "dec": 40.86517,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiG",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M32"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -17.0,
+      "dec": -5.0
+    }
+  },
+  {
+    "name": "M33",
+    "aliases": [
+      "M33",
+      "M 33"
+    ],
+    "ra": 23.46206906218,
+    "dec": 30.66017511198,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiG",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M33"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.707,
+      "dec": 0.827
+    }
+  },
+  {
+    "name": "M34",
+    "aliases": [
+      "M34",
+      "NGC 1039"
+    ],
+    "ra": 40.53792,
+    "dec": 42.73389,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M34"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.7256,
+      "dec": -5.732
+    },
+    "parallax_mas": 1.9536
+  },
+  {
+    "name": "M35",
+    "aliases": [
+      "M35",
+      "NGC 2168"
+    ],
+    "ra": 92.28125,
+    "dec": 24.3375,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M35"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 2.2784,
+      "dec": -2.9336
+    },
+    "parallax_mas": 1.1301
+  },
+  {
+    "name": "M36",
+    "aliases": [
+      "M36",
+      "M 36"
+    ],
+    "ra": 84.0825,
+    "dec": 34.13389,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M36"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.155,
+      "dec": -3.388
+    },
+    "parallax_mas": 0.835
+  },
+  {
+    "name": "M37",
+    "aliases": [
+      "M37",
+      "M 37"
+    ],
+    "ra": 88.0775,
+    "dec": 32.54333,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M37"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 1.924,
+      "dec": -5.648
+    },
+    "parallax_mas": 0.666
+  },
+  {
+    "name": "M38",
+    "aliases": [
+      "M38",
+      "M 38"
+    ],
+    "ra": 82.16667,
+    "dec": 35.81889,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M38"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 1.58,
+      "dec": -4.424
+    },
+    "parallax_mas": 0.874
+  },
+  {
+    "name": "M39",
+    "aliases": [
+      "M39",
+      "NGC 7092"
+    ],
+    "ra": 322.76667,
+    "dec": 48.29639,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M39"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -7.3569,
+      "dec": -19.5993
+    },
+    "parallax_mas": 3.3373
+  },
+  {
+    "name": "M40",
+    "aliases": [
+      "M40",
+      "M 40"
+    ],
+    "ra": 185.55,
+    "dec": 58.083,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "?",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": null,
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M40"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M41",
+    "aliases": [
+      "M41",
+      "M 41"
+    ],
+    "ra": 101.51292,
+    "dec": -20.71861,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M41"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -4.339,
+      "dec": -1.381
+    },
+    "parallax_mas": 1.36
+  },
+  {
+    "name": "Orion Nebula",
+    "aliases": [
+      "M42",
+      "Orion Nebula",
+      "NGC 1976",
+      "M 42"
+    ],
+    "ra": 83.8201,
+    "dec": -5.3876,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "HII",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2022A&A...661A..38P",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M42"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 1.67,
+      "dec": -0.3
+    }
+  },
+  {
+    "name": "M43",
+    "aliases": [
+      "M43",
+      "M 43"
+    ],
+    "ra": 83.8792,
+    "dec": -5.27,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "HII",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": null,
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M43"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M44",
+    "aliases": [
+      "M44",
+      "NGC 2632"
+    ],
+    "ra": 129.99333,
+    "dec": 19.60917,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M44"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -36.047,
+      "dec": -12.917
+    },
+    "parallax_mas": 5.371
+  },
+  {
+    "name": "Pleiades",
+    "aliases": [
+      "M45",
+      "Pleiades",
+      "Cl Melotte 22"
+    ],
+    "ra": 56.65833,
+    "dec": 24.17806,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M45"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 19.997,
+      "dec": -45.548
+    },
+    "parallax_mas": 7.364
+  },
+  {
+    "name": "M46",
+    "aliases": [
+      "M46",
+      "NGC 2437"
+    ],
+    "ra": 115.43917,
+    "dec": -14.845,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M46"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3.8232,
+      "dec": 0.3729
+    },
+    "parallax_mas": 0.6005
+  },
+  {
+    "name": "M47",
+    "aliases": [
+      "M47",
+      "NGC 2422"
+    ],
+    "ra": 114.14917,
+    "dec": -14.50417,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M47"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -7.02,
+      "dec": 0.9592
+    },
+    "parallax_mas": 2.069
+  },
+  {
+    "name": "M48",
+    "aliases": [
+      "M48",
+      "NGC 2548"
+    ],
+    "ra": 123.39167,
+    "dec": -5.71972,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M48"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -1.3302,
+      "dec": 1.0164
+    },
+    "parallax_mas": 1.2897
+  },
+  {
+    "name": "M49",
+    "aliases": [
+      "M49",
+      "M 49"
+    ],
+    "ra": 187.4449,
+    "dec": 8.0004,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "Sy2",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "1997A&AS..122..235L",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M49"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M50",
+    "aliases": [
+      "M50",
+      "NGC 2323"
+    ],
+    "ra": 105.69708,
+    "dec": -8.36861,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M50"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.7977,
+      "dec": -0.654
+    },
+    "parallax_mas": 1.0012
+  },
+  {
+    "name": "Whirlpool Galaxy",
+    "aliases": [
+      "M51",
+      "Whirlpool Galaxy",
+      "Whirlpool",
+      "NGC 5194",
+      "M 51"
+    ],
+    "ra": 202.469575,
+    "dec": 47.1952583,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "Sy2",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M51"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M52",
+    "aliases": [
+      "M52",
+      "M 52"
+    ],
+    "ra": 351.19667,
+    "dec": 61.59222,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M52"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -1.938,
+      "dec": -1.131
+    },
+    "parallax_mas": 0.596
+  },
+  {
+    "name": "M53",
+    "aliases": [
+      "M53",
+      "M 53"
+    ],
+    "ra": 198.230208,
+    "dec": 18.168167,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M53"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.11,
+      "dec": -1.35
+    },
+    "parallax_mas": 0.067
+  },
+  {
+    "name": "M54",
+    "aliases": [
+      "M54",
+      "M 54"
+    ],
+    "ra": 283.763875,
+    "dec": -30.479861,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M54"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -2.73,
+      "dec": -1.38
+    },
+    "parallax_mas": 0.053
+  },
+  {
+    "name": "M55",
+    "aliases": [
+      "M55",
+      "M 55"
+    ],
+    "ra": 294.998792,
+    "dec": -30.96475,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M55"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3.41,
+      "dec": -9.27
+    },
+    "parallax_mas": 0.209
+  },
+  {
+    "name": "M56",
+    "aliases": [
+      "M56",
+      "M 56"
+    ],
+    "ra": 289.148208,
+    "dec": 30.183472,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M56"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -2.02,
+      "dec": 1.65
+    },
+    "parallax_mas": 0.091
+  },
+  {
+    "name": "M57",
+    "aliases": [
+      "M57",
+      "M 57"
+    ],
+    "ra": 283.39623652463,
+    "dec": 33.02913424654,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "PN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M57"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 1.645,
+      "dec": 2.472
+    },
+    "parallax_mas": 1.2696
+  },
+  {
+    "name": "M58",
+    "aliases": [
+      "M58",
+      "M 58"
+    ],
+    "ra": 189.431656125,
+    "dec": 11.81809,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "Sy2",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M58"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M59",
+    "aliases": [
+      "M59",
+      "M 59"
+    ],
+    "ra": 190.50940890631998,
+    "dec": 11.64691930771,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiG",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M59"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.055,
+      "dec": -0.283
+    }
+  },
+  {
+    "name": "M60",
+    "aliases": [
+      "M60",
+      "M 60"
+    ],
+    "ra": 190.91654510497253,
+    "dec": 11.55269115946306,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M60"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M61",
+    "aliases": [
+      "M61",
+      "M 61"
+    ],
+    "ra": 185.47886774286997,
+    "dec": 4.47377704644,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "Sy2",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M61"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.11,
+      "dec": 0.144
+    },
+    "parallax_mas": 0.0797
+  },
+  {
+    "name": "M62",
+    "aliases": [
+      "M62",
+      "M 62"
+    ],
+    "ra": 255.3025,
+    "dec": -30.112361,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006MNRAS.365.1357D",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M62"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -4.99,
+      "dec": -2.95
+    },
+    "parallax_mas": 0.185
+  },
+  {
+    "name": "M63",
+    "aliases": [
+      "M63",
+      "M 63"
+    ],
+    "ra": 198.95530912246997,
+    "dec": 42.02936891003,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "LIN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M63"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.309,
+      "dec": -0.076
+    },
+    "parallax_mas": 0.0147
+  },
+  {
+    "name": "M64",
+    "aliases": [
+      "M64",
+      "M 64"
+    ],
+    "ra": 194.1820667,
+    "dec": 21.6826583,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "SyG",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M64"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M65",
+    "aliases": [
+      "M65",
+      "M 65"
+    ],
+    "ra": 169.73295193949,
+    "dec": 13.09230575102,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiP",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M65"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M66",
+    "aliases": [
+      "M66",
+      "M 66"
+    ],
+    "ra": 170.0626,
+    "dec": 12.9915,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "AGN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "1997A&AS..122..235L",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M66"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M67",
+    "aliases": [
+      "M67",
+      "NGC 2682"
+    ],
+    "ra": 132.84792,
+    "dec": 11.815,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M67"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -10.9737,
+      "dec": -2.9396
+    },
+    "parallax_mas": 1.1325
+  },
+  {
+    "name": "M68",
+    "aliases": [
+      "M68",
+      "M 68"
+    ],
+    "ra": 189.866583,
+    "dec": -26.744056,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M68"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -2.75,
+      "dec": 1.78
+    },
+    "parallax_mas": 0.113
+  },
+  {
+    "name": "M69",
+    "aliases": [
+      "M69",
+      "M 69"
+    ],
+    "ra": 277.84625,
+    "dec": -32.348083,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M69"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -5.12,
+      "dec": -5.81
+    },
+    "parallax_mas": 0.116
+  },
+  {
+    "name": "M70",
+    "aliases": [
+      "M70",
+      "M 70"
+    ],
+    "ra": 280.803167,
+    "dec": -32.292111,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M70"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 1.39,
+      "dec": -4.72
+    },
+    "parallax_mas": 0.121
+  },
+  {
+    "name": "M71",
+    "aliases": [
+      "M71",
+      "M 71"
+    ],
+    "ra": 298.443708,
+    "dec": 18.779194,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M71"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3.41,
+      "dec": -2.61
+    },
+    "parallax_mas": 0.251
+  },
+  {
+    "name": "M72",
+    "aliases": [
+      "M72",
+      "M 72"
+    ],
+    "ra": 313.365417,
+    "dec": -12.537306,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M72"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -1.29,
+      "dec": -3.32
+    },
+    "parallax_mas": 0.084
+  },
+  {
+    "name": "M73",
+    "aliases": [
+      "M73",
+      "NGC 6994"
+    ],
+    "ra": 314.75,
+    "dec": -12.633,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "err",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": null,
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M73"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M74",
+    "aliases": [
+      "M74",
+      "M 74"
+    ],
+    "ra": 24.17393801526,
+    "dec": 15.78364097564,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "G",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M74"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.344,
+      "dec": -0.229
+    }
+  },
+  {
+    "name": "M75",
+    "aliases": [
+      "M75",
+      "M 75"
+    ],
+    "ra": 301.5201708,
+    "dec": -21.9222611,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M75"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.58,
+      "dec": -2.78
+    },
+    "parallax_mas": 0.069
+  },
+  {
+    "name": "M76",
+    "aliases": [
+      "M76",
+      "M 76"
+    ],
+    "ra": 25.58189905342,
+    "dec": 51.57542638057,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "PN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M76"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 2.586,
+      "dec": -2.959
+    },
+    "parallax_mas": 0.2945
+  },
+  {
+    "name": "M77",
+    "aliases": [
+      "M77",
+      "M 77"
+    ],
+    "ra": 40.66962152891999,
+    "dec": -0.01329435839,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "Sy2",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M77"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M78",
+    "aliases": [
+      "M78",
+      "M 78"
+    ],
+    "ra": 86.69083,
+    "dec": 0.07917,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "RNe",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": null,
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M78"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.93,
+      "dec": -4.5
+    }
+  },
+  {
+    "name": "M79",
+    "aliases": [
+      "M79",
+      "M 79"
+    ],
+    "ra": 81.044125,
+    "dec": -24.52425,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006MNRAS.365.1357D",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M79"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 2.47,
+      "dec": -1.59
+    },
+    "parallax_mas": 0.088
+  },
+  {
+    "name": "M80",
+    "aliases": [
+      "M80",
+      "M 80"
+    ],
+    "ra": 244.260042,
+    "dec": -22.976083,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M80"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -2.934,
+      "dec": -5.578
+    },
+    "parallax_mas": 0.102
+  },
+  {
+    "name": "M81",
+    "aliases": [
+      "M81",
+      "M 81"
+    ],
+    "ra": 148.88821939854,
+    "dec": 69.06529514038,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "Sy2",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M81"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.278,
+      "dec": -0.072
+    },
+    "parallax_mas": 0.1495
+  },
+  {
+    "name": "M82",
+    "aliases": [
+      "M82",
+      "M 82"
+    ],
+    "ra": 148.9684583,
+    "dec": 69.6797028,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "AGN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M82"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M83",
+    "aliases": [
+      "M83",
+      "M 83"
+    ],
+    "ra": 204.25383,
+    "dec": -29.865761111,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "SBG",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M83"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M84",
+    "aliases": [
+      "M84",
+      "M 84"
+    ],
+    "ra": 186.265597208,
+    "dec": 12.886983139,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "Sy2",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2009A&A...493..317L",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M84"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.08289,
+      "dec": -0.05116
+    }
+  },
+  {
+    "name": "M85",
+    "aliases": [
+      "M85",
+      "M 85"
+    ],
+    "ra": 186.3502208,
+    "dec": 18.1910806,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiP",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M85"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M86",
+    "aliases": [
+      "M86",
+      "M 86"
+    ],
+    "ra": 186.549225,
+    "dec": 12.9459694,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiG",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M86"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M87",
+    "aliases": [
+      "M87",
+      "M 87"
+    ],
+    "ra": 187.70593076725,
+    "dec": 12.391123246083,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "AGN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020A&A...644A.159C",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M87"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -8.029,
+      "dec": 10.734
+    }
+  },
+  {
+    "name": "M88",
+    "aliases": [
+      "M88",
+      "M 88"
+    ],
+    "ra": 187.99646877602,
+    "dec": 14.42031915884,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "Sy2",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M88"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M89",
+    "aliases": [
+      "M89",
+      "M 89"
+    ],
+    "ra": 188.915863889292,
+    "dec": 12.556341907139,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "Sy2",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020A&A...644A.159C",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M89"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M90",
+    "aliases": [
+      "M90",
+      "M 90"
+    ],
+    "ra": 189.20750409994997,
+    "dec": 13.1629232814,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "Sy2",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M90"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -0.238,
+      "dec": -0.395
+    },
+    "parallax_mas": 0.072
+  },
+  {
+    "name": "M91",
+    "aliases": [
+      "M91",
+      "M 91"
+    ],
+    "ra": 188.86018615054996,
+    "dec": 14.49632231493,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "LIN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M91"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M92",
+    "aliases": [
+      "M92",
+      "M 92"
+    ],
+    "ra": 259.280792,
+    "dec": 43.135944,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M92"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -4.935,
+      "dec": -0.625
+    },
+    "parallax_mas": 0.112
+  },
+  {
+    "name": "M93",
+    "aliases": [
+      "M93",
+      "NGC 2447"
+    ],
+    "ra": 116.14417,
+    "dec": -23.85611,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M93"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3.568,
+      "dec": 5.0434
+    },
+    "parallax_mas": 0.9603
+  },
+  {
+    "name": "M94",
+    "aliases": [
+      "M94",
+      "M 94"
+    ],
+    "ra": 192.72114082143,
+    "dec": 41.12025024573,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "SyG",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M94"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.714,
+      "dec": 0.8
+    }
+  },
+  {
+    "name": "M95",
+    "aliases": [
+      "M95",
+      "M 95"
+    ],
+    "ra": 160.99054728575,
+    "dec": 11.70369477537,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiP",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M95"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M96",
+    "aliases": [
+      "M96",
+      "M 96"
+    ],
+    "ra": 161.6906,
+    "dec": 11.8199389,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiP",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M96"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M97",
+    "aliases": [
+      "M97",
+      "M 97"
+    ],
+    "ra": 168.69880122825,
+    "dec": 55.01902300891,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "PN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M97"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.076,
+      "dec": 1.214
+    },
+    "parallax_mas": 1.2347
+  },
+  {
+    "name": "M98",
+    "aliases": [
+      "M98",
+      "M 98"
+    ],
+    "ra": 183.45121278623998,
+    "dec": 14.900542632,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "LIN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M98"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M99",
+    "aliases": [
+      "M99",
+      "M 99"
+    ],
+    "ra": 184.7067708,
+    "dec": 14.4164889,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "H2G",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M99"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M100",
+    "aliases": [
+      "M100",
+      "M 100"
+    ],
+    "ra": 185.72887499732997,
+    "dec": 15.8223045161,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "AGN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M100"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 2.189,
+      "dec": 0.26
+    }
+  },
+  {
+    "name": "M101",
+    "aliases": [
+      "M101",
+      "M 101"
+    ],
+    "ra": 210.8024292,
+    "dec": 54.34875,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiP",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M101"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M102",
+    "aliases": [
+      "M102",
+      "M 102"
+    ],
+    "ra": 226.6231708,
+    "dec": 55.7633083,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "SyG",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M102"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M103",
+    "aliases": [
+      "M103",
+      "M 103"
+    ],
+    "ra": 23.33792,
+    "dec": 60.65361,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "OpC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2023A&A...674A..37G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M103"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -1.384,
+      "dec": -0.497
+    },
+    "parallax_mas": 0.373
+  },
+  {
+    "name": "M104",
+    "aliases": [
+      "M104",
+      "M 104"
+    ],
+    "ra": 189.997632745917,
+    "dec": -11.623054494444,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "LIN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020A&A...644A.159C",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M104"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M105",
+    "aliases": [
+      "M105",
+      "M 105"
+    ],
+    "ra": 161.9566667,
+    "dec": 12.5816306,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "LIN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M105"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M106",
+    "aliases": [
+      "M106",
+      "M 106"
+    ],
+    "ra": 184.7400833,
+    "dec": 47.3037194,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "Sy2",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M106"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M107",
+    "aliases": [
+      "M107",
+      "M 107"
+    ],
+    "ra": 248.13275,
+    "dec": -13.053778,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M107"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -1.93,
+      "dec": -5.98
+    },
+    "parallax_mas": 0.194
+  },
+  {
+    "name": "M108",
+    "aliases": [
+      "M108",
+      "M 108"
+    ],
+    "ra": 167.8790292,
+    "dec": 55.6741222,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "AGN",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M108"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "M109",
+    "aliases": [
+      "M109",
+      "M 109"
+    ],
+    "ra": 179.39984644985,
+    "dec": 53.37472391176001,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiG",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M109"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.32,
+      "dec": 0.067
+    },
+    "parallax_mas": 0.1077
+  },
+  {
+    "name": "M110",
+    "aliases": [
+      "M110",
+      "M 110"
+    ],
+    "ra": 10.09190514583,
+    "dec": 41.68541867226,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GiG",
+    "description": "Messier catalogue object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?M110"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -1.705,
+      "dec": -0.672
+    }
+  },
+  {
+    "name": "Sirius",
+    "aliases": [
+      "Sirius",
+      "* alf CMa"
+    ],
+    "ra": 101.287155333,
+    "dec": -16.716115861,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "SB*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Sirius"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -546.01,
+      "dec": -1223.07
+    },
+    "parallax_mas": 379.21
+  },
+  {
+    "name": "Vega",
+    "aliases": [
+      "Vega",
+      "* alf Lyr"
+    ],
+    "ra": 279.234734787,
+    "dec": 38.783688956,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "dS*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Vega"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 200.94,
+      "dec": 286.23
+    },
+    "parallax_mas": 130.23
+  },
+  {
+    "name": "Betelgeuse",
+    "aliases": [
+      "Betelgeuse",
+      "* alf Ori"
+    ],
+    "ra": 88.792938991,
+    "dec": 7.407063995,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "s*r",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Betelgeuse"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 27.54,
+      "dec": 11.3
+    },
+    "parallax_mas": 6.55
+  },
+  {
+    "name": "Rigel",
+    "aliases": [
+      "Rigel",
+      "* bet Ori"
+    ],
+    "ra": 78.634467067,
+    "dec": -8.201638365,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "s*b",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Rigel"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 1.31,
+      "dec": 0.5
+    },
+    "parallax_mas": 3.78
+  },
+  {
+    "name": "Polaris",
+    "aliases": [
+      "Polaris",
+      "* alf UMi"
+    ],
+    "ra": 37.95456067,
+    "dec": 89.26410897,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "cC*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Polaris"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 44.48,
+      "dec": -11.85
+    },
+    "parallax_mas": 7.54
+  },
+  {
+    "name": "Proxima Centauri",
+    "aliases": [
+      "Proxima Centauri",
+      "NAME Proxima Centauri"
+    ],
+    "ra": 217.42894222160578,
+    "dec": -62.67949018907555,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "PM*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Proxima%20Centauri"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3781.741,
+      "dec": 769.465
+    },
+    "parallax_mas": 768.0665
+  },
+  {
+    "name": "Alpha Centauri",
+    "aliases": [
+      "Alpha Centauri",
+      "Rigil Kentaurus",
+      "α Cen",
+      "alf Cen",
+      "* alf Cen"
+    ],
+    "ra": 219.902083,
+    "dec": -60.833972,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "**",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2001AJ....122.3466M",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Alpha%20Centauri"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3608.0,
+      "dec": 686.0
+    },
+    "parallax_mas": 750.81
+  },
+  {
+    "name": "Arcturus",
+    "aliases": [
+      "Arcturus",
+      "* alf Boo"
+    ],
+    "ra": 213.915300295,
+    "dec": 19.182409162,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "RG*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Arcturus"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -1093.39,
+      "dec": -2000.06
+    },
+    "parallax_mas": 88.83
+  },
+  {
+    "name": "Antares",
+    "aliases": [
+      "Antares",
+      "* alf Sco"
+    ],
+    "ra": 247.35191542,
+    "dec": -26.432002612,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "s*r",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Antares"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -12.11,
+      "dec": -23.3
+    },
+    "parallax_mas": 5.89
+  },
+  {
+    "name": "Aldebaran",
+    "aliases": [
+      "Aldebaran",
+      "* alf Tau"
+    ],
+    "ra": 68.98016279,
+    "dec": 16.509302351,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "LP?",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Aldebaran"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 63.45,
+      "dec": -188.94
+    },
+    "parallax_mas": 48.94
+  },
+  {
+    "name": "Deneb",
+    "aliases": [
+      "Deneb",
+      "* alf Cyg"
+    ],
+    "ra": 310.357979753,
+    "dec": 45.280338807,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "sg*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Deneb"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 2.01,
+      "dec": 1.85
+    },
+    "parallax_mas": 2.31
+  },
+  {
+    "name": "Altair",
+    "aliases": [
+      "Altair",
+      "* alf Aql"
+    ],
+    "ra": 297.695827296,
+    "dec": 8.868321196,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "dS*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Altair"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 536.23,
+      "dec": 385.29
+    },
+    "parallax_mas": 194.95
+  },
+  {
+    "name": "Capella",
+    "aliases": [
+      "Capella",
+      "* alf Aur"
+    ],
+    "ra": 79.172327944,
+    "dec": 45.99799147,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "SB*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Capella"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 75.25,
+      "dec": -426.89
+    },
+    "parallax_mas": 76.2
+  },
+  {
+    "name": "Canopus",
+    "aliases": [
+      "Canopus",
+      "* alf Car"
+    ],
+    "ra": 95.987957829,
+    "dec": -52.695661384,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Canopus"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 19.93,
+      "dec": 23.24
+    },
+    "parallax_mas": 10.55
+  },
+  {
+    "name": "Spica",
+    "aliases": [
+      "Spica",
+      "* alf Vir"
+    ],
+    "ra": 201.298247362,
+    "dec": -11.161319485,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "bC*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Spica"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -42.35,
+      "dec": -30.67
+    },
+    "parallax_mas": 13.06
+  },
+  {
+    "name": "Fomalhaut",
+    "aliases": [
+      "Fomalhaut",
+      "* alf PsA"
+    ],
+    "ra": 344.412692721,
+    "dec": -29.622237033,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "PM*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Fomalhaut"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 328.95,
+      "dec": -164.67
+    },
+    "parallax_mas": 129.81
+  },
+  {
+    "name": "Barnard's Star",
+    "aliases": [
+      "Barnard's Star",
+      "NAME Barnard's star",
+      "barnard's star",
+      "barnards star",
+      "barnard star",
+      "barnard",
+      "gj 699"
+    ],
+    "ra": 269.44850253,
+    "dec": 4.73942005,
+    "coordinate_epoch": "J2016.0",
+    "object_type": "BY*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Barnard%27s%20Star",
+      "verified_astrometry": "Gaia DR3 4472832130942575872"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -801.551,
+      "dec": 10362.394
+    },
+    "parallax_mas": 546.9759,
+    "motion": {
+      "pm_ra_masyr": -801.551,
+      "pm_dec_masyr": 10362.394,
+      "parallax_mas": 546.976,
+      "ref_epoch_jyear": 2016.0
+    }
+  },
+  {
+    "name": "Wolf 359",
+    "aliases": [
+      "Wolf 359"
+    ],
+    "ra": 164.1205036259475,
+    "dec": 7.01472313480167,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "PM*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Wolf%20359"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3866.338,
+      "dec": -2699.215
+    },
+    "parallax_mas": 415.1794
+  },
+  {
+    "name": "Luyten's Star",
+    "aliases": [
+      "Luyten's Star",
+      "BD+05 1668"
+    ],
+    "ra": 111.85207903566794,
+    "dec": 5.22578930307139,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "PM*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Luyten%27s%20Star"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 571.232,
+      "dec": -3691.487
+    },
+    "parallax_mas": 264.1269
+  },
+  {
+    "name": "Tau Ceti",
+    "aliases": [
+      "Tau Ceti",
+      "* tau Cet"
+    ],
+    "ra": 26.01701307163417,
+    "dec": -15.93747989102139,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "PM*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Tau%20Ceti"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -1721.728,
+      "dec": 854.963
+    },
+    "parallax_mas": 273.8097
+  },
+  {
+    "name": "Epsilon Eridani",
+    "aliases": [
+      "Epsilon Eridani",
+      "* eps Eri"
+    ],
+    "ra": 53.23268537982792,
+    "dec": -9.45826097051806,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "BY*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Epsilon%20Eridani"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -974.758,
+      "dec": 20.876
+    },
+    "parallax_mas": 310.5773
+  },
+  {
+    "name": "61 Cygni",
+    "aliases": [
+      "61 Cygni",
+      "* 61 Cyg"
+    ],
+    "ra": 316.724792,
+    "dec": 38.749417,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "**",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2001AJ....122.3466M",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?61%20Cygni"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "Eta Carinae",
+    "aliases": [
+      "Eta Carinae",
+      "* eta Car"
+    ],
+    "ra": 161.2647742,
+    "dec": -59.6844309,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "s*b",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2012yCat.1322....0Z",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Eta%20Carinae"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -11.0,
+      "dec": 4.1
+    }
+  },
+  {
+    "name": "Sgr A*",
+    "aliases": [
+      "Sgr A*",
+      "Galactic Center",
+      "Sagittarius A*",
+      "NAME Sgr A*"
+    ],
+    "ra": 266.416816625,
+    "dec": -29.007824972,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "X",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2011AJ....142...35P",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Sgr%20A%2A"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "Large Magellanic Cloud",
+    "aliases": [
+      "Large Magellanic Cloud",
+      "LMC",
+      "NAME LMC"
+    ],
+    "ra": 80.89417,
+    "dec": -69.75611,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "G",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2003A&A...412...45P",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Large%20Magellanic%20Cloud"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 1.91,
+      "dec": 0.229
+    }
+  },
+  {
+    "name": "Small Magellanic Cloud",
+    "aliases": [
+      "Small Magellanic Cloud",
+      "SMC",
+      "NAME SMC"
+    ],
+    "ra": 13.15833,
+    "dec": -72.80028,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "G",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2003A&A...412...45P",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Small%20Magellanic%20Cloud"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.772,
+      "dec": -1.117
+    }
+  },
+  {
+    "name": "Horsehead Nebula",
+    "aliases": [
+      "Horsehead Nebula",
+      "NAME Horsehead Nebula"
+    ],
+    "ra": 85.24583,
+    "dec": -2.45833,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "DNe",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": null,
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Horsehead%20Nebula"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "Carina Nebula",
+    "aliases": [
+      "Carina Nebula",
+      "NGC 3372"
+    ],
+    "ra": 161.259292,
+    "dec": -59.699944,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "HII",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2019ApJ...870...32K",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Carina%20Nebula"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -6.55,
+      "dec": 2.17
+    },
+    "parallax_mas": 0.38
+  },
+  {
+    "name": "Omega Centauri",
+    "aliases": [
+      "Omega Centauri",
+      "NGC 5139"
+    ],
+    "ra": 201.697,
+    "dec": -47.479472,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2010AJ....140.1830G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Omega%20Centauri"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -3.24,
+      "dec": -6.73
+    },
+    "parallax_mas": 0.193
+  },
+  {
+    "name": "47 Tucanae",
+    "aliases": [
+      "47 Tucanae",
+      "47 Tuc",
+      "NGC 104"
+    ],
+    "ra": 6.0223292,
+    "dec": -72.0814444,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "GlC",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2006AJ....131.1163S",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?47%20Tucanae"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 5.25,
+      "dec": -2.53
+    },
+    "parallax_mas": 0.232
+  },
+  {
+    "name": "Sculptor Galaxy",
+    "aliases": [
+      "Sculptor Galaxy",
+      "NAME Sculptor Dwarf Galaxy"
+    ],
+    "ra": 15.03917,
+    "dec": -33.70889,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "G",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "1982ESO...C......0L",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Sculptor%20Galaxy"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 0.09,
+      "dec": 0.02
+    }
+  },
+  {
+    "name": "Centaurus A",
+    "aliases": [
+      "Centaurus A",
+      "NAME Centaurus A"
+    ],
+    "ra": 201.365063376833,
+    "dec": -43.019112508083,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "BLL",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020A&A...644A.159C",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Centaurus%20A"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00"
+  },
+  {
+    "name": "Luhman 16",
+    "aliases": [
+      "Luhman 16",
+      "WISE 1049-5319",
+      "NAME Luhman 16"
+    ],
+    "ra": 162.328814,
+    "dec": -53.319466,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "**",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2003yCat.2246....0C",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Luhman%2016"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -2767.502,
+      "dec": 356.856
+    },
+    "parallax_mas": 501.557
+  },
+  {
+    "name": "Gliese 229 B",
+    "aliases": [
+      "Gliese 229 B",
+      "HD 42581B"
+    ],
+    "ra": 92.645,
+    "dec": -21.866667,
+    "coordinate_epoch": "J2000.0 (reference frame; observation epoch unspecified)",
+    "object_type": "BD*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2009AJ....137....1F",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Gliese%20229%20B"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -137.0,
+      "dec": -714.1
+    },
+    "parallax_mas": 173.19
+  },
+  {
+    "name": "Epsilon Indi B",
+    "aliases": [
+      "Epsilon Indi B",
+      "* eps Ind B",
+      "epsilon indi b",
+      "eps indi b",
+      "eps ind b",
+      "epsilon indi ba"
+    ],
+    "ra": 331.0764526,
+    "dec": -56.79381207,
+    "coordinate_epoch": "J2016.0",
+    "object_type": "BD*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?Epsilon%20Indi%20B",
+      "verified_astrometry": "Gaia DR3 6412596012146801152 (photocentre of Ba+Bb)"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 3981.977,
+      "dec": -2466.832
+    },
+    "parallax_mas": 270.658,
+    "motion": {
+      "pm_ra_masyr": 3981.977,
+      "pm_dec_masyr": -2466.832,
+      "parallax_mas": 270.658,
+      "ref_epoch_jyear": 2016.0
+    }
+  },
+  {
+    "name": "WISE 0855-0714",
+    "aliases": [
+      "WISE 0855-0714",
+      "WISEA J085510.74-071442.5",
+      "wise 0855-0714",
+      "wise 0855",
+      "wise0855",
+      "wise j085510.83-071442.5"
+    ],
+    "ra": 133.7952573,
+    "dec": -7.245091,
+    "coordinate_epoch": "MJD 55320.38 (2010.34)",
+    "object_type": "BD*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2021ApJS..253....7K",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?WISE%20J085510.83-071442.5",
+      "verified_astrometry": "Luhman & Esplin 2016, ApJ 152, 78 (arXiv:1605.06655)"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -8123.7,
+      "dec": 673.2
+    },
+    "parallax_mas": 439.0,
+    "motion": {
+      "pm_ra_masyr": -8118.0,
+      "pm_dec_masyr": 680.0,
+      "parallax_mas": 449.0,
+      "ref_epoch_jyear": 2010.34
+    }
+  },
+  {
+    "name": "RW Aurigae",
+    "aliases": [
+      "RW Aurigae",
+      "V* RW Aur",
+      "rw aurigae",
+      "rw aur",
+      "rw aur a"
+    ],
+    "ra": 76.9560812,
+    "dec": 30.40120459,
+    "coordinate_epoch": "J2016.0",
+    "object_type": "TT*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2007A&A...474..653V",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?RW%20Aurigae",
+      "verified_astrometry": "Gaia DR3 156430822114424576"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": 7.23,
+      "dec": -20.33
+    },
+    "parallax_mas": 15.42,
+    "motion": {
+      "pm_ra_masyr": 2.641,
+      "pm_dec_masyr": -27.398,
+      "parallax_mas": 6.406,
+      "ref_epoch_jyear": 2016.0
+    }
+  },
+  {
+    "name": "R Draconis",
+    "aliases": [
+      "R Draconis",
+      "V* R Dra",
+      "r draconis",
+      "r dra"
+    ],
+    "ra": 248.16737837,
+    "dec": 66.75500675,
+    "coordinate_epoch": "J2016.0",
+    "object_type": "Mi*",
+    "description": "Astronomical object",
+    "source": {
+      "resolver": "S=Simbad, IDIA (via url)",
+      "refPos": "2020yCat.1350....0G",
+      "url": "https://cds.unistra.fr/cgi-bin/nph-sesame/-ox/SNV?R%20Draconis",
+      "verified_astrometry": "Gaia DR3 1648328016354496384"
+    },
+    "retrieved_at": "2026-11-14T23:04:37.413916+00:00",
+    "proper_motion_masyr": {
+      "ra": -20.643,
+      "dec": 6.149
+    },
+    "parallax_mas": 1.2509,
+    "motion": {
+      "pm_ra_masyr": -20.643,
+      "pm_dec_masyr": 6.149,
+      "parallax_mas": 1.251,
+      "ref_epoch_jyear": 2016.0
+    }
+  }
+]
