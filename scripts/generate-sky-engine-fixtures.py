@@ -15,3 +15,29 @@ for order in range(6):
     for a, d, pixel in zip(lon, lat, pixels, strict=True):
         rows.append([order, float(a), float(d), int(pixel)])
 Path('frontend/tests/fixtures/healpix.json').write_text(json.dumps(rows, separators=(',', ':')) + '\n', encoding='utf-8')
+
+# One million reproducible angles at maximum order; packed uint16 keeps the
+# reference fixture small enough for the repository.
+seed = 1842
+ras = np.empty(1_000_000, dtype=np.float64)
+decs = np.empty(1_000_000, dtype=np.float64)
+for i in range(1_000_000):
+    seed = (1664525 * seed + 1013904223) & 0xFFFFFFFF
+    ras[i] = seed / 2**32 * 360
+    seed = (1664525 * seed + 1013904223) & 0xFFFFFFFF
+    decs[i] = seed / 2**32 * 180 - 90
+pixels = HEALPix(nside=32, order="nested").lonlat_to_healpix(ras * u.deg, decs * u.deg)
+Path('frontend/tests/fixtures/healpix-million.bin').write_bytes(pixels.astype('<u2').tobytes())
+centers = HEALPix(nside=32, order="nested").healpix_to_lonlat(np.arange(12288))
+np.column_stack((centers[0].degree, centers[1].degree)).astype('<f8').tofile('frontend/tests/fixtures/healpix-centers.bin')
+reference = []
+hp = HEALPix(nside=32, order='nested')
+for index in [0, 1, 445, 1023, 1024, 4095, 4096, 8191, 10226, 12287]:
+    lon, lat = hp.boundaries_lonlat(index, step=1)
+    reference.append({'pixel': index, 'corners': np.column_stack((lon.degree.ravel(), lat.degree.ravel())).tolist(), 'neighbours': [int(x) for x in hp.neighbours(index) if x >= 0]})
+Path('frontend/tests/fixtures/healpix-boundaries.json').write_text(json.dumps(reference, separators=(',', ':')) + '\n', encoding='utf-8')
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter('ignore', RuntimeWarning)
+    all_neighbours = hp.neighbours(np.arange(12288)).T.astype('<i2')
+Path('frontend/tests/fixtures/healpix-neighbours.bin').write_bytes(all_neighbours.tobytes())

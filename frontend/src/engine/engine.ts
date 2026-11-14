@@ -1,7 +1,6 @@
-import { ang2pix } from './core/healpix/nested';
 import { pan, zoom } from './core/camera/camera';
-import { selectOrder } from './core/tiles/selection';
-import { unproject } from './core/projections/math';
+import { selectOrder, pointAt, visibleCells } from './core/tiles/selection';
+import { bindInput } from './adapters/input';
 import { createWebGL2Renderer } from './adapters/webgl-renderer';
 import { irsaTileSource } from './adapters/tile-source';
 import type { Renderer, Tile } from './ports/renderer';
@@ -17,12 +16,6 @@ export interface SkyEngine {
   setView(view: Partial<ViewState>): void; getView(): Readonly<ViewState>; setPlane(plane: number): void;
   setProjection(projection: Projection): void; on<K extends keyof Events>(event: K, handler: Listener<K>): () => void; destroy(): void;
 }
-function pointAt(view: Readonly<ViewState>, x: number, y: number, width: number, height: number): Point | null {
-  const projection = view.proj === 'SIN' && view.fov > 180 ? 'AIT' : view.proj;
-  const fov = view.fov * Math.PI / 180;
-  const scale = projection === 'SIN' ? Math.sin(Math.min(fov, Math.PI) / 2) : projection === 'TAN' ? Math.tan(Math.min(fov, 2.6) / 2) : 2 * Math.SQRT2 * Math.min(fov / (2 * Math.PI), 1);
-  return unproject(projection, (2 * x / width - 1) * scale, (1 - 2 * y / height) * scale * height / width, view.ra, view.dec);
-}
 export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOptions = {}): SkyEngine {
   const source = options.tileSource ?? irsaTileSource();
   const renderer = options.renderer ?? createWebGL2Renderer(canvas, options.cacheSize ?? 256);
@@ -35,18 +28,7 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
   function update(): void { emit('viewchange', { ...view }); invalidate(); }
   function render(): void {
     frame = 0; if (destroyed) return;
-    const wanted = new Map<string, { order: number; npix: number; distance: number }>();
-    const order = selectOrder(view.fov, canvas.clientWidth * devicePixelRatio);
-    for (let pixel = 0; pixel < 12; pixel++) wanted.set(`0/${pixel}/${view.plane}`, { order: 0, npix: pixel, distance: 1e9 });
-    const width = canvas.clientWidth, height = canvas.clientHeight;
-    for (let y = 0; y <= height; y += Math.max(1, height / 20)) for (let x = 0; x <= width; x += Math.max(1, width / 20)) {
-      const point = pointAt(view, x, y, width, height); if (!point) continue;
-      for (let level = 1; level <= order; level++) {
-        const npix = ang2pix(level, point.ra, point.dec), key = `${level}/${npix}/${view.plane}`;
-        const distance = (x-width/2)**2 + (y-height/2)**2;
-        if (!wanted.has(key) || distance < (wanted.get(key)?.distance ?? Infinity)) wanted.set(key, { order: level, npix, distance });
-      }
-    }
+    const wanted = new Map(visibleCells(view, canvas.clientWidth, canvas.clientHeight, selectOrder(view.fov, canvas.clientWidth * devicePixelRatio)).map(item => [`${item.order}/${item.npix}/${view.plane}`, item]));
     for (const [key, state] of cache) if (state.kind === 'loading' && !wanted.has(key)) { state.controller.abort(); cache.delete(key); }
     for (const [key, item] of [...wanted].sort((a,b) => a[1].order - b[1].order || a[1].distance - b[1].distance)) {
       const existing = cache.get(key);
@@ -65,31 +47,13 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
     for (const [key, state] of cache) if (state.kind === 'ready' && key.endsWith(`/${view.plane}`)) tiles.push(state.tile);
     renderer.render(view, tiles);
   }
-  let dragging: { x: number; y: number; moved: boolean } | null = null;
-  const pointerdown = (event: PointerEvent): void => { canvas.setPointerCapture(event.pointerId); dragging = { x: event.clientX, y: event.clientY, moved: false }; };
-  const pointermove = (event: PointerEvent): void => {
-    const rect = canvas.getBoundingClientRect(); emit('cursor', pointAt(view, event.clientX-rect.left, event.clientY-rect.top, rect.width, rect.height));
-    if (dragging) { const dx = event.clientX-dragging.x, dy = event.clientY-dragging.y; dragging = { x: event.clientX, y: event.clientY, moved: dragging.moved || Math.abs(dx)+Math.abs(dy)>1 }; view = pan(view, dx, dy, rect.width); update(); }
-  };
-  const pointerup = (event: PointerEvent): void => { if (dragging && !dragging.moved) { const rect = canvas.getBoundingClientRect(); const p = pointAt(view, event.clientX-rect.left, event.clientY-rect.top, rect.width, rect.height); if (p) emit('pick', p); } dragging = null; };
-  const wheel = (event: WheelEvent): void => { event.preventDefault(); view = zoom(view, Math.exp(event.deltaY * 0.001)); update(); };
-  const keydown = (event: KeyboardEvent): void => {
-    const step = 30; let handled = true;
-    switch (event.key) {
-      case 'ArrowLeft': view=pan(view,-step,0,canvas.clientWidth); break;
-      case 'ArrowRight': view=pan(view,step,0,canvas.clientWidth); break;
-      case 'ArrowUp': view=pan(view,0,-step,canvas.clientWidth); break;
-      case 'ArrowDown': view=pan(view,0,step,canvas.clientWidth); break;
-      case '+': case '=': view=zoom(view,0.8); break;
-      case '-': view=zoom(view,1.25); break;
-      case 'PageUp': view={...view,plane:Math.min(101,view.plane+1)}; break;
-      case 'PageDown': view={...view,plane:Math.max(0,view.plane-1)}; break;
-      default: handled=false;
-    }
-    if (handled) { event.preventDefault(); update(); }
-  };
-  canvas.addEventListener('pointerdown', pointerdown); canvas.addEventListener('pointermove', pointermove); canvas.addEventListener('pointerup', pointerup);
-  canvas.addEventListener('wheel', wheel, { passive: false }); canvas.addEventListener('keydown', keydown);
+  const unbindInput = bindInput(canvas, {
+    move(dx,dy) { view=pan(view,dx,dy,canvas.clientWidth);update(); },
+    zoom(factor) { view=zoom(view,factor);update(); },
+    band(delta) { view={...view,plane:Math.max(0,Math.min(101,view.plane+delta))};update(); },
+    cursor(x,y) { emit('cursor',pointAt(view,x,y,canvas.clientWidth,canvas.clientHeight)); },
+    pick(x,y) { const point=pointAt(view,x,y,canvas.clientWidth,canvas.clientHeight);if(point) emit('pick',point); },
+  });
   const resize = new ResizeObserver(invalidate); resize.observe(canvas);
   const contextlost = (event: Event): void => { event.preventDefault(); emit('status', 'WebGL context lost. Reload to restore the sky.'); };
   canvas.addEventListener('webglcontextlost', contextlost);
@@ -100,7 +64,7 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
     setProjection(proj) { view={...view,proj}; update(); },
     on(key, listener) { listeners[key].add(listener); return () => listeners[key].delete(listener); },
     destroy() { destroyed=true; if(frame) cancelAnimationFrame(frame); resize.disconnect();
-      canvas.removeEventListener('pointerdown',pointerdown); canvas.removeEventListener('pointermove',pointermove); canvas.removeEventListener('pointerup',pointerup); canvas.removeEventListener('wheel',wheel); canvas.removeEventListener('keydown',keydown); canvas.removeEventListener('webglcontextlost',contextlost);
+      unbindInput(); canvas.removeEventListener('webglcontextlost',contextlost);
       for (const state of cache.values()) { if (state.kind==='loading') state.controller.abort(); if (state.kind==='ready') state.tile.bitmap.close(); } renderer.destroy();
     },
   };
