@@ -3,6 +3,7 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- **14-nov · integración HiPS:** proxy con reintentos y límite, fuente backend, vuelo nativo y búsqueda conectada; prueba en vivo en `docs/reviews/integration/`. Pendiente revisión humana; arrastre AIT cerca del polo requiere investigación adicional.
 - **14-nov noche · rama `integration/main-ready` (Dax + agentes):** producto funcional de punta a punta.
   - Backend `backend/` (FastAPI, hexagonal ADR 0040/0041): `/resolve`, `/search` (148 objetos reales + tolerante a errores, ADR 0044), `/observations`, `/series`, `/series/{id}/frames/{i}`, `/hips`. Caché local→IRSA por capas, un cortacircuitos por servicio. 141 tests.
   - Frontend `frontend/`: app única (`index.html`): mapa propio WebGL2 tipo Aladin (ADR 0042) + rail de los 5 objetos del reto + panel temporal con línea de tiempo, Loop/Diferencia/Color, semáforo y procedencia (ADR 0043). 99 tests (1 intermitente, ver PR).
