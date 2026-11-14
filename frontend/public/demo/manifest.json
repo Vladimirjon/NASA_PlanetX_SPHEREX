@@ -1,0 +1,137 @@
+[
+ {
+  "slug": "barnards-star",
+  "name": "Barnard's Star",
+  "resolve": {
+   "query": "Barnard's Star",
+   "canonical_name": "Barnard's Star",
+   "ra": 269.44850253,
+   "dec": 4.73942005,
+   "coordinate_epoch": "J2016.0",
+   "motion": {
+    "pm_ra_masyr": -801.551,
+    "pm_dec_masyr": 10362.394,
+    "parallax_mas": 546.976,
+    "ref_epoch_jyear": 2016.0
+   },
+   "provenance": {
+    "source_url": "https://github.com/Vladimirjon/NASA_PlanetX_SPHEREX/blob/main/docs/context/12-mapa-de-datos-spherex.md",
+    "collection": null,
+    "retrieved_at": "2026-11-14T22:21:24.130340Z",
+    "cache_layer": "precomputed",
+    "sha256": null,
+    "pipeline_version": null
+   }
+  },
+  "series": "demo/barnards-star/series.json",
+  "frames": 3
+ },
+ {
+  "slug": "epsilon-indi-b",
+  "name": "Epsilon Indi B",
+  "resolve": {
+   "query": "Epsilon Indi B",
+   "canonical_name": "Epsilon Indi B",
+   "ra": 331.0764526,
+   "dec": -56.79381207,
+   "coordinate_epoch": "J2016.0",
+   "motion": {
+    "pm_ra_masyr": 3981.977,
+    "pm_dec_masyr": -2466.832,
+    "parallax_mas": 270.658,
+    "ref_epoch_jyear": 2016.0
+   },
+   "provenance": {
+    "source_url": "https://github.com/Vladimirjon/NASA_PlanetX_SPHEREX/blob/main/docs/context/12-mapa-de-datos-spherex.md",
+    "collection": null,
+    "retrieved_at": "2026-11-14T22:21:24.138882Z",
+    "cache_layer": "precomputed",
+    "sha256": null,
+    "pipeline_version": null
+   }
+  },
+  "series": "demo/epsilon-indi-b/series.json",
+  "frames": 4
+ },
+ {
+  "slug": "wise-0855",
+  "name": "WISE 0855-0714",
+  "resolve": {
+   "query": "WISE 0855-0714",
+   "canonical_name": "WISE 0855-0714",
+   "ra": 133.7952573,
+   "dec": -7.245091,
+   "coordinate_epoch": "MJD 55320.38 (2010.34)",
+   "motion": {
+    "pm_ra_masyr": -8118.0,
+    "pm_dec_masyr": 680.0,
+    "parallax_mas": 449.0,
+    "ref_epoch_jyear": 2010.34
+   },
+   "provenance": {
+    "source_url": "https://github.com/Vladimirjon/NASA_PlanetX_SPHEREX/blob/main/docs/context/12-mapa-de-datos-spherex.md",
+    "collection": null,
+    "retrieved_at": "2026-11-14T22:21:24.146344Z",
+    "cache_layer": "precomputed",
+    "sha256": null,
+    "pipeline_version": null
+   }
+  },
+  "series": "demo/wise-0855/series.json",
+  "frames": 2
+ },
+ {
+  "slug": "rw-aurigae",
+  "name": "RW Aurigae",
+  "resolve": {
+   "query": "RW Aurigae",
+   "canonical_name": "RW Aurigae",
+   "ra": 76.9560812,
+   "dec": 30.40120459,
+   "coordinate_epoch": "J2016.0",
+   "motion": {
+    "pm_ra_masyr": 2.641,
+    "pm_dec_masyr": -27.398,
+    "parallax_mas": 6.406,
+    "ref_epoch_jyear": 2016.0
+   },
+   "provenance": {
+    "source_url": "https://github.com/Vladimirjon/NASA_PlanetX_SPHEREX/blob/main/docs/context/12-mapa-de-datos-spherex.md",
+    "collection": null,
+    "retrieved_at": "2026-11-14T22:21:24.150811Z",
+    "cache_layer": "precomputed",
+    "sha256": null,
+    "pipeline_version": null
+   }
+  },
+  "series": "demo/rw-aurigae/series.json",
+  "frames": 2
+ },
+ {
+  "slug": "r-draconis",
+  "name": "R Draconis",
+  "resolve": {
+   "query": "R Draconis",
+   "canonical_name": "R Draconis",
+   "ra": 248.16737837,
+   "dec": 66.75500675,
+   "coordinate_epoch": "J2016.0",
+   "motion": {
+    "pm_ra_masyr": -20.643,
+    "pm_dec_masyr": 6.149,
+    "parallax_mas": 1.251,
+    "ref_epoch_jyear": 2016.0
+   },
+   "provenance": {
+    "source_url": "https://github.com/Vladimirjon/NASA_PlanetX_SPHEREX/blob/main/docs/context/12-mapa-de-datos-spherex.md",
+    "collection": null,
+    "retrieved_at": "2026-11-14T22:21:24.153809Z",
+    "cache_layer": "precomputed",
+    "sha256": null,
+    "pipeline_version": null
+   }
+  },
+  "series": "demo/r-draconis/series.json",
+  "frames": 3
+ }
+]
