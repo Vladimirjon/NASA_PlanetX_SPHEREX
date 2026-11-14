@@ -49,7 +49,7 @@ void main(){
  if(info.r==0u){color=vec4(0.,0.,0.,1.);return;}
  uint bits=14u-info.g;uint x=0u,y=0u;for(uint i=0u;i<14u;i++){if(i>=bits)break;x|=((fine>>(2u*i))&1u)<<i;y|=((fine>>(2u*i+1u))&1u)<<i;}
  float size=exp2(float(bits));vec2 uv=(vec2(float(y),float(x))+.5)/size;
- color=texture(tiles,vec3(uv,float(info.r-1u)));
+ float brightness=texture(tiles,vec3(uv,float(info.r-1u))).r; color=vec4(vec3(brightness),1.);
  float ra=mod(atan(v.y,v.x)+2.*PI,2.*PI)*180./PI, dec=asin(clamp(v.z,-1.,1.))*180./PI;
  float spacing=camera.z>180.?30.:camera.z>45.?15.:camera.z>10.?5.:camera.z>2.?1.:camera.z>0.5?.2:.05;
  float rx=abs(fract(ra/spacing+.5)-.5),dy=abs(fract(dec/spacing+.5)-.5);
@@ -61,12 +61,11 @@ function shader(gl: WebGL2RenderingContext, type: number, code: string): WebGLSh
   const result = gl.createShader(type);
   if (!result) throw new Error('Cannot create WebGL shader');
   gl.shaderSource(result, code); gl.compileShader(result);
-  if (!gl.getShaderParameter(result, gl.COMPILE_STATUS)) throw new Error(`Shader compilation: ${gl.getShaderInfoLog(result) ?? 'unknown error'}`);
   return result;
 }
 
-export function createWebGL2Renderer(canvas: HTMLCanvasElement, capacity = 256): Renderer {
-  const context = canvas.getContext('webgl2', { antialias: false, preserveDrawingBuffer: true });
+export function createWebGL2Renderer(canvas: HTMLCanvasElement, capacity = 256, capture = false): Renderer {
+  const context = canvas.getContext('webgl2', { antialias: false, preserveDrawingBuffer: capture });
   if (!context) throw new Error('WebGL2 is unavailable');
   const gl: WebGL2RenderingContext = context;
   const program = gl.createProgram();
@@ -74,20 +73,32 @@ export function createWebGL2Renderer(canvas: HTMLCanvasElement, capacity = 256):
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!program) throw new Error('Cannot create WebGL program');
   gl.attachShader(program, shader(gl, gl.VERTEX_SHADER, vertex)); gl.attachShader(program, shader(gl, gl.FRAGMENT_SHADER, fragment)); gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(`WebGL link: ${gl.getProgramInfoLog(program) ?? 'unknown error'}`);
-  gl.useProgram(program);
   const buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
-  const pos = gl.getAttribLocation(program, 'a_position'); gl.enableVertexAttribArray(pos); gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const parallel = gl.getExtension('KHR_parallel_shader_compile') as {COMPLETION_STATUS_KHR:number}|null;
+  let linked=false, destroyed=false, compileFrame=0;
+  let latest: {view:Readonly<ViewState>;images:readonly Tile[]}|null=null;
+  let cameraUniform: WebGLUniformLocation|null=null, projectionUniform: WebGLUniformLocation|null=null;
   const texture = gl.createTexture(); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
-  gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 512, 512, capacity);
+  gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.R8, 512, 512, capacity);
   gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
   const lookup = gl.createTexture(); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, lookup);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  gl.uniform1i(gl.getUniformLocation(program, 'tiles'), 0); gl.uniform1i(gl.getUniformLocation(program, 'lookup'), 1);
+  gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA16UI, 128, 96);
+  const indices = new Uint16Array(128 * 96 * 4);
+
   const slots = new Map<ImageBitmap, number>();
   function render(view: Readonly<ViewState>, images: readonly Tile[]): void {
+    if(destroyed)return;
+    if(!linked){
+      if(parallel && !gl.getProgramParameter(program,parallel.COMPLETION_STATUS_KHR)){latest={view,images};if(!compileFrame) compileFrame=requestAnimationFrame(()=>{compileFrame=0;if(latest)render(latest.view,latest.images);});return;}
+      if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(`WebGL link: ${gl.getProgramInfoLog(program) ?? 'unknown error'}`);
+      gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+      const pos=gl.getAttribLocation(program,'a_position');gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
+      cameraUniform=gl.getUniformLocation(program,'camera');projectionUniform=gl.getUniformLocation(program,'projection');
+      gl.uniform1i(gl.getUniformLocation(program,'tiles'),0);gl.uniform1i(gl.getUniformLocation(program,'lookup'),1);linked=true;
+    }
     const width = Math.max(1, Math.round(canvas.clientWidth * window.devicePixelRatio));
     const height = Math.max(1, Math.round(canvas.clientHeight * window.devicePixelRatio));
     if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
@@ -101,19 +112,20 @@ export function createWebGL2Renderer(canvas: HTMLCanvasElement, capacity = 256):
       let slot = 0; while (used.has(slot)) slot++;
       if (slot >= capacity) break;
       slots.set(tile.bitmap, slot); used.add(slot);
-      gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, slot, 512, 512, 1, gl.RGBA, gl.UNSIGNED_BYTE, tile.bitmap);
+      gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, slot, 512, 512, 1, gl.RED, gl.UNSIGNED_BYTE, tile.bitmap);
+      tile.bitmap.close();
     }
-    const indices = new Uint16Array(128 * 96 * 4);
-    for (const tile of [...images].sort((a,b) => a.order-b.order)) {
+    indices.fill(0);
+    for (const tile of [...images].filter(image => image.plane===view.plane).sort((a,b) => a.order-b.order)) {
       const slot = slots.get(tile.bitmap); if (slot === undefined) continue;
       const count = 4 ** (5 - tile.order), first = tile.npix * count;
       for (let i = first; i < first + count; i++) { indices[i*4] = slot + 1; indices[i*4+1] = tile.order; }
     }
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, lookup);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16UI, 128, 96, 0, gl.RGBA_INTEGER, gl.UNSIGNED_SHORT, indices);
-    gl.uniform4f(gl.getUniformLocation(program, 'camera'), view.ra, view.dec, view.fov, width / height);
-    gl.uniform1i(gl.getUniformLocation(program, 'projection'), view.proj === 'SIN' ? 0 : view.proj === 'TAN' ? 1 : 2);
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 128, 96, gl.RGBA_INTEGER, gl.UNSIGNED_SHORT, indices);
+    gl.uniform4f(cameraUniform, view.ra, view.dec, view.fov, width / height);
+    gl.uniform1i(projectionUniform, view.proj === 'SIN' ? 0 : view.proj === 'TAN' ? 1 : 2);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
-  return { render, destroy() { gl.deleteTexture(texture); gl.deleteTexture(lookup); gl.deleteBuffer(buffer); gl.deleteProgram(program); } };
+  return { render, destroy() { destroyed=true; if(compileFrame)cancelAnimationFrame(compileFrame); gl.deleteTexture(texture); gl.deleteTexture(lookup); gl.deleteBuffer(buffer); gl.deleteProgram(program); } };
 }
