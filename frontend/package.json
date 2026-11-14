@@ -10,7 +10,8 @@
     "build": "tsc --noEmit && vite build",
     "dev": "vite",
     "test:smoke": "node smoke.mjs",
-    "test:series-smoke": "node series-smoke.mjs"
+    "test:series-smoke": "node series-smoke.mjs",
+    "test:app-smoke": "node app-smoke.mjs"
   },
 
   "dependencies": {

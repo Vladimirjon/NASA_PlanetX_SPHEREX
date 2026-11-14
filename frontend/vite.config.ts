@@ -8,7 +8,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(root, 'index.html'),
-        series: resolve(root, 'series.html'),
+        series: resolve(root, 'series.html'), // deep-link alias → redirects into the app
       },
     },
   },
