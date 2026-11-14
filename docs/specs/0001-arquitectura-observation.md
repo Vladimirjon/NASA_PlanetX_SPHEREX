@@ -1,4 +1,4 @@
-> Estado tras revisión 2026-11-14: ver docs/reviews/2026-11-14-triage-specs-main.md. Implementación vigente: contracts/openapi.yaml v0.2 y docs/specs/0002.
+> Estado tras revisión 2026-11-14: ver docs/reviews/2026-11-14-triage-specs-main.md. Implementación vigente: `contracts/openapi.yaml` v0.3 y `docs/specs/0002`; se programa contra ellos. Esta ficha y `contracts/observation.schema.json` son la evolución futura, no implementada (ver `docs/STATE.md`, «Contrato `Observation` vigente»).
 
 # Ficha de tarea para agente — Arquitectura de datos y Observation
 
