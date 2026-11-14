@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: SkyShift API
-  version: 0.2.0
+  version: 0.3.0
   summary: Temporal SPHEREx series for any sky position, with local-first caching and full provenance.
   description: |
     Contract-first source of truth (AGENTS.md rule 7). Frontend types are generated from this file.
@@ -24,6 +24,29 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Health" }
+
+  /search:
+    get:
+      operationId: searchTargets
+      summary: Search targets by name or coordinates, using a local catalog and CDS Sesame.
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, minLength: 1, maxLength: 64 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 20, default: 10 }
+      responses:
+        "200":
+          description: Ranked suggestions with source provenance.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SearchSuggestion" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "503": { $ref: "#/components/responses/Problem" }
 
   /resolve:
     get:
@@ -209,6 +232,9 @@ components:
         cache_layer: { $ref: "#/components/schemas/CacheLayer" }
         sha256: { type: string, pattern: "^[a-f0-9]{64}$" }
         pipeline_version: { type: string, description: SkyShift processing version that produced derived data. }
+        resolver: { type: string, description: CDS resolver identifier. }
+        reference: { type: string, description: Position reference bibcode. }
+        astrometry_source: { type: string, description: Source of a verified astrometry override. }
 
     Health:
       type: object
@@ -220,6 +246,22 @@ components:
           required: [irsa]
           properties:
             irsa: { type: string, enum: [closed, open, half_open], description: Circuit breaker state. }
+
+    SearchSuggestion:
+      type: object
+      required: [name, kind, ra, dec, score, provenance]
+      properties:
+        name: { type: string }
+        kind: { type: string, enum: [target, coordinates, resolver] }
+        ra: { type: number, minimum: 0, exclusiveMaximum: 360 }
+        dec: { type: number, minimum: -90, maximum: 90 }
+        coordinate_epoch: { type: string }
+        motion: { $ref: "#/components/schemas/Motion" }
+        object_type: { type: string }
+        description: { type: string, maxLength: 60 }
+        matched_alias: { type: string }
+        score: { type: number, minimum: 0, maximum: 1 }
+        provenance: { $ref: "#/components/schemas/Provenance" }
 
     ResolvedName:
       type: object

@@ -4,13 +4,12 @@ XML is parsed with defusedxml (external input).
 """
 
 import asyncio
-from urllib.parse import quote
+from urllib.parse import quote, urljoin, urlsplit
 
 import httpx
 from defusedxml import ElementTree
 
 from skyshift.adapters.http import Sleep, get_with_retry
-from skyshift.domain.motion import Motion
 from skyshift.domain.position import InvalidPosition, SkyPosition
 from skyshift.ports.origin import Fetched, InvalidPayload, OriginError
 from skyshift.ports.resolver import ResolvedTarget
@@ -30,6 +29,21 @@ class SesameResolver:
         url = SESAME + quote(name, safe="")
         try:
             response = await get_with_retry(self._client, url, sleep=self._sleep)
+            if response.status_code in {301, 302, 303, 307, 308}:
+                location = response.headers.get("location", "")
+                destination = urlsplit(urljoin(url, location))
+                if (
+                    destination.scheme != "https"
+                    or destination.hostname
+                    not in {"cds.unistra.fr", "vizier.cds.unistra.fr", "vizier.idia.ac.za"}
+                    or destination.port not in {None, 443}
+                    or destination.username is not None
+                    or not destination.path.endswith("/nph-sesame/-ox/SNV")
+                ):
+                    raise OriginError("Sesame returned an untrusted redirect")
+                response = await get_with_retry(
+                    self._client, destination.geturl(), sleep=self._sleep
+                )
         except httpx.HTTPError as exc:
             raise OriginError(f"Sesame request failed: {type(exc).__name__}") from exc
         if response.status_code != 200:
@@ -51,15 +65,12 @@ class SesameResolver:
             position = SkyPosition(float(ra) % 360.0, float(dec))
         except (ValueError, InvalidPosition) as exc:
             raise InvalidPayload("Sesame returned an invalid position") from exc
-        pm_ra, pm_de = resolver.findtext("pm/pmRA"), resolver.findtext("pm/pmDE")
-        plx = resolver.findtext("plx/v")
-        motion = None
-        if pm_ra and pm_de:
-            motion = Motion(float(pm_ra), float(pm_de), float(plx) if plx else 0.0, 2000.0)
+        # Sesame provides J2000 frame coordinates but not a position epoch here.
+        # Motion cannot safely be propagated without the latter.
         return ResolvedTarget(
             canonical_name=(resolver.findtext("oname") or "").removeprefix("NAME ").strip(),
             position=position,
-            motion=motion,
-            epoch_label="J2000.0",
+            motion=None,
+            epoch_label="J2000.0 frame; position epoch unspecified",
             source=f"CDS Sesame ({resolver.get('name', 'resolver')})",
         )

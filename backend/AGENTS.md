@@ -26,3 +26,6 @@ Variables: `SKYSHIFT_CACHE_DIR` (por defecto `.cache/skyshift`), `SKYSHIFT_PRECO
 ## Cómo extender
 - Nueva fuente: puerto en `ports/` (si no existe) + adaptador en `adapters/` + conexión en `create_app`. El dominio no se toca.
 - Nuevo endpoint: primero `contracts/openapi.yaml`, luego caso de uso en `application/`, handler delgado en `api/`.
+
+## Búsqueda de objetos
+`GET /api/v1/search?q=...&limit=10` acepta nombres, alias y coordenadas; usa primero el catálogo local y después Sesame con caché de 30 días. Los resultados incluyen época y procedencia. Regenera el catálogo con `uv run --python 3.13 --locked --script scripts/build-popular-catalog.py` desde la raíz; las omisiones quedan en `docs/reviews/search/catalog-build.md`. El marco J2000 no demuestra la época de observación: no propagar movimiento sin época de referencia conocida.

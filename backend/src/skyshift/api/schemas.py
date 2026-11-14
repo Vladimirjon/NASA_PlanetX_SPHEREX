@@ -23,6 +23,9 @@ class Provenance(BaseModel):
     cache_layer: Layer
     sha256: str | None = None
     pipeline_version: str | None = None
+    resolver: str | None = None
+    reference: str | None = None
+    astrometry_source: str | None = None
 
 
 class MotionModel(BaseModel):
