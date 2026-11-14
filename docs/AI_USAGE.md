@@ -26,3 +26,6 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-14 | Cursor (Composer) | Implementación vista serie temporal SPHEREx (`frontend/src/series/`, demo+API, Canvas2D, ADR 0043) | Orquestador aprobó diseño; humano revisa capturas en docs/reviews/series-viewer/ |
 | 2026-11-14 | Cursor (Composer) | App integrada mapa+timeline+5 targets (`frontend/src/app/`), fix timeout 60s y slug→canónico | Orquestador aprobó ronda 2; humano revisa docs/reviews/app/ |
 | 2026-11-14 | Claude Code (orquestador) + Codex + Cursor | Integración de ramas (backend, motor del cielo, app, búsqueda), renumeración de ADRs 0040–0044, revisión de commits y PR | Dax revisa el PR antes del merge |
+
+| 2026-11-14 | Claude Code (Claude Opus 5.5) | Drafted TDD implementation plan `docs/specs/0011` and stack ADR `docs/adr/0010` (versions resolved with `uv pip compile`); no product code written | Mateo reviews; Johann agrees on folder; runs only after spec 0010 is approved |
+| 2026-11-14 | Claude Code (Claude Opus 5.5) | Drafted `contracts/observation.schema.json`, `contracts/package-manifest.schema.json`, examples and `scripts/check_contracts.py`; the real example was generated from a live IRSA query, and the ID rule was tested on 906 real rows | Pending: Johann reviews; Mateo and Daniel review the contract; cross-model review noted in the PR |

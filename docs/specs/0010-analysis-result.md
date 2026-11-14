@@ -6,7 +6,8 @@
 - Estado: **borrador** (Ciclo 1, documentación; no implementar todavía)
 - Revisores: Sebastián (ciencia), Johann (frontera con `Observation`)
 - Depende de: [0001 — Arquitectura de datos y `Observation`](0001-arquitectura-observation.md) (borrador de Johann, en `main`)
-- ADRs relacionados: 0003 (stack recomendado). Pendiente: ADR de alcance MVP (guiado vs. libre).
+- ADRs relacionados: 0003 (stack recomendado), 0010 (stack del módulo, propuesta). Pendiente: ADR de alcance MVP (guiado vs. libre).
+- **Criterios científicos:** R6, R11, R12, el modelo de incertidumbre y las condiciones del caso son los **propuestos por Sebastián** en su mensaje del 14-nov-2026, adoptados aquí como **provisionales** hasta que su ficha (`ScientificCase`) los publique. Esta ficha los citará entonces en vez de duplicarlos.
 
 > **Etiquetas.** `[medido]` = probado con datos reales el 14-nov-2026. `[doc]` = documentación oficial. `[inferencia]` = razonamiento sin prueba directa. `[VERIFICAR]` = falta respaldo. `[DECISIÓN EQUIPO]` / `[DECISIÓN SEBASTIÁN]` = no lo decide este módulo ni un agente.
 >
@@ -23,9 +24,9 @@ Dadas ≥ 2 `Observation` (ficha 0001) de la misma zona y una posición objetivo
 | **(a) Desplazamiento aparente** (`astrometric_shift`) | ¿La posición en el cielo de la fuente cambió entre fechas, más allá del error de medición? | arcsec y arcsec/año (en RA·cos Dec y Dec) |
 | **(b) Cambio de flujo** (`flux_change`) | ¿El flujo de la fuente, **a la misma longitud de onda**, cambió entre fechas, más allá del error? | µJy y razón adimensional B/A |
 
-Si no se puede responder con honestidad, el resultado válido es **un rechazo explicado** (`not_evaluable`) o **"no detectada"** (`target_not_detected`), nunca un número dudoso.
+Si no se puede responder con honestidad, el resultado válido es **un rechazo explicado** (`not_evaluable`) o **"sin detección utilizable con este criterio"** (`no_usable_detection`), nunca un número dudoso. Un resultado bajo el umbral de cambio (`change_below_criterion`) **no** afirma que el objeto esté inmóvil o sea constante: solo que no supera nuestro criterio.
 
-**Prioridad propuesta:** primero (a), porque ya se probó con datos reales (anexo B.2). La tarea (b) sirve primero como **control**: demuestra que a λ igual no hay un cambio falso y que a λ distinta sí aparecería uno (anexo B.3).
+**Prioridad (acordada con Sebastián):** primero (a). ε Indi B es **candidato de movimiento**, todavía no caso evaluado (sección 4.4). La tarea (b) es un **control** a λ emparejada; la variabilidad real de brillo queda como opcional.
 
 **Por qué medir en el cielo y no en píxeles:** cada imagen de SPHEREx tiene su propia orientación y distorsión (TAN-SIP) [doc]. Por eso se mide en el **marco nativo** de cada imagen, sin interpolar, y se pasa a RA/Dec con su WCS, que ya está calibrado contra Gaia DR3 con RMS < 0,3″ [doc, Expsupp §4.2.2]. La reproyección a una rejilla común queda para la **visualización** (blink e imagen diferencia de Daniel), no para la medición.
 
@@ -40,8 +41,8 @@ Si no se puede responder con honestidad, el resultado válido es **un rechazo ex
 | `time.samples` con `role = midpoint`, `scale = "UTC"` leído de la cabecera (`MJD-AVG`) | Obligatorio. Una muestra solo de SIA (`scale = null`) no basta para publicar | Δt y ajuste de movimiento |
 | `time.exposure_s` (de `XPOSURE`, no `TELAPSE`) | Obligatorio | Contexto; `XPOSURE` es el tiempo de integración (cabecera) |
 | `spatial_wcs` (`HduRef` a la cabecera `IMAGE` completa, con SIP) | Obligatorio | Píxel → RA/Dec |
-| `spectral.local` con `method = cwave_cband` | Obligatorio en (b); en (a) se registra. `wcs_wave_approximation` → (b) `not_evaluable` | λ y ancho de banda en el píxel del objetivo |
-| `products.calibrations` | Debe apuntar al Spectral WCS vinculado por la regla de 0001 §3.5; si no, `calibration_unresolved` | Trazar `CWAVE`/`CBAND` |
+| `spectral.local` | Solo como punto de referencia de la `Observation`. **La λ de cada medición la lee este módulo** con `CWAVE`/`CBAND` en el píxel medido (acordado con Johann, `STATE.md` 14-nov), porque un objeto en movimiento cae en otro píxel en cada fecha | Referencia |
+| `products.calibrations` | Debe apuntar al Spectral WCS vinculado por la regla de 0001 §3.5; si no, `calibration_unresolved`. Con `wcs_wave_approximation` la tarea (b) es `not_evaluable` | Leer `CWAVE`/`CBAND` en el píxel medido |
 | `quality.flags`, `quality.variance` | Obligatorios; sin `VARIANCE` → `not_evaluable` | Excluir píxeles, incertidumbre |
 | `quality.pipeline_assessment` | Se copia como procedencia; **no** se usa como control (todo lo publicado es `FINAST=0`, `Pass`; 0001 §7.4 E) | Guarda defensiva |
 | `ancillary` (`EPSF`, `ZODI`) | Opcional según método | Ajuste PSF / fondo |
@@ -62,7 +63,7 @@ Si no se puede responder con honestidad, el resultado válido es **un rechazo ex
 
 ## 3. Salidas exactas — contrato `AnalysisResult` (`0.1-draft`)
 
-Nombres en inglés (`AGENTS.md` §5). Mismo estilo de versión, nulabilidad y `issues` que `Observation` (0001 §3.2): `null` = desconocido, nunca cero ni aprobado. Si se decide API, el esquema pasa a `contracts/openapi.yaml`.
+Nombres en inglés (`AGENTS.md` §5). Mismo estilo de versión, nulabilidad y `issues` que `Observation` (0001 §3.2): `null` = desconocido, nunca cero ni aprobado. Siguiendo a Johann, el borrador verificable irá a `contracts/analysis-result.schema.json` (JSON Schema, como `observation.schema.json`) y se valida con `mise run check-contracts`; el manifiesto offline lo referencia en `cases[].analysis_refs`.
 
 ```yaml
 AnalysisResult:
@@ -83,7 +84,8 @@ AnalysisResult:
     status: comparable | comparable_with_warnings | not_comparable
     checks:                      # uno por regla de la sección 4
       - {check_id, status: pass | warn | fail | not_evaluated, observed_value, criterion, source}
-  outcome: change_measured | no_significant_change | target_not_detected | not_evaluable | data_error
+  outcome: change_measured | change_below_criterion | no_usable_detection | not_evaluable | data_error
+  criteria_ref: {source, version}  # p. ej. {"Sebastián, mensaje 14-nov-2026", "provisional"}; luego su ficha
   measurements:                  # una fila por entrada, usada o descartada
     - observation_id: string
       time_mjd_utc: number       # midpoint (MJD-AVG), d
@@ -91,13 +93,15 @@ AnalysisResult:
       y_pix: number
       ra_deg: number             # ICRS
       dec_deg: number
-      sigma_pos_stat_arcsec: number
+      cov_pos_arcsec2: [[number, number], [number, number]]   # covarianza (RA·cosDec, Dec) de esta posición
       wavelength_um: number      # CWAVE en el píxel medido
       bandwidth_um: number       # CBAND en el píxel medido
       wavelength_method: cwave_cband | wcs_wave_approximation
       flux_ujy: number | null
       flux_err_stat_ujy: number | null
+      flux_upper_limit_ujy: number | null   # si no hay detección utilizable; nunca flujo cero
       snr: number | null
+      detection: usable | not_usable
       flags_bitmask: integer     # OR de FLAGS en radio 2,5 px
       flag_names: [string]
       used: boolean
@@ -109,21 +113,26 @@ AnalysisResult:
     delta_dec_arcsec: number
     separation_arcsec: number
     position_angle_deg: number   # de N hacia E
-    sigma_separation_arcsec: number   # incluye piso sistemático (sección 4.3)
+    cov_delta_arcsec2: [[number, number], [number, number]]  # covarianza de la diferencia: suma de ambas épocas + correlaciones
     rate_arcsec_per_yr: number
-    sigma_rate_arcsec_per_yr: number
-    significance: number         # separation / sigma; el umbral NO lo fija este módulo
+    cov_rate: [[number, number], [number, number]] | null    # (arcsec/año)², si model = linear_fit
+    test: {statistic: chi2, value, dof: 2, p_value, equivalent_sigma}   # Δᵀ C⁻¹ Δ; NO separation/σ
     fit_residual_rms_arcsec: number | null
-    reference_comparison: {expected_separation_arcsec, residual_arcsec, source} | null
+    residuals_vs_wavelength: {slope_arcsec_per_um, sigma, n} | null     # control Ba/Bb (sección 4.4)
+    reference_star_check: {n_stars, rms_arcsec, catalog, catalog_version} | null
+    external_references:        # contraste, no evaluación automática
+      - {catalog, identifier, version, epoch_jyear, pm_ra_cosdec, pm_dec, pm_uncertainties,
+         parallax_mas, object_relation: same_object | common_proper_motion_companion,
+         independence_note}
   photometry:                    # solo si kind = flux_change; null si no se midió
-    wavelength_match: {lambda_a_um, lambda_b_um, delta_lambda_um, delta_over_cband, tolerance, tolerance_source}
+    wavelength_match: {lambda_a_um, lambda_b_um, delta_lambda_um, delta_over_min_cband, tolerance, tolerance_source}
     flux_a_ujy: number
     flux_b_ujy: number
     delta_flux_ujy: number
-    sigma_delta_flux_ujy: number # incluye piso sistemático (sección 4.3)
+    sigma_delta_flux_ujy: number # propaga ambas épocas + término de 3 % (sección 4.3)
     ratio_b_over_a: number
     sigma_ratio: number
-    significance: number
+    significance_sigma: number   # |Δ| / σ_Δ (una dimensión)
   zone_of_interest: {ra_deg, dec_deg, radius_arcsec}   # para que la UI resalte
   method:
     name: string                 # p. ej. "native-frame-gaussian-centroid"
@@ -147,7 +156,10 @@ AnalysisResult:
 | `bad_pixels_near_target` | bits de la lista "fotometría" en r ≤ 2,5 px | `block` esa medición |
 | `suspect_pixels_near_target` | resto de bits de `CONTAINS_BAD_PIXEL` en r ≤ 2,5 px | `warn` |
 | `saturation_risk` | objetivo más brillante que el límite de la Tabla 25, o bits `OVERFLOW`/`NONLINEAR` | `block` en flujo; `warn` en posición `[VERIFICAR]` |
-| `low_snr` | SNR < umbral `[DECISIÓN SEBASTIÁN]` | `block` → `target_not_detected` |
+| `low_snr` | SNR < 5 en esa exposición (R11) | esa exposición no se usa; si no queda ninguna → `no_usable_detection` |
+| `wavelength_dependent_position` | los residuos de posición dependen de λ (sección 4.4, Ba/Bb) | `warn`; `block` si la pendiente explica el movimiento `[DECISIÓN SEBASTIÁN]` |
+| `registration_unverified` | no se comprobó el registro con estrellas de referencia del recorte | `warn` (impide pedir "evaluado") |
+| `uncertainty_inflated` | los residuos superan lo esperado y se infló σ_wcs (sección 4.3) | `info` |
 | `target_off_footprint` | el objetivo cae fuera de la imagen o del recorte | `block` |
 | `neighbor_confusion` | otra fuente a < 2 px | `warn` |
 | `insufficient_epochs` | < 2 adquisiciones distintas utilizables | `block` → `not_evaluable` (mismo nombre que 0001 §4.4) |
@@ -158,11 +170,11 @@ AnalysisResult:
 
 **Ejemplo con datos reales (sondeo exploratorio, no es un resultado del producto):** las 12 mediciones de ε Indi B del anexo B son las filas que llenarían `measurements` y `astrometry`.
 
-**Lo que este contrato NO contiene, a propósito:** nivel del semáforo, texto para el público, "tipo de objeto". Sebastián los deriva de `outcome`, `comparability`, `issues` y `significance` en `ScientificCase`.
+**Lo que este contrato NO contiene, a propósito:** nivel del semáforo, texto para el público, "tipo de objeto". Sebastián los deriva de `outcome`, `comparability`, `issues`, `test` y `significance_sigma` en `ScientificCase`. Las referencias externas (Hipparcos/Gaia) son contraste y nunca otorgan solas el nivel "evaluado"; "confirmado" nunca lo asigna la app.
 
 ## 4. Restricciones científicas (precondiciones de comparación)
 
-> **Propuesta para acordar con Sebastián.** Solo uso umbrales con fuente oficial; los demás quedan `[DECISIÓN SEBASTIÁN]`.
+> R6, R11 y R12 llevan los valores **propuestos por Sebastián** (mensaje del 14-nov-2026), provisionales para el MVP. No son garantías ni tolerancias universales.
 
 ### 4.1 Reglas
 
@@ -173,13 +185,13 @@ AnalysisResult:
 | R3 | Guarda defensiva: `FINAST == 0` y `L2DQAFLG == 'Pass'` | a, b | `pipeline_quality_unexpected` | Expsupp §3.2.8; IRSA solo publica imágenes así (0001 §7.4 E), así que **no discrimina** entre productos |
 | R4 | Identidad resuelta y calibración vinculada | a, b (calibración solo en b) | `identity_unresolved` / `calibration_unresolved` | 0001 §3.1 y §3.5 |
 | R5 | Mezclar DR1 y QR3 está permitido: mismo pipeline `v27` y las mismas 15 calibraciones [medido por Johann]. QR2 no aparece en la búsqueda actual | a, b | — | 0001 §7.4 C; Expsupp §2.1 |
-| R6 | λ compatible en el píxel medido: Δλ / CBAND ≤ tolerancia, con `CWAVE`/`CBAND` | b | `not_comparable` (`wavelength_mismatch`) | trampa LVF [doc] + anexo B.3 [medido]. Tolerancia `[DECISIÓN SEBASTIÁN]`, considerando la pendiente del espectro del objeto |
+| R6 | λ compatible en la posición medida de cada época: **Δλ / min(CBAND₁, CBAND₂) ≤ 0,02**, con `CWAVE`/`CBAND`. Válido **solo** para el control de brillo de ε Indi B; otro objeto necesita su propio criterio (depende del espectro y de la respuesta de ambas bandas) | b | `not_comparable` (`wavelength_mismatch`). Fuera del criterio, la diferencia **no** se interpreta como variabilidad | Sebastián (14-nov) + trampa LVF [doc] + anexo B.3 [medido] |
 | R7 | Sin bits de la lista "fotometría" en r ≤ 2,5 px: `SUR_ERROR, NONFUNC, MISSING_DATA, HOT, COLD, NONLINEAR, PERSIST, BLOOM, SNOWBALL, HALO, SATELLITE_HALO` | a, b | descartar esa medición | Expsupp §3.3 "Flag usage" |
 | R8 | Resto de la lista `CONTAINS_BAD_PIXEL` (`TRANSIENT, OVERFLOW, DICHROIC, CROSSTALK, GHOST*, STREAK`) → advertir, no bloquear | a, b | `warn` | Expsupp §3.3: "should only be interpreted as a warning" |
 | R9 | **`SOURCE` no es un problema**: marca píxeles de fuentes conocidas (51 % del detector en una imagen de prueba) | a, b | — | Expsupp Tabla 16 + `PXSRCMSK=51.16` [medido] |
 | R10 | Objetivo no saturado: más débil que ~11,3–11,7 AB (D1–D4), 10,2 AB (D5), 9,75 AB (D6) | b (a: advertir) | `not_comparable` | Expsupp Tabla 25 (modelo pre-lanzamiento de no linealidad) |
-| R11 | Detección: SNR ≥ umbral | a, b | `target_not_detected` | umbral `[DECISIÓN SEBASTIÁN]` |
-| R12 | Solo `change_measured` si `significance` ≥ umbral; si no, `no_significant_change` | a, b | — | umbral `[DECISIÓN SEBASTIÁN]` |
+| R11 | Detección utilizable: **SNR ≥ 5 por exposición usada**, además de calidad (R7), identificación y ajuste aceptables. Política del MVP, no garantía de detección | a, b | esa exposición no se usa; sin ninguna → `no_usable_detection`, conservando flujo, incertidumbre y límite superior. Nunca flujo cero ni "desapareció" | Sebastián (14-nov) |
+| R12 | Solo `change_measured` si el cambio es **≥ 5σ**. En posición: prueba χ² en 2D con la covarianza de la diferencia (`test.equivalent_sigma`), no separation/σ. En flujo: \|Δ\|/σ_Δ propagando ambas épocas | a, b | `change_below_criterion`: se conserva la medición; no se afirma que el objeto sea inmóvil o constante | Sebastián (14-nov) |
 
 ### 4.2 Cosas que **no** se deben asumir
 
@@ -189,11 +201,25 @@ AnalysisResult:
 - Una "época" dura semanas (anexo B.1). Un objeto rápido se mueve **dentro** de ella: se usa el tiempo de cada exposición.
 - `WCS-WAVE` es aproximada (0001 §3.5). En las 12 imágenes de ε Indi B difiere de `CWAVE` solo entre +0,15 y +0,75 nm [medido], pero cerca del borde llega a 0,52 µm (0001 §7.4 D). Para decidir comparabilidad se usa `CWAVE`.
 
-### 4.3 Modelo de incertidumbre (propuesta)
+### 4.3 Modelo de incertidumbre (provisional, revisado con Sebastián)
 
-- **Posición:** `σ_total = √(σ_stat² + σ_wcs²)` con `σ_wcs = 0,3″` por imagen, la cota oficial "RMS < 0,3″" del ajuste contra Gaia (Expsupp §4.2.2). Motivo [medido]: el error estadístico del ajuste gaussiano salió ~0,02″, pero la dispersión real entre imágenes fue de 0,2–0,4″. Sin piso, el contrato exageraría la precisión 10 veces.
-- **Flujo:** `σ_total = √(σ_stat² + (0,03·F)²)`, el mismo piso de 3 % que usa el pipeline oficial en su fotometría (Expsupp §3.3, ec. 19).
-- La significancia se reporta siempre; el umbral para decir "cambió" lo fija Sebastián.
+- **Posición, por imagen:** covarianza `C = C_stat + σ_wcs²·I`, con `σ_wcs = 0,3″` **provisional**. Ese 0,3″ es el **rendimiento RMS observado** contra Gaia (Expsupp §4.2.2), **no** un piso obligatorio universal. Se contrasta con estrellas de referencia del mismo recorte (`reference_star_check`); si sus residuos son mayores, se infla `σ_wcs` y se marca `uncertainty_inflated`. Motivo [medido]: el error estadístico del ajuste salió ~0,02″, pero la dispersión real entre imágenes fue de 0,2–0,4″.
+- **Diferencia de posición:** `C_Δ = C_A + C_B` (más correlaciones si las hay; por ejemplo, dos detectores de la misma adquisición comparten apuntado). Estadístico `Δᵀ C_Δ⁻¹ Δ` ~ χ² con 2 grados de libertad, reportado también como σ gaussiana equivalente.
+- **Ajuste lineal:** con N fechas, la covarianza del movimiento sale del ajuste ponderado; si χ²/dof > 1, se escala.
+- **Flujo:** `σ_total = √(σ_stat² + (0,03·F)²)`. El 3 % **sí** está documentado como término añadido a la incertidumbre fotométrica oficial (Expsupp §3.3, ec. 19).
+- La significancia se reporta siempre, incluso por debajo de 5σ.
+
+### 4.4 Condiciones antes de evaluar el candidato ε Indi B (Sebastián, 14-nov)
+
+| # | Condición | Cómo se cumple | Estado |
+| --- | --- | --- | --- |
+| C1 | Recalcular aplicando FLAGS (R7/R8) | Excluir las exposiciones con `SUR_ERROR`/`HALO` cerca del objetivo (anexo B.2 tiene dos) | Pendiente |
+| C2 | Documentar archivos y fechas exactos | Lista de `product_id`, URL, versión y `MJD-AVG` de cada recorte en el manifiesto (`contracts/package-manifest.schema.json`) | Pendiente |
+| C3 | Comprobar el registro con estrellas de referencia | Estrellas Gaia del recorte, no saturadas y aisladas: RMS de sus residuos por imagen | Pendiente |
+| C4 | Revisar paralaje | ε Indi B está a ~3,6 pc (paralaje ≈ 0,27″ `[VERIFICAR]`): modelar o al menos cuantificar su efecto en las fechas usadas | Pendiente |
+| C5 | Revisar sesgo del centroide | PSF sub-muestreada (FWHM ≈ 1,2 px): pruebas sintéticas con fase de píxel variable (plan 0011) o ajuste con ePSF | Pendiente |
+| C6 | **Ba/Bb no resueltas** | SPHEREx no separa las dos enanas: a distinta λ cambia el peso de cada una y el centro de luz puede moverse. Probar si los residuos de posición dependen de λ (`residuals_vs_wavelength`) y, si hace falta, usar solo λ parecidas | Pendiente |
+| C7 | Referencia externa adecuada | Buscar una solución astrométrica publicada de Ba/Bb (movimiento, paralaje y órbita). Gaia no es del todo independiente: el WCS de SPHEREx ya usa ese marco | Pendiente |
 
 ## 5. Casos de prueba
 
@@ -201,35 +227,38 @@ Las pruebas **sintéticas** son para el código y van rotuladas (`is_synthetic: 
 
 | # | Tipo | Caso | Resultado esperado |
 | --- | --- | --- | --- |
-| T1 | sintético | Dos imágenes idénticas (misma matriz, mismo WCS) | `no_significant_change`, separación 0 dentro de σ |
+| T1 | sintético | Dos imágenes idénticas (misma matriz, mismo WCS) | `change_below_criterion`, separación 0 dentro de σ |
 | T2 | sintético | Misma escena con WCS desplazado globalmente, objeto quieto | separación ≈ 0 en el cielo. Si se midiera en píxeles fallaría (prueba de regresión) |
 | T3 | sintético | Fuente gaussiana desplazada 1,0 px conocido, ruido conocido | `change_measured`, separación ≈ 6,15″ ± σ; el valor inyectado queda dentro de 2σ `[VERIFICAR criterio]` |
 | T4 | sintético | Misma fuente, flujo ×1,5 en B, misma λ | `flux_change`, ratio ≈ 1,5 ± σ |
 | T5 | sintético | B con escala/exposición distinta pero flujo físico igual | ratio ≈ 1 (no se compara "brillo de pantalla") |
 | T6 | sintético | Píxel `HOT` o `NONLINEAR` sobre el objetivo en B | medición B descartada (`bad_pixels_near_target`); `not_evaluable` si quedan < 2 |
 | T7 | sintético | `CWAVE` A = 1,65 µm, B = 2,38 µm | `flux_change` → `not_comparable` (`wavelength_mismatch`) |
-| T8 | sintético | Objetivo bajo el umbral de SNR | `target_not_detected` |
+| T8 | sintético | Objetivo con SNR < 5 en todas las exposiciones | `no_usable_detection`, con flujo, σ y límite superior (nunca 0) |
 | T9 | sintético | Recorte con `CRPIX1A` = −375: el píxel original debe ser recorte + 376 | λ leída del píxel correcto; con un error de origen, `calibration_unresolved` |
 | T10 | sintético | Entrada incompleta: sin `time.samples` UTC o sin `quality.variance` | `data_error` / `not_evaluable` con razón y `paths` |
 | T11 | sintético | Dos filas del mismo `acquisition_id` (dos detectores) | `insufficient_epochs`: no son dos fechas |
 | T12 | sintético | `identity_status = unresolved` | `identity_unresolved` |
-| R-1 | **real** | ε Indi B, D3, DR1 + QR3 (anexo B.2) | `change_measured`; movimiento consistente con el de catálogo dentro de σ |
-| R-2 | **real** | ε Indi B a `CWAVE` 1,9341 vs. 1,9333 µm (Δλ/CBAND = 0,02) | `no_significant_change` (+1,0 % con piso de 3 %) |
+| T13 | sintético | Diferencia con covarianza no diagonal (errores RA/Dec correlacionados) | `test.value` = Δᵀ C⁻¹ Δ calculado a mano; difiere de separation/σ |
+| T14 | sintético | Dos fuentes no resueltas (separación < 1 px) con razón de flujo que cambia con λ | el centroide se mueve con λ → `wavelength_dependent_position` |
+| T15 | sintético | Estrellas de referencia con residuos de 0,6″ (mayores que 0,3″) | `σ_wcs` inflado y `uncertainty_inflated` |
+| R-1 | **real** | ε Indi B, D3, DR1 + QR3 (anexo B.2), tras C1–C3 | `change_measured` (≥ 5σ en χ² 2D; el sondeo da ~15σ entre primera y última fecha `[recalcular]`); consistente con la compañera de movimiento común. Sigue siendo **candidato** hasta C4–C7 |
+| R-2 | **real** | ε Indi B a `CWAVE` 1,9341 vs. 1,9333 µm (Δλ/min(CBAND) = 0,017 ≤ 0,02) | `change_below_criterion` (+1,0 %, ≈ 0,2σ con el término de 3 %) |
 | R-3 | **real** | ε Indi B a 1,6464 vs. 2,3753 µm | `not_comparable` (sin R6 daría un falso "−62 %") |
-| R-4 | **real** | WISE 0855 en una sola exposición D5/D6 | `target_not_detected` / `low_snr` (SNR medido de −0,0 a 4,7) |
+| R-4 | **real** | WISE 0855 en una sola exposición D5/D6 | `no_usable_detection` / `low_snr` (SNR medido de −0,0 a 4,7 < 5) |
 
 ## 6. Criterio de aceptación
 
-1. **Contrato:** Sebastián puede escribir la interpretación de R-1, R-2 y R-3 usando solo los campos de `AnalysisResult`, sin preguntar ni deducir datos faltantes.
+1. **Contrato:** Sebastián puede escribir la interpretación de R-1, R-2 y R-3 (incluidos los casos bajo criterio) usando solo los campos de `AnalysisResult`, sin preguntar ni deducir datos faltantes.
 2. **Rechazo explícito:** T6, T7, T9–T12 y R-3 devuelven la razón exacta (código, `paths` y detalle), no un número.
 3. **Frontera con 0001:** cada `inputs[]` resuelve a una `Observation` y a un producto exacto; ningún campo de entrada se rellena con un valor por defecto.
 4. **Reproducibilidad:** con el mismo `code_ref` y los mismos `product_id`, el resultado es idéntico.
-5. **Ciencia:** en R-1 el movimiento medido coincide con un catálogo independiente dentro de la incertidumbre declarada, y Sebastián lo revisa.
-6. **Pruebas:** T1–T12 pasan en CI (TDD, `AGENTS.md` §6) antes de decir "listo".
+5. **Ciencia:** en R-1 se cumplen C1–C7 (sección 4.4) y el movimiento es consistente con una referencia externa documentada (identificador, versión, época, incertidumbres), sabiendo que no es del todo independiente. Sebastián lo revisa; la app nunca asigna "confirmado".
+6. **Pruebas:** T1–T15 pasan en CI (TDD, `AGENTS.md` §6) antes de decir "listo".
 
 ## 7. Fuentes
 
-- SPHEREx Explanatory Supplement v2.0 (2026-08-25), SSDC-DP-017: §2.1 (versiones QR/DR1), §3.2.5 Tabla 16 (FLAGS), §3.2.8 y §4.2.2 (astrometría, `FINAST`, RMS < 0,3″), §3.3 (fotometría: uso de flags, `CONTAINS_BAD_PIXEL`, ec. 19 piso 3 %), Tabla 25 (saturación). https://irsa.ipac.caltech.edu/data/SPHEREx/docs/SPHEREx_Expsupp_QR.pdf
+- SPHEREx Explanatory Supplement v2.0 (2026-08-25), SSDC-DP-017: §2.1 (versiones QR/DR1), §3.2.5 Tabla 16 (FLAGS), §3.2.8 y §4.2.2 (astrometría, `FINAST`, RMS < 0,3″), §3.3 (fotometría: uso de flags, `CONTAINS_BAD_PIXEL`, ec. 19, término de 3 %), Tabla 25 (saturación). https://irsa.ipac.caltech.edu/data/SPHEREx/docs/SPHEREx_Expsupp_QR.pdf
 - Ficha 0001 de Johann (`Observation`): §3.4–3.5 (λ por `CWAVE`/`CBAND`, vínculo de calibración), §7.4 (épocas, calidad publicada, recortes y origen de píxel).
 - SPHEREx data products (IRSA): https://caltech-ipac.github.io/spherex-archive-documentation/spherex-data-products
 - Tutoriales IRSA: recortes, Source Discovery Tool (máscaras y conversión con ángulo sólido), PSF. https://caltech-ipac.github.io/irsa-tutorials/spherex/
@@ -277,11 +306,11 @@ Coincide con el conteo independiente de Johann (0001 §7.4 H) para los objetos q
 
 - Desplazamiento de la primera a la última: **6,45″ = 1,05 px en 1,42 años**.
 - Ajuste lineal: μα* = **3,88″/año**, μδ = **−2,57″/año**; RMS de residuos 0,38″ (RA) y 0,19″ (Dec).
-- Referencia de catálogo (Hipparcos, ε Indi A, compañera de movimiento común): 3,97 / −2,54 ″/año `[VERIFICAR con Gaia DR3 para B]`.
+- Contraste: el movimiento de Hipparcos de **ε Indi A** es 3,97 / −2,54 ″/año. Como A es la compañera de movimiento común, esto muestra **consistencia con la compañera**, no una astrometría independiente de B. Falta una solución publicada de Ba/Bb (C7).
 - SNR 95–163; FWHM 1,0–1,3 px.
 - Dos imágenes tenían `HALO`/`TRANSIENT` (y una `SUR_ERROR`) cerca del objetivo: R7/R8 las habrían descartado o advertido.
 
-**Lectura:** el movimiento de ~1 px sí se puede medir en el cielo con una precisión de ~0,3″ por imagen. ε Indi B es un candidato técnico fuerte para el caso guiado de movimiento. La elección del caso es de Sebastián y del equipo.
+**Lectura:** el movimiento de ~1 px parece medible con ~0,3″ por imagen. ε Indi B queda priorizado como **candidato de movimiento** (Sebastián), no como caso evaluado: falta cumplir C1–C7 (sección 4.4). Este sondeo no aplicó FLAGS ni controló Ba/Bb.
 
 ### B.3 Sondeo de brillo: la trampa LVF con datos reales (exploratorio)
 
@@ -296,7 +325,7 @@ Apertura r = 2 px, fondo en anillo, conversión con `OMEGA_MEDIAN`, solo error e
 | 2026-09-28 | 1,9333 | 0,0476 | 12 387 ± 120 |
 | 2025-04-30 | 2,3753 | 0,0589 | 11 965 ± 124 |
 
-- A **λ emparejada**: 1,9341 vs. 1,9333 µm (Δλ/CBAND = 0,02, 15 meses de diferencia) da **+1,0 %**; 1,6464 vs. 1,6377 µm (Δλ/CBAND = 0,22) da −2,3 %. Ambos están dentro del piso de 3 % → `no_significant_change`.
+- Con el **criterio R6** (Δλ/min(CBAND) ≤ 0,02) solo pasa 1,9341 vs. 1,9333 µm (0,017; 15 meses): **+1,0 %**, por debajo de 5σ → `change_below_criterion`. El par 1,6464 vs. 1,6377 µm (0,22) **no** cumple R6: su −2,3 % no se interpreta (una diferencia pequeña también puede salir de efectos que se compensan).
 - A **λ distinta** (1,6464 vs. 2,3753 µm, con un día de diferencia) parece haber un "−62 %". Es el espectro de la enana marrón, no un cambio temporal. **Es la mejor demostración de por qué existe la regla R6** (útil para Sebastián y para el pitch).
 
 ### B.4 Brillo de los objetos propuestos frente a la saturación (bloqueante para elegir casos)
@@ -314,15 +343,15 @@ Conversión Vega→AB usada: K +1,85, W2 +3,34 `[VERIFICAR fuente exacta]`.
 **Consecuencias:**
 
 - De los cinco objetos de `02-ciencia-para-cs.md`, solo ε Indi B está en rango para medir.
-- Las dos variables propuestas (RW Aur, R Dra) saturan: para un caso de brillo hace falta otra variable más débil (K ≳ 12 Vega) `[DECISIÓN SEBASTIÁN]`.
-- **El par candidato D3 de WISE 0855 (may-2025 / may-2026, misma λ; 0001 §7.4 B) no es medible:** WISE 0855 no se detecta en una exposición ni en D5/D6, donde más brilla, y en D3 es todavía más débil `[inferencia sobre D3]`. Sirve como ejemplo de `target_not_detected`, no como caso de cambio. Apilar cada época podría ayudar `[VERIFICAR]`, pero es arriesgado.
+- Las dos variables propuestas (RW Aur, R Dra) saturan: para un caso de brillo hace falta otra variable más débil (K ≳ 12 Vega) solo como filtro de búsqueda: no garantiza ausencia de saturación ni detección; hay que revisar píxeles y banda SPHEREx usados. Queda como **opcional** (Sebastián).
+- **El par candidato D3 de WISE 0855 (may-2025 / may-2026, misma λ; 0001 §7.4 B) no es medible:** WISE 0855 no se detecta en una exposición ni en D5/D6, donde más brilla, y en D3 es todavía más débil `[inferencia sobre D3]`. Sirve como ejemplo de `no_usable_detection`, no como caso de cambio. Apilar cada época podría ayudar `[VERIFICAR]`, pero es arriesgado.
 
 ## Anexo C — Alcance escalonado
 
 | Nivel | Qué | Estado |
 | --- | --- | --- |
 | **Obligatorio** | 1 caso real guiado de movimiento con medición defendible (candidato técnico: ε Indi B), precalculado offline, con `AnalysisResult` completo | Viable según B.2 |
-| Recomendado | El mismo objeto como **control de brillo**: `no_significant_change` a λ emparejada y `not_comparable` a λ distinta (B.3) | Viable según B.3 |
+| Recomendado | El mismo objeto como **control de brillo**: `change_below_criterion` a λ emparejada (R6) y `not_comparable` a λ distinta (B.3) | Viable según B.3 |
 | Opcional | Un caso de variabilidad real (requiere una variable no saturada) | Falta candidato |
 | Fuera del MVP | Detección automática de múltiples fuentes en 5 regiones; declarar objetos nuevos | No se compromete |
 
@@ -333,7 +362,7 @@ Conversión Vega→AB usada: K +1,85, W2 +3,34 `[VERIFICAR fuente exacta]`.
 | ¿Qué medición se prioriza y sobre qué área? | Primero el desplazamiento (a), sobre el objetivo: ventana de ±4 px para el ajuste y radio de 2,5 px para revisar FLAGS (radio que usa el pipeline). El flujo (b) se usa como control a λ emparejada. Los valores finales los aprueba Sebastián |
 | ¿Píxeles nativos o reproyectados? | **Nativos** para medir (sin remuestreo, sin correlación de ruido). La reproyección solo se usa para mostrar |
 | ¿WCS/rejilla, FLAGS, varianza, PSF/fondo, calibraciones? | WCS espacial completa con SIP; FLAGS y VARIANCE obligatorias; `CWAVE`/`CBAND` vinculadas; fondo local en anillo (no `ZODI` para el centroide); `EPSF` solo si se elige A3 |
-| ¿Cómo conserva la incertidumbre y qué obliga a "no evaluable"? | Piso sistemático de la §4.3. "No evaluable" si falta `VARIANCE`, WCS, tiempo UTC, identidad resuelta o hay < 2 adquisiciones utilizables tras R7 |
+| ¿Cómo conserva la incertidumbre y qué obliga a "no evaluable"? | Covarianza por imagen + σ_wcs provisional contrastado con estrellas de referencia (§4.3). "No evaluable" si falta `VARIANCE`, WCS, tiempo UTC, identidad resuelta o hay < 2 adquisiciones utilizables tras R7 |
 | ¿Qué IDs/revisiones incluye `AnalysisResult`? | `inputs[]` = `{observation_id, product_id}`; `region_ref` = `{region_id, revision}`; `method.version`; `provenance.code_ref` y `executed_at` |
 | FLAGS comprimida: ¿recorte de IRSA o archivo completo? | **Recortes de IRSA** bastan: traen FLAGS ya descomprimida y el origen de píxel. Se usaron así en el anexo B |
 | ¿`XPOSURE` o `TELAPSE`? ¿Qué tiempo? | `XPOSURE` como duración; el punto medio `MJD-AVG` (UTC) como tiempo de cada medición |
@@ -342,8 +371,8 @@ Conversión Vega→AB usada: K +1,85, W2 +3,34 `[VERIFICAR fuente exacta]`.
 
 | Para | Pregunta |
 | --- | --- |
-| Johann | ¿`spectral.local` lo calcula `Observation` para una posición dada, o este módulo lee `CWAVE` en el píxel medido usando `products.calibrations`? (Propuesta: lo lee este módulo, porque la posición de un objeto en movimiento cambia en cada fecha.) ¿El recorte entra como `products.derived` con su `Transformation`? |
-| Sebastián | Tolerancia Δλ/CBAND (R6), umbral de SNR (R11), umbral de significancia (R12), severidad de los códigos, elección del caso (B.4), ¿se acepta Hipparcos/Gaia como referencia externa para "evaluado"? |
+| Johann | **Respondido (STATE 14-nov):** la λ de cada medición la lee este módulo en el píxel medido; `spectral.local` queda como punto de referencia. **Pendiente:** ¿el recorte entra como `products.derived` con su `Transformation`? ¿Carpeta del módulo (ADR 0010)? |
+| Sebastián | **Respondido el 14-nov (provisional):** R6 = Δλ/min(CBAND) ≤ 0,02 solo para ε Indi B; R11 = SNR ≥ 5 por exposición; R12 = ≥ 5σ con covarianza; ε Indi B como candidato; Hipparcos/Gaia solo como contraste. **Pendiente:** que su ficha publique estos criterios; severidad final de los códigos; umbral para `wavelength_dependent_position`; solución publicada de Ba/Bb (C7). |
 | Daniel | ¿La UI necesita `zone_of_interest` en grados o en píxeles del recorte reproyectado? ¿Cómo muestra `is_synthetic`? |
 | Equipo | ADR de alcance (guiado vs. libre); ¿todo precalculado offline (recomendado) o backend en vivo? |
 
