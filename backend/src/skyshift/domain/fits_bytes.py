@@ -237,3 +237,26 @@ def _table_hdu(hdu_bytes: bytes) -> fits.BinTableHDU:
     table = cast(fits.BinTableHDU, hdul[1]).copy()
     hdul.close()
     return table
+
+
+def wavelength_map(
+    image_header_bytes: bytes, wave_hdu_bytes: bytes, x0: int, y0: int, width: int, height: int
+) -> npt.NDArray[np.float64]:
+    """λ (µm) of every pixel of a detector box, from the WAVE-TAB axis without SIP."""
+    header = _header(image_header_bytes)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", FITSFixedWarning)
+        hdul = fits.HDUList(
+            [fits.PrimaryHDU(), fits.ImageHDU(header=header), _table_hdu(wave_hdu_bytes)]
+        )
+        wcs_w = WCS(header, fobj=hdul, key="W")
+        wcs_w.sip = None
+        yy, xx = np.mgrid[y0 : y0 + height, x0 : x0 + width]
+        lam, _bw = wcs_w.pixel_to_world_values(xx.astype(np.float64), yy.astype(np.float64))
+    return np.asarray(lam, dtype=np.float64)
+
+
+def detector_pixel(image_header_bytes: bytes, ra_deg: float, dec_deg: float) -> tuple[float, float]:
+    """0-based detector pixel of a sky position, spatial WCS with SIP."""
+    x, y = spatial_wcs(image_header_bytes).all_world2pix(ra_deg, dec_deg, 0)
+    return float(x), float(y)

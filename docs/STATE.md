@@ -3,6 +3,7 @@
 Actualizado: sáb 14-nov-2026, tarde (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- 14-nov ~16:45: analizador con dominio + SIA2 + lector FITS S3 + BuildSeries escritos (102 tests); FALTA test de punta a punta de BuildSeries, endpoints /series y /frames, prueba con los 5 objetos. Revisores del visor: R2 UX y R4 ciencia = CAMBIOS REQUERIDOS (B: cielo en espejo, este a la derecha; texto <16 px; sin botones táctiles); R1 y R3 en curso. Informes en rama feat/sky-engine docs/reviews/sky-engine/.
 - Mapa de datos físico listo (`docs/context/12`): reglas de pasadas (>45 d), tolerancia λ/(4R), máscara FLAGS, propagación de movimiento propio. **La demo vieja de WISE 0855 no contiene a WISE 0855** (posición de 2010) y sus pares no son comparables en λ: no usarla en el pitch.
 - Backend hexagonal con caché por capas y proxy HiPS (53 tests); visor propio dibuja (rama `feat/sky-engine`, en revisión). Ficha 0002 v2 espera aprobación.
 - **Fase 0 (bases)** en rama `feat/phase0-foundations`: ADR 0006 (dos pistas, caché local→IRSA, Rust/Redis solo si se mide), `contracts/openapi.yaml` v0.1 válido, fichas 0002 (analizador) y 0003 (visor propio, sin Aladin) en borrador; agente físico redacta `docs/context/12`.
