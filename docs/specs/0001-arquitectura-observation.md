@@ -1,3 +1,5 @@
+> Estado tras revisión 2026-11-14: ver docs/reviews/2026-11-14-triage-specs-main.md. Implementación vigente: contracts/openapi.yaml v0.2 y docs/specs/0002.
+
 # Ficha de tarea para agente — Arquitectura de datos y Observation
 
 - Dueño humano propuesto: **Johann** (arquitectura de datos e integración; ratificación del equipo pendiente).
