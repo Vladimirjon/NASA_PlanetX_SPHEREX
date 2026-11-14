@@ -4,6 +4,12 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 
 | Date | Tool | Purpose | Human review |
 | --- | --- | --- | --- |
+| 2026-11-14 | Codex (OpenAI) | Implement offline scientific checks and a local explanatory preview using IRSA cutouts | Sebastián, Johann and Mateo still need to validate scientific integration and case evidence |
+| 2026-11-14 | Codex (OpenAI) + research subagents | Investigate numerical comparison criteria against IRSA documentation and Mateo's current branch | Thresholds are scoped/provisional; no pair certified and reproducibility checks remain pending |
+| 2026-11-14 | Codex (OpenAI) | Check exploratory target coordinates and pixel values in two SPHEREx cutouts with Astropy | Identity and detection remain unverified; pixel values are not reported as target photometry |
+| 2026-11-14 | Codex (OpenAI) + research subagents | Examine WISE 0855 candidate pair, exploratory coordinates, cutouts, quality planes and spectral calibration | Human/scientific validation pending; positions and spectral values exploratory, no detection asserted |
+| 2026-11-14 | Codex (OpenAI) | Query IRSA SIA2 and inspect original FITS headers to fill WISE 0855 candidate controls | Source IDs and observation times checked; source detection and pair validity not evaluated |
+| 2026-11-14 | Codex (OpenAI) + research subagents | Rebuild science validation draft against Johann's Observation proposal and NASA/IPAC sources | Sebastián, Johann and Mateo review pending; no scientific results asserted |
 | 2026-11-14 | Claude Code (Claude Opus 5.5) | Research of challenge rules, data APIs and agent standards; drafting team context docs | Team reads and validates; decisions recorded in ADRs |
 | 2026-11-14 | Claude Code (Claude Opus 5.5) + research subagents | Evidence-based skill selection, cross-platform toolchain and stack research; drafting standards (docs/context/05–08, ADRs 0003–0005) | Dax reviews; stack ADR pending team approval |
 | 2026-11-14 | Codex (initial draft) + Claude Code (Claude Opus 5.5) | Draft spec `docs/specs/0001-arquitectura-observation.md` (data architecture, proposed `Observation` contract, interfaces, failure states); small read-only IRSA SIA2 queries and FITS header reads (byte ranges, no full downloads) to check fields | Pending: Johann reviews; Mateo and Daniel review the spec; Sebastián reviews scientific requirements; Dax reviews the `Region` boundary |
