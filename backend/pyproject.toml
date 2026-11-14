@@ -4,10 +4,13 @@ version = "0.1.0"
 description = "SkyShift backend: temporal SPHEREx series with local-first tiered cache"
 requires-python = ">=3.13"
 dependencies = [
+    "astropy==8.0.2",
     "fastapi==0.163.0",
     "httpx==0.28.1",
+    "numpy==2.5.4",
     "pydantic==2.14.3",
     "pydantic-settings==2.16.3",
+    "reproject==0.21.0",
     "uvicorn==0.54.0",
 ]
 
