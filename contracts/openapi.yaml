@@ -143,6 +143,11 @@ paths:
               schema: { type: string, format: binary }
         "404": { $ref: "#/components/responses/Problem" }
         "422": { $ref: "#/components/responses/Problem" }
+        "503":
+          description: IRSA unreachable with no cached copy, or IRSA returned an invalid tile (never cached).
+          content:
+            application/problem+json:
+              schema: { $ref: "#/components/schemas/Problem" }
 
 components:
   parameters:
