@@ -26,5 +26,9 @@ run = "uv run --no-project python scripts/sync_skills.py"
 description = "Fail if .claude/skills is out of sync"
 run = "uv run --no-project python scripts/sync_skills.py --check"
 
+[tasks.check-contracts]
+description = "Validate contracts/*.schema.json and every example (spec 0001); offline"
+run = "uv run --locked --script scripts/check_contracts.py"
+
 # Added when the stack is approved and frontend/ + backend/ exist (see docs/context/08):
 # dev, dev:api, dev:web, test, lint, fmt, build, gen-api, precompute

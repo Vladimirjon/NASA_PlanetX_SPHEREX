@@ -1,0 +1,74 @@
+{
+  "schema_version": "0.1-draft",
+  "package_id": "synthetic-demo-package",
+  "package_version": 1,
+  "content_origin": "synthetic_fixture",
+  "prepared_at": "2026-11-14T00:00:00Z",
+  "prepared_with": {
+    "software": [{"name": "synthetic-fixture", "version": "0"}],
+    "repository_commit": null
+  },
+  "sources": [
+    {"service": "synthetic", "request": "hand-written fixture; no NASA data retrieved", "retrieved_at": "2026-11-14T00:00:00Z", "status": "n/a"}
+  ],
+  "cases": [
+    {
+      "case_ref": "synthetic-case-a",
+      "region_ref": {"region_id": "synthetic-region-a", "revision": 1},
+      "observation_ids": ["synthetic:package-observation-a"],
+      "analysis_refs": []
+    }
+  ],
+  "observations": [
+    {
+      "schema_version": "0.1-draft",
+      "observation_id": "synthetic:package-observation-a",
+      "identity_status": "unresolved",
+      "mission": "SPHEREx",
+      "instrument": null,
+      "source": {
+        "collection": "spherex_dr1",
+        "archive_collection": null,
+        "obs_id": "synthetic-source-a",
+        "publisher_did": "urn:synthetic:package-product-a",
+        "acquisition_id": null
+      },
+      "detector": null,
+      "product_type": "image",
+      "product_subtype": null,
+      "calibration_level": null,
+      "region_refs": ["synthetic-region-a"],
+      "time": {"samples": [], "exposure_s": null, "release_date": null},
+      "coverage": {"center": null, "footprint": null},
+      "spatial_wcs": null,
+      "spectral": {"search_range_m": null, "local": null},
+      "quality": {"flags": null, "variance": null, "pipeline_assessment": null, "review_ref": null},
+      "ancillary": [],
+      "products": {
+        "native": {"product_id": "synthetic:package-product-a", "uri": null, "format": null, "filename": null, "version": null, "processing_date": null, "sha256": null},
+        "calibrations": [],
+        "derived": [],
+        "display": []
+      },
+      "metadata_stage": "discovery",
+      "availability": {"native": "unverified", "prepared": "not_prepared", "display": "not_prepared", "offline": "incomplete"},
+      "issues": [
+        {"code": "metadata_missing", "paths": ["/time", "/coverage", "/spectral"], "detail": "Synthetic fixture: no acquisition time, coverage or wavelength."}
+      ],
+      "provenance": {
+        "query_uri": null,
+        "retrieved_at": null,
+        "raw_metadata_ref": null,
+        "calibration_history": [],
+        "field_sources": [{"paths": ["/"], "kind": "synthetic", "reference": "contracts/examples/package-manifest-synthetic.json", "locator": "entire record; no NASA data retrieved"}]
+      }
+    }
+  ],
+  "assets": [],
+  "completeness": {
+    "status": "incomplete",
+    "verified_at": null,
+    "missing": ["cutouts and display images for synthetic-case-a have not been prepared"]
+  },
+  "acknowledgements": ["https://irsa.ipac.caltech.edu/Missions/spherex.html"]
+}

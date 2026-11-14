@@ -1,0 +1,331 @@
+{
+  "schema_version": "0.1-draft",
+  "observation_id": "spherex:dr1:2025W19_1B_0116_1:D3:l2b-v27-2026-197",
+  "identity_status": "resolved",
+  "mission": "SPHEREx",
+  "instrument": "SPHEREx",
+  "source": {
+    "collection": "spherex_dr1",
+    "archive_collection": "spherex_dr1",
+    "obs_id": "2025W19_1B_0116_1",
+    "publisher_did": "ivo://irsa.ipac/spherex_dr1?2025W19_1B_0116_1/D3",
+    "acquisition_id": "2025W19_1B_0116_1"
+  },
+  "detector": 3,
+  "product_type": "image",
+  "product_subtype": "science",
+  "calibration_level": 2,
+  "region_refs": [],
+  "time": {
+    "samples": [
+      {
+        "role": "start",
+        "value": 60800.700028,
+        "format": "MJD",
+        "scale": null,
+        "reference_position": null,
+        "source_locator": "sia:t_min"
+      },
+      {
+        "role": "end",
+        "value": 60800.701361,
+        "format": "MJD",
+        "scale": null,
+        "reference_position": null,
+        "source_locator": "sia:t_max"
+      },
+      {
+        "role": "start",
+        "value": "2025-05-05T16:48:02.459",
+        "format": "ISO8601",
+        "scale": "UTC",
+        "reference_position": null,
+        "source_locator": "fits:IMAGE:DATE-BEG"
+      },
+      {
+        "role": "midpoint",
+        "value": "2025-05-05T16:49:00.018",
+        "format": "ISO8601",
+        "scale": "UTC",
+        "reference_position": null,
+        "source_locator": "fits:IMAGE:DATE-AVG"
+      },
+      {
+        "role": "end",
+        "value": "2025-05-05T16:49:57.577",
+        "format": "ISO8601",
+        "scale": "UTC",
+        "reference_position": null,
+        "source_locator": "fits:IMAGE:DATE-END"
+      },
+      {
+        "role": "start",
+        "value": 60800.700028461,
+        "format": "MJD",
+        "scale": "UTC",
+        "reference_position": null,
+        "source_locator": "fits:IMAGE:MJD-BEG"
+      },
+      {
+        "role": "midpoint",
+        "value": 60800.70069465,
+        "format": "MJD",
+        "scale": "UTC",
+        "reference_position": null,
+        "source_locator": "fits:IMAGE:MJD-AVG"
+      },
+      {
+        "role": "end",
+        "value": 60800.701360839,
+        "format": "MJD",
+        "scale": "UTC",
+        "reference_position": null,
+        "source_locator": "fits:IMAGE:MJD-END"
+      }
+    ],
+    "exposure_s": 113.5826,
+    "release_date": "2026-09-27 23:59:28"
+  },
+  "coverage": {
+    "center": {
+      "ra_deg": 134.41457781198824,
+      "dec_deg": -9.004141208277177,
+      "frame": "ICRS"
+    },
+    "footprint": {
+      "value": "POLYGON ICRS 133.24990295057214 -6.792366530370936 136.573730639645 -7.893897878777517 135.6087246915983 -11.252283174147388 132.22997686194108 -10.127262014271603 133.24990295057214 -6.792366530370936",
+      "format": "stc-s",
+      "frame": "ICRS"
+    }
+  },
+  "spatial_wcs": {
+    "product_id": "spherex-file:dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits",
+    "hdu": "IMAGE",
+    "header_ref": "spherex-file:dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits#bytes=2880-25919"
+  },
+  "spectral": {
+    "search_range_m": {
+      "min": 1.6301e-06,
+      "max": 2.4346e-06
+    },
+    "local": {
+      "sky_position": {
+        "ra_deg": 133.7951,
+        "dec_deg": -7.2451,
+        "frame": "ICRS"
+      },
+      "original_pixel": {
+        "x": 381.198,
+        "y": 153.715,
+        "origin": 0
+      },
+      "central_um": 2.364179,
+      "bandwidth_um": 0.05945574,
+      "method": "cwave_cband",
+      "resources": [
+        {
+          "product_id": "spherex-file:dr1/spectral_wcs/cal-swcs-v5-2026-191/3/spectral_wcs_D3_spx_cal-swcs-v5-2026-191.fits",
+          "extname": "CWAVE",
+          "unit": "um"
+        },
+        {
+          "product_id": "spherex-file:dr1/spectral_wcs/cal-swcs-v5-2026-191/3/spectral_wcs_D3_spx_cal-swcs-v5-2026-191.fits",
+          "extname": "CBAND",
+          "unit": "um"
+        }
+      ],
+      "transform_ref": null
+    }
+  },
+  "quality": {
+    "flags": {
+      "product_id": "spherex-file:dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits",
+      "extname": "FLAGS",
+      "unit": null
+    },
+    "variance": {
+      "product_id": "spherex-file:dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits",
+      "extname": "VARIANCE",
+      "unit": "MJy2 / sr2"
+    },
+    "pipeline_assessment": {
+      "l1_dqa": "Pass",
+      "l2_dqa": "Pass",
+      "fine_astrometry": 0,
+      "source_locator": "fits:IMAGE:L1DQAFLG,L2DQAFLG,FINAST"
+    },
+    "review_ref": null
+  },
+  "ancillary": [
+    {
+      "product_id": "spherex-file:dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits",
+      "extname": "ZODI",
+      "unit": "MJy / sr"
+    },
+    {
+      "product_id": "spherex-file:dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits",
+      "extname": "EPSF",
+      "unit": null
+    },
+    {
+      "product_id": "spherex-file:dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits",
+      "extname": "WCS-WAVE",
+      "unit": null
+    }
+  ],
+  "products": {
+    "native": {
+      "product_id": "spherex-file:dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits",
+      "uri": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits",
+      "format": "image/fits",
+      "filename": "level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits",
+      "version": "l2b-v27",
+      "processing_date": "2026-197",
+      "sha256": null
+    },
+    "calibrations": [
+      {
+        "product_id": "spherex-file:dr1/spectral_wcs/cal-swcs-v5-2026-191/3/spectral_wcs_D3_spx_cal-swcs-v5-2026-191.fits",
+        "uri": "https://nasa-irsa-spherex.s3.us-east-1.amazonaws.com/dr1/spectral_wcs/cal-swcs-v5-2026-191/3/spectral_wcs_D3_spx_cal-swcs-v5-2026-191.fits",
+        "format": "image/fits",
+        "filename": "spectral_wcs_D3_spx_cal-swcs-v5-2026-191.fits",
+        "version": "cal-swcs-v5",
+        "processing_date": "2026-191",
+        "sha256": null
+      }
+    ],
+    "derived": [],
+    "display": []
+  },
+  "metadata_stage": "calibration_linked",
+  "availability": {
+    "native": "reachable",
+    "prepared": "not_prepared",
+    "display": "not_prepared",
+    "offline": "not_prepared"
+  },
+  "issues": [],
+  "provenance": {
+    "query_uri": "https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1&POS=circle+133.7951+-7.2451+0.01&MAXREC=3",
+    "retrieved_at": "2026-11-14T22:07:54Z",
+    "raw_metadata_ref": "spherex-file:dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits#bytes=2880-25919",
+    "calibration_history": [
+      {
+        "kind": "dichroic",
+        "uuid": "019f521b-2016-7d75-b59c-06114053e977"
+      },
+      {
+        "kind": "gain_factors",
+        "uuid": "019f521b-4ad3-7698-b7c3-a40aefa6469e"
+      },
+      {
+        "kind": "initial_distortion_table",
+        "uuid": "019f521b-605a-79ba-ab36-caf4d55f5d5e"
+      },
+      {
+        "kind": "nonfunc_v2",
+        "uuid": "019f521b-9f55-7500-8459-b5622fcf085a"
+      },
+      {
+        "kind": "sband_mnemonics",
+        "uuid": "019f521c-f507-7801-8542-ad9eb4fc903d"
+      },
+      {
+        "kind": "spectral_wcs",
+        "uuid": "019f4f99-19af-763f-8f2e-b7dc6cd00055"
+      },
+      {
+        "kind": "nonlinear_pars",
+        "uuid": "019f521c-2000-7c45-a420-373f63ecd02e"
+      },
+      {
+        "kind": "readnoise_pars",
+        "uuid": "019f521c-a112-777a-a07f-a9dc1ff1148e"
+      },
+      {
+        "kind": "abs_gain_matrix",
+        "uuid": "019f4f95-4ba8-7702-b148-d444260b8782"
+      },
+      {
+        "kind": "dark",
+        "uuid": "019f4f95-fa60-7cd4-a1c1-5f8ee1086c1a"
+      },
+      {
+        "kind": "epsf",
+        "uuid": "019f4f97-fd05-77b6-939a-bbce423218bb"
+      },
+      {
+        "kind": "sip",
+        "uuid": "019f4f98-692f-7198-8618-f68b3cffaf8e"
+      },
+      {
+        "kind": "xtalk_class1",
+        "uuid": "019f521e-09d6-79b4-bb54-4d5e8b821076"
+      },
+      {
+        "kind": "xtalk_class2",
+        "uuid": "019f521e-48c6-7472-87b0-ee92d8fe1b4f"
+      },
+      {
+        "kind": "zodi_scaling_v2",
+        "uuid": "01a09305-b02b-7b9a-9ee3-3c3f7f235994"
+      }
+    ],
+    "field_sources": [
+      {
+        "paths": [
+          "/instrument",
+          "/source/archive_collection",
+          "/source/obs_id",
+          "/source/publisher_did",
+          "/product_type",
+          "/product_subtype",
+          "/calibration_level",
+          "/coverage",
+          "/spectral/search_range_m",
+          "/time/release_date",
+          "/products/native/uri",
+          "/products/native/format"
+        ],
+        "kind": "sia",
+        "reference": "https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1&POS=circle+133.7951+-7.2451+0.01&MAXREC=3",
+        "locator": "columns instrument_name, obs_collection, obs_id, obs_publisher_did, dataproduct_type, dataproduct_subtype, calib_level, s_ra, s_dec, s_region, em_min, em_max, obs_release_date, access_url, access_format; t_min/t_max for the two SIA time samples"
+      },
+      {
+        "paths": [
+          "/source/acquisition_id",
+          "/detector",
+          "/time/exposure_s",
+          "/spatial_wcs",
+          "/quality",
+          "/ancillary",
+          "/provenance/calibration_history"
+        ],
+        "kind": "fits_header",
+        "reference": "spherex-file:dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits#bytes=2880-25919",
+        "locator": "IMAGE header: OBSID, DETECTOR, XPOSURE, DATE-*, MJD-*, TIMESYS, CTYPE/SIP, L1DQAFLG, L2DQAFLG, FINAST, HISTORY [CALIB]; extension names and BUNIT from the HDU walk in spec 0001 section 7.4"
+      },
+      {
+        "paths": [
+          "/observation_id",
+          "/products/native/product_id",
+          "/products/native/filename",
+          "/products/native/version",
+          "/products/native/processing_date"
+        ],
+        "kind": "derivation",
+        "reference": "docs/specs/0001-arquitectura-observation.md#31-identidad-y-significado",
+        "locator": "ID rule applied to the cloud_access key and file name"
+      },
+      {
+        "paths": [
+          "/spectral/local",
+          "/products/calibrations"
+        ],
+        "kind": "calibration",
+        "reference": "https://nasa-irsa-spherex.s3.us-east-1.amazonaws.com/dr1/spectral_wcs/cal-swcs-v5-2026-191/3/spectral_wcs_D3_spx_cal-swcs-v5-2026-191.fits",
+        "locator": "pixel from IMAGE TAN-SIP WCS (astropy 8.0.2 all_world2pix, origin 0); CWAVE/CBAND read at nearest pixel (381,154); link rule: single published version cal-swcs-v5-2026-191 and byte-identical WCS-WAVE table"
+      }
+    ]
+  }
+}

@@ -116,9 +116,24 @@ Los cubos combinados y los HiPS tienen un papel distinto al de exposiciones indi
 2. `source.obs_id` y `source.acquisition_id`: conservar el primero tal como llega de SIA; el segundo es el `OBSID` del FITS o la adquisición extraída de una convención de nombre comprobada. No presuponer que sean cadenas idénticas.
 3. `products.native.product_id`: ID interno del archivo científico versionado, más `source.publisher_did` original. No reutilizarlo para recortes, calibraciones ni representaciones.
 
-La clave de reconciliación propuesta considera colección, identificador publicado, adquisición, detector, nombre completo, versión y fecha de procesamiento; el checksum distingue contenidos si se descargan. Ningún campo aislado se presume suficiente para todas las versiones. [COMPROBADO §7.4] el segmento de proceso puede ser `l2b` o `l2b_retry`; se conserva completo, junto con el prefijo de colección del camino (`dr1/`, `qr3/`). En R Dra, DR1 y QR3 no comparten ningún par `(obs_id, banda)`: son observaciones distintas, no reprocesamientos. Una revisión nueva conserva el vínculo a la adquisición pero recibe otra identidad de producto/registro; no cuenta como otra época. El algoritmo de IDs y las reglas de deduplicación se acuerdan después de contrastar filas reales. Mientras falte identidad, usar ID interno provisional con `identity_status=unresolved`; no consolidarlo ni usarlo en mediciones publicadas.
+La clave de reconciliación propuesta considera colección, identificador publicado, adquisición, detector, nombre completo, versión y fecha de procesamiento; el checksum distingue contenidos si se descargan. Ningún campo aislado se presume suficiente para todas las versiones. [COMPROBADO §7.4] el segmento de proceso puede ser `l2b` o `l2b_retry`; se conserva completo, junto con el prefijo de colección del camino (`dr1/`, `qr3/`). En R Dra, DR1 y QR3 no comparten ningún par `(obs_id, banda)`: son observaciones distintas, no reprocesamientos. Una revisión nueva conserva el vínculo a la adquisición pero recibe otra identidad de producto/registro; no cuenta como otra época.
+
+**Regla de IDs [PROPUESTA, validada con 906 filas reales en §7.4 J].** A partir de la clave del archivo en el archivo oficial (`cloud_access.key`, p. ej. `dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits`):
+
+| Identificador | Regla | Ejemplo real |
+| --- | --- | --- |
+| `products.native.product_id` | `spherex-file:` + clave completa | `spherex-file:dr1/level2/2025W19_1B/…D3_spx_l2b-v27-2026-197.fits` |
+| `observation_id` (resuelto) | `spherex:<publicación>:<obs_id>:D<detector>:<proceso>-v<versión>-<fecha de proceso>`, donde la publicación es el primer segmento de la clave (`dr1`, `qr3`) y el resto sale del nombre con `^level2_(.+)D([1-6])_spx_(l2b(?:_[a-z]+)?)-v(\d+)-(\d{4}-\d{3})\.fits$` | `spherex:dr1:2025W19_1B_0116_1:D3:l2b-v27-2026-197` |
+| `observation_id` (sin resolver) | `unresolved:` + primeros 16 hex de `sha256(access_url)`, o de `publisher_did` si no hay URL. Sin ninguno de los dos, no se crea el registro | — |
+| Calibración y otros archivos oficiales | `spherex-file:` + clave | `spherex-file:dr1/spectral_wcs/cal-swcs-v5-2026-191/3/…` |
+| Derivados y representaciones | `derived:` / `display:` + `sha256` del contenido | — |
+| Fixtures sintéticas | `synthetic:<nombre>` | `synthetic:observation-a` |
+
+Por qué la publicación y no la colección: Wide y Deep comparten el camino `dr1/level2/`, y la colección es un atributo de la búsqueda, no del archivo. `identity_status = resolved` exige que el nombre analice y que `obs_id` y detector coincidan con la fila SIA y con `OBSID`/`DETECTOR` de la cabecera cuando se lean; si no, se usa `identity_unresolved` y el ID provisional. Nunca consolidar ni usar en mediciones publicadas un registro sin resolver.
 
 ### 3.2. Convenciones de estructura y ausencias
+
+**Versión verificable por máquina:** [`contracts/observation.schema.json`](../../contracts/observation.schema.json) (JSON Schema 2020-12, borrador `0.1-draft`). Las tablas explican el significado; el schema fija la estructura. Si discrepan, es un error que se corrige en el mismo PR, y mientras tanto manda el schema (`AGENTS.md` §4.7, contrato primero). `mise run check-contracts` valida los schemas, los ejemplos de esta ficha, los de `contracts/examples/`, la regla de IDs y 11 casos que deben fallar; no usa la red.
 
 Todos los campos de las tablas son **[PROPUESTA]**; la columna «origen» distingue el respaldo del dato de la decisión de exponerlo. `O` = obligatorio; `O?` = clave obligatoria cuyo valor puede ser `null`; `C` = obligatorio cuando existe el objeto/recurso correspondiente; `P` = decisión pendiente. Las claves opcionales se indican expresamente. `null` significa desconocido, no cero, falso ni aprobado; `issues` explica las ausencias relevantes. Un array vacío significa que no se adjuntaron elementos, no que se haya probado su inexistencia.
 
@@ -205,18 +220,25 @@ Estas estructuras pertenecen solo a la propuesta `Observation`. En los objetos p
 2. `dr1/spectral_wcs/` y `qr3/spectral_wcs/` publican una sola versión, `cal-swcs-v5-2026-191`.
 3. La tabla `WCS-WAVE` embebida en cada imagen es **idéntica byte a byte** a la del archivo Spectral WCS del mismo detector, en 258/258 DR1 y 1/1 QR3. [OFICIAL S7 §4.3.1, p. 61] esa tabla se construye con los valores por píxel de ese archivo.
 
+**Quién calcula λ para medir** (respuesta a la ficha 0010 anexo E; se acepta la propuesta de Mateo). `spectral.local` de `Observation` es la λ en **un punto de referencia fijo** del registro (por ejemplo, el centro de una región), y sirve para preseleccionar y mostrar. **No es la λ de una medición.** Para un objeto que se mueve, la posición cambia en cada fecha: `AnalysisResult` lee `CWAVE`/`CBAND` en el píxel original que midió, usando `products.calibrations` de cada observación, y registra método y recurso en su propio contrato. `Observation` garantiza el vínculo con la calibración, no el valor en la posición del objeto.
+
+**Recortes como derivados** (segunda pregunta del anexo E). Sí: un recorte de IRSA entra en `products.derived` con `parent_product_ids` = [`product_id` del original] y una `Transformation` `operation="cutout"`, `method="irsa_cutout_service"`. Sus `parameters` llevan `center_ra_deg`, `center_dec_deg`, `size_deg` y el desplazamiento de píxel leído de `CRPIX1A`/`CRPIX2A` (píxel original base 0 = píxel del recorte base 0 + 1 − `CRPIXnA`, §7.4 I). `quality_refs` apunta a FLAGS y VARIANCE del recorte, y `wcs_ref` a su cabecera.
+
 **Regla propuesta:** `products.calibrations` apunta al archivo Spectral WCS de la misma colección y detector solo si se cumplen (2) y (3). Si aparece más de una versión, o la tabla no coincide, se registra `calibration_unresolved` y no se usa `cwave_cband`.
 
 ### 3.6. Ejemplos sintéticos de estructura
 
-**Ambos ejemplos son completamente sintéticos.** Los IDs, coordenadas, tiempos y recursos no describen observaciones NASA reales; `example.invalid` no es un archivo descargable. No son fixtures científicas ni evidencia de un par. Solo ilustran candidatos de descubrimiento, sin FLAGS leídas, calibración vinculada ni calidad aprobada.
+**Ejemplo real.** [`contracts/examples/observation-real-dr1-2025W19_1B_0116_1-D3.json`](../../contracts/examples/observation-real-dr1-2025W19_1B_0116_1-D3.json) es el registro completo, en etapa `calibration_linked`, del producto DR1 de §7.3. Se generó con una consulta SIA2 nueva y lecturas por rango, sin transcribir valores a mano, el 2026-11-14 a las 22:07 UTC (`provenance.retrieved_at`). Cada campo indica su fuente en `field_sources`.
+
+**Los dos ejemplos siguientes son completamente sintéticos.** Los IDs, coordenadas, tiempos y recursos no describen observaciones NASA reales; `example.invalid` no es un archivo descargable. No son fixtures científicas ni evidencia de un par. Solo ilustran candidatos de descubrimiento, sin FLAGS leídas, calibración vinculada ni calidad aprobada.
 
 **Ejemplo 1 — candidato sintético con metadatos de búsqueda y escala temporal aún desconocida.**
 
+<!-- contract-example: observation -->
 ```json
 {
   "schema_version": "0.1-draft",
-  "observation_id": "synthetic-observation-a",
+  "observation_id": "synthetic:observation-a",
   "identity_status": "unresolved",
   "mission": "SPHEREx",
   "instrument": null,
@@ -249,7 +271,7 @@ Estas estructuras pertenecen solo a la propuesta `Observation`. En los objetos p
   "quality": {"flags": null, "variance": null, "pipeline_assessment": null, "review_ref": null},
   "ancillary": [],
   "products": {
-    "native": {"product_id": "synthetic-product-a", "uri": "https://example.invalid/synthetic-a.fits", "format": "image/fits", "filename": "synthetic-a.fits", "version": null, "processing_date": null, "sha256": null},
+    "native": {"product_id": "synthetic:product-a", "uri": "https://example.invalid/synthetic-a.fits", "format": "image/fits", "filename": "synthetic-a.fits", "version": null, "processing_date": null, "sha256": null},
     "calibrations": [],
     "derived": [],
     "display": []
@@ -272,10 +294,11 @@ Estas estructuras pertenecen solo a la propuesta `Observation`. En los objetos p
 
 **Ejemplo 2 — candidato sintético sin tiempo ni acceso al producto.** El registro se puede mostrar como incompleto; no se convierte en una época comparable. `unverified` no afirma que una URL haya fallado: no hay URL conocida.
 
+<!-- contract-example: observation -->
 ```json
 {
   "schema_version": "0.1-draft",
-  "observation_id": "synthetic-observation-b",
+  "observation_id": "synthetic:observation-b",
   "identity_status": "unresolved",
   "mission": "SPHEREx",
   "instrument": null,
@@ -298,7 +321,7 @@ Estas estructuras pertenecen solo a la propuesta `Observation`. En los objetos p
   "quality": {"flags": null, "variance": null, "pipeline_assessment": null, "review_ref": null},
   "ancillary": [],
   "products": {
-    "native": {"product_id": "synthetic-product-b", "uri": null, "format": null, "filename": null, "version": null, "processing_date": null, "sha256": null},
+    "native": {"product_id": "synthetic:product-b", "uri": null, "format": null, "filename": null, "version": null, "processing_date": null, "sha256": null},
     "calibrations": [],
     "derived": [],
     "display": []
@@ -390,16 +413,51 @@ Para `availability`: `native` admite `unverified`, `reachable`, `unavailable`; `
 | Búsqueda válida sin resultados | `no_results`; lista vacía y filtros visibles | No afirmar que no existen objetos ni que todo el archivo fue agotado; considerar colecciones y completitud |
 | Resultado truncado o formato inválido | `search_truncated` / `invalid_upstream_response` | Johann registra límite/estado; una lista parcial no prueba ausencia de más épocas. [COMPROBADO] SIA marca el truncado con `QUERY_STATUS=OVERFLOW` dentro de una respuesta HTTP 200 |
 | Error del servicio con HTTP 200 | `upstream_query_error` | [COMPROBADO] una RA fuera de rango devolvió HTTP 200 con `QUERY_STATUS=ERROR` y el texto `UsageFault`. Leer siempre `QUERY_STATUS`; nunca tratar «200 sin filas» como `no_results` sin mirarlo |
-| Proxy de IRSA caído (HTML en lugar de VOTable) | `upstream_unavailable` | [COMPROBADO] HTTP 502 con página HTML al usar `TIME`. Validar el tipo de contenido antes de interpretar; reintento finito |
-| Una adquisición o tiempo insuficiente | `insufficient_epochs` / `time_metadata_missing` | Puede mostrarse una imagen con aviso; no análisis temporal. Varias revisiones del mismo registro no añaden épocas |
+| Proxy de IRSA caído (HTML en lugar de VOTable) | `upstream_unavailable` | [COMPROBADO] HTTP 502 con página HTML, intermitente y con o sin `TIME` (§7.4 G). Validar el tipo de contenido antes de interpretar; reintento finito |
+| Una adquisición o tiempo insuficiente | `insufficient_epochs` (contrato de comparabilidad, Sebastián) / `required_metadata_missing` en `/time` | Puede mostrarse una imagen con aviso; no análisis temporal. Varias revisiones del mismo registro no añaden épocas |
+| Tiempo de SIA y de cabecera discrepan | `time_conflict` | Conservar ambas muestras; Sebastián decide cuál usar. En las 258 filas de §7.4 no hubo discrepancia |
+| Nombre de archivo que no sigue la regla de IDs | `identity_unresolved` | ID provisional `unresolved:…` (§3.1); no se usa en mediciones publicadas |
 | Archivo/URL ausente o inaccesible | `asset_unavailable` / `metadata_missing` | Conservar ID/versión. Buscar nueva URL del mismo producto si es posible; no cambiar de versión sin registrarlo |
 | Falta λ local, WCS, FLAGS, VARIANCE u otra entrada necesaria | `required_metadata_missing` | Mantener pendiente, nombrar campos y operación bloqueada; no interpretar null como buena calidad |
 | Calibración sin asociación a la imagen | `calibration_unresolved` | Johann aporta procedencia; Sebastián/Mateo revisan asociación; no habilitar ciencia con aproximación visual |
 | Par incompatible | `comparison_rejected` con regla/evidencia | Sebastián define razón y alternativa permitida; Daniel muestra rechazo comprensible |
 | Par aún no evaluado | `comparison_pending` | Indicar qué control falta y quién lo revisa; nunca rotular «evaluado» |
-| Sin red y paquete completo | `offline_prepared` | Usar exactamente el paquete identificado; mostrar origen y fecha de preparación, sin aparentar actualización en vivo |
-| Sin red y paquete ausente/incompleto | `offline_assets_missing` | Mostrar limitación y recursos faltantes; no afirmar que la demo offline está disponible |
+| Sin red y paquete completo | manifiesto `completeness.status = complete` (§4.5) | Usar exactamente el paquete identificado; mostrar origen y fecha de preparación, sin aparentar actualización en vivo |
+| Sin red y paquete ausente/incompleto | manifiesto `completeness.status = incomplete` o `unverified`, con `missing` | Mostrar limitación y recursos faltantes; no afirmar que la demo offline está disponible |
 | Derivado huérfano, unidad desconocida o checksum inconsistente | `provenance_incomplete` / `integrity_mismatch` | Bloquear medición/publicación afectada hasta resolver origen, unidades o integridad |
+
+**Dónde vive cada código.** Los de nivel `Observation` (`issues[].code`) y los de búsqueda forman listas cerradas en [`contracts/observation.schema.json`](../../contracts/observation.schema.json) (`ObservationIssueCode`, `SearchIssueCode`). Un código fuera de la lista no valida. Los de un par (`comparison_pending`, `comparison_rejected`, `insufficient_epochs`) los define el contrato de comparabilidad de Sebastián. El estado offline lo da el manifiesto (§4.5). Daniel escribe el texto de pantalla de cada código, en inglés, usando el código como clave.
+
+| Código `Observation` | Significa | Lo emite |
+| --- | --- | --- |
+| `metadata_pending` | El dato se obtiene en una etapa posterior (p. ej., aún no se leyó la cabecera) | Adquisición (Johann) |
+| `metadata_missing` | La fuente no entregó el dato | Adquisición |
+| `required_metadata_missing` | Falta un dato que una operación concreta necesita; esa operación queda bloqueada | Quien intenta la operación |
+| `file_not_inspected` | El archivo no se abrió; no hay WCS, FLAGS ni calidad leídas | Adquisición |
+| `time_conflict` | Los tiempos de SIA y de la cabecera no coinciden | Adquisición |
+| `identity_unresolved` | El nombre de archivo no sigue la regla de IDs | Adquisición |
+| `calibration_unresolved` | No se cumple la regla de vínculo con Spectral WCS (§3.5) | Adquisición |
+| `asset_unavailable` | El archivo o la URL no respondió al comprobarlo | Adquisición o preparación |
+| `provenance_incomplete` | Un derivado no tiene padres, transformaciones o unidades | Preparación |
+| `integrity_mismatch` | El checksum no coincide | Preparación o paquete |
+
+### 4.5. Manifiesto del paquete preparado (offline)
+
+Schema: [`contracts/package-manifest.schema.json`](../../contracts/package-manifest.schema.json). Ejemplo sintético, en estado `incomplete` a propósito: [`contracts/examples/package-manifest-synthetic.json`](../../contracts/examples/package-manifest-synthetic.json). El manifiesto es el índice del respaldo de la demo: dice qué observaciones trae, qué archivos locales existen y de dónde salió cada byte.
+
+| Campo | Qué guarda | Regla |
+| --- | --- | --- |
+| `package_id`, `package_version` | Nombre estable y revisión entera creciente | Un cambio de contenido sube la versión |
+| `content_origin` | `irsa_snapshot` (datos reales capturados) o `synthetic_fixture` (inventados, para pruebas o maquetas) | Un `irsa_snapshot` no puede contener observaciones sintéticas ni con identidad sin resolver; un `synthetic_fixture` no puede mezclar reales. La interfaz rotula siempre el segundo |
+| `prepared_at`, `prepared_with` | Hora UTC de preparación, software con versión exacta y commit del repo | La fecha del paquete no es la fecha de adquisición |
+| `sources[]` | Cada consulta o descarga usada (`irsa_sia2`, `irsa_cutout`, `spherex_s3`…), con hora y estado | Sin fuentes no hay paquete |
+| `cases[]` | `case_ref` (de `ScientificCase`, Sebastián), `region_ref` con revisión (Dax), `observation_ids` y `analysis_refs` (Mateo) | IDs opacos de los otros contratos; el contenido vive en ellos. Todo `observation_id` citado debe estar en `observations` |
+| `observations[]` | Registros `Observation` completos | Validan contra `observation.schema.json` |
+| `assets[]` | Ruta relativa POSIX, `sha256`, tamaño, tipo, `product_id` y rol | Sin `..` ni rutas absolutas; cada `product_id` existe en alguna observación |
+| `completeness` | `complete`, `incomplete` o `unverified`, hora de verificación y lista de faltantes | `complete` exige 0 faltantes y checksums verificados **en el equipo de la demo** |
+| `acknowledgements[]` | Página de agradecimiento y cita de SPHEREx | [S1] pide agradecimiento en el uso publicado |
+
+**Responsable propuesto:** Johann mantiene el manifiesto y la procedencia; Mateo produce los derivados científicos que se registran en él (§6.4, DECISIÓN de Johann y Mateo).
 
 ## 5. Casos de prueba propuestos
 
@@ -447,9 +505,18 @@ Esta entrega permite revisar la propuesta documental. Ninguna casilla anterior s
 | Daniel | ¿Qué necesita cargar cada vista y qué datos deben permanecer junto a la imagen? ¿Cómo distingue candidato, pendiente, rechazado, sin resultado, fallo técnico y modo offline? ¿Qué recurso mínimo exige el respaldo en el dispositivo? ¿Cómo navega si existe una región pero no un caso o imagen disponibles? Hay tres fechas por producto (adquisición, procesamiento y publicación): ¿cuál se ve junto a la imagen y dónde van las otras? ¿Cómo se marca un registro `synthetic` en una maqueta para que nunca parezca dato real? |
 | Johann + equipo | ¿Se ratifican roles/revisores? ¿Guiado primero, cuántas regiones y qué relación con exploración libre? ¿Preparación local basta para MVP o habrá API? ¿Quién prepara derivados y quién conserva/actualiza el manifiesto? ¿Cuál es el criterio de deduplicación/versionado tras ver datos reales? |
 
+**ADRs a considerar tras acuerdos**, sin crearlos vacíos: (1) alcance guiado/libre y significado del selector, si cambia la visión; (2) preparación, respaldo y necesidad de API, aclarando ADR 0003; (3) identidad/versionado compartidos si el acuerdo afecta a todos los contratos. Los criterios científicos concretos deben vivir en la ficha de Sebastián y referenciarse, no duplicarse como decisiones de Johann.
+
+### 6.3. Dependencias y trabajo posterior a aprobación
+
+1. Todos ratifican alcance y responsables; Dax/Johann revisan `Region` y consumidores revisan esta ficha.
+2. Johann verifica un registro real: fila, cabeceras, identidad y enlace de calibración. **Hecho** (§7.3–§7.4): filas, cabeceras de las 7 extensiones, vínculo de calibración, épocas y λ por observación en la zona de prueba. ε Indi B lo resolvió Mateo (0010 B.1). Sebastián decide si hay un par candidato defendible; no se promete resultado positivo.
+3. Tras aprobar fichas/contratos: Dax puede construir selección; Johann adquisición/procedencia/preparación acordadas; Mateo mediciones; Sebastián reglas/casos; Daniel consumo y estados. Son permisos futuros, no tareas ejecutadas aquí.
+4. `Observation` se acuerda antes de cerrar entradas de Mateo; `AnalysisResult` antes de cerrar interpretación; `Region` antes de cerrar selección; `ScientificCase` antes del panel de conclusiones. Si hay API, primero OpenAPI y después implementación.
+
 ### 6.4. Respuestas propuestas a §6.2, validadas contra evidencia
 
-Un subagente (Antigravity, modelo `gemini-3.8-flash-medium`, solo lectura) redactó una respuesta por pregunta. Claude las contrastó con §7.3–§7.4 y con las fuentes oficiales, y corrigió las que no se sostenían. **Ninguna respuesta sustituye la decisión de su dueño:** las marcadas DECISIÓN son recomendaciones para la reunión.
+Un subagente (Antigravity, modelo `gemini-3.8-flash-medium`, solo lectura) redactó una respuesta por pregunta. Claude las contrastó con §7.3–§7.4 y con las fuentes oficiales, y corrigió las que no se sostenían. **Ninguna respuesta sustituye la decisión de su dueño:** las marcadas DECISIÓN son recomendaciones para la reunión. **Las filas de Mateo ya tienen respuesta de su dueño** en la ficha [0010](0010-analysis-result.md) anexo D, que manda sobre esta tabla. Coinciden en lo esencial: medir en píxeles nativos, usar los recortes de IRSA, `XPOSURE` y `MJD-AVG`.
 
 | Persona | Pregunta | Respuesta validada | Estado | Corrección aplicada |
 | --- | --- | --- | --- | --- |
@@ -479,19 +546,10 @@ Un subagente (Antigravity, modelo `gemini-3.8-flash-medium`, solo lectura) redac
 | Daniel | Tres fechas | Adquisición junto a la imagen; procesamiento y publicación en el panel de procedencia, rotuladas | EVIDENCIA (§7.3) + PROPUESTA | — |
 | Daniel | Datos sintéticos | `field_sources.kind="synthetic"` + rótulo visible permanente + nunca estados «evaluado» | EVIDENCIA (`AGENTS.md` §4) + PROPUESTA | — |
 | Equipo | Roles | Los propuestos en la guía del Ciclo 1 | DECISIÓN del equipo | — |
-| Equipo | Guiado/libre y cuántas regiones | Guiado primero con al menos un caso candidato. Hay candidatos espectrales reales (§7.4 B), pero cinco regiones no garantizan cinco casos | DECISIÓN del equipo | — |
+| Equipo | Guiado/libre y cuántas regiones | Guiado primero con al menos un caso candidato. Según 0010 B.4, de los cinco objetos solo ε Indi B está en rango para medir (los demás saturan o son demasiado débiles): cinco regiones no garantizan cinco casos | DECISIÓN del equipo | Se corrigió el candidato D3 de WISE 0855, que no es medible |
 | Equipo | ¿Preparación local o API? | Preparación local basta para la demo; una API exige primero `contracts/openapi.yaml` | DECISIÓN de Johann y Daniel (ADR) | — |
 | Equipo | ¿Quién prepara derivados y el manifiesto? | Propuesta: Mateo, derivados científicos; Johann, manifiesto y procedencia | DECISIÓN de Johann y Mateo | — |
 | Equipo | Clave de deduplicación | Colección + `obs_id` + detector + segmento de proceso completo (`l2b`/`l2b_retry`) + versión + fecha de proceso. En los datos revisados no hay dos versiones de la misma observación | EVIDENCIA comprobada + PROPUESTA | Se añadieron `l2b_retry` y la fecha de proceso, que el subagente omitió |
-
-**ADRs a considerar tras acuerdos**, sin crearlos vacíos: (1) alcance guiado/libre y significado del selector, si cambia la visión; (2) preparación, respaldo y necesidad de API, aclarando ADR 0003; (3) identidad/versionado compartidos si el acuerdo afecta a todos los contratos. Los criterios científicos concretos deben vivir en la ficha de Sebastián y referenciarse, no duplicarse como decisiones de Johann.
-
-### 6.3. Dependencias y trabajo posterior a aprobación
-
-1. Todos ratifican alcance y responsables; Dax/Johann revisan `Region` y consumidores revisan esta ficha.
-2. Johann verifica un registro real: fila, cabeceras, identidad y enlace de calibración. **Hecho** (§7.3–§7.4): filas, cabeceras de las 7 extensiones, vínculo de calibración, épocas y λ por observación en la zona de prueba. Falta resolver Epsilon Indi B cuando SIMBAD vuelva. Sebastián decide si hay un par candidato defendible; no se promete resultado positivo.
-3. Tras aprobar fichas/contratos: Dax puede construir selección; Johann adquisición/procedencia/preparación acordadas; Mateo mediciones; Sebastián reglas/casos; Daniel consumo y estados. Son permisos futuros, no tareas ejecutadas aquí.
-4. `Observation` se acuerda antes de cerrar entradas de Mateo; `AnalysisResult` antes de cerrar interpretación; `Region` antes de cerrar selección; `ScientificCase` antes del panel de conclusiones. Si hay API, primero OpenAPI y después implementación.
 
 ## 7. Fuentes y alcance de verificación
 
@@ -516,7 +574,7 @@ Fuentes de autoridad humana: [AGENTS.md](../../AGENTS.md), [onboarding](../Onboa
 - [COMPROBADO] segundo intento (sesión de Claude Code, misma tarde): consultas SIA2 y lecturas parciales por rango de bytes desde el bucket público, sin claves ni servicios de pago. Resultados en §7.3. Se leyeron solo cabeceras (≈115 KB del MEF de 65,8 MB y ≈40 KB del Spectral WCS de 33 MB); no se descargaron imágenes completas ni se ejecutaron tutoriales, recortes, conversiones temporales o análisis.
 - Tercera ronda (misma tarde): segunda época, vínculo de calibración, error de `WCS-WAVE`, DQA, `TIME`, QR3 y recortes cerrados con datos en §7.4.
 - **No se cierra con datos, porque es decisión o fase posterior:** comparabilidad de un par (reglas de Sebastián), rendimiento sostenido y funcionamiento sin red (se miden cuando exista implementación). No hay cinco casos listos ni un par aprobado.
-- **Pendiente externo:** Epsilon Indi B no se pudo resolver por nombre hoy (SIMBAD respondió 404 y NED no tiene estrellas). Para repetirlo: `https://cds.unistra.fr/cgi-bin/nph-sesame/-oI/SNV?eps%20Ind%20B` cuando SIMBAD vuelva.
+- ε Indi B no se pudo resolver por nombre en esta sesión (SIMBAD respondió 404 y NED no tiene estrellas). Lo resolvió Mateo con 2MASS vía IRSA Gator (ficha 0010 anexo B.1).
 - Verificación documental: análisis de JSON, referencias locales, coherencia de campos y revisión de diff se registran al entregar. `mise.toml` no define tareas de test/lint/build del producto: quedan para cuando exista implementación. No se presenta su ausencia como prueba superada.
 
 ### 7.3. Registro real contrastado (14-11-2026, ~16:05 UTC−5)
@@ -575,6 +633,8 @@ El punto cae dentro del detector en las 258 filas (posición calculada con la WC
 
 El par D3 de mayo 2025 y mayo 2026 es un **candidato espectral** para que Sebastián lo evalúe. Aún no pasó controles de calidad, alineación ni movimiento propio. WISE 0855 se mueve; λ se evaluó en el punto fijo, no en la posición del objeto en cada fecha.
 
+**Actualización (ficha [0010](0010-analysis-result.md) anexo B.4, medido por Mateo):** WISE 0855 no se detecta en una sola exposición (SNR de 0 a 4,7 en D5/D6, donde más brilla; en D3 es aún más débil, según su inferencia). **Este par no es medible.** Queda como ejemplo de compatibilidad espectral y del resultado `target_not_detected`, no como caso de cambio. El candidato técnico de movimiento es ε Indi B (0010 B.2: 6,45″ en 1,42 años, SNR 95–163). La elección del caso sigue siendo de Sebastián y del equipo.
+
 **C. Vínculo imagen ↔ calibración espectral.** UUID de `HISTORY [CALIB] spectral_wcs` constante por detector en 258/258 (D1 `019f4f98-edf0-…`, D2 `019f4f99-03f1-…`, D3 `019f4f99-19af-…`, D4 `019f4f99-3265-…`, D5 `019f4f99-48fc-…`, D6 `019f4f99-5f21-…`). Tabla `WCS-WAVE` embebida idéntica a la del Spectral WCS en 258/258 DR1 y 1/1 QR3. Un archivo QR3 (`2026W20_2A_0294_4D3`) y uno DR1 (`2025W19_1B_0116_1D3`) citan las mismas 15 calibraciones (`HISTORY [CALIB]`). Regla resultante en §3.5.
 
 **D. Error de la tabla aproximada.** En el punto de prueba, |`WCS-WAVE` − `CWAVE`| ≤ 1,3 nm (mediana 0,34 nm) en las 258 observaciones. Sobre el detector 3 completo (muestreo cada 4 px): p99 1,16 nm, igual que `WLERRP99`; máximo 0,52 µm en el borde (x=2028, y=1820). Detalle en §3.5.
@@ -593,8 +653,10 @@ El par D3 de mayo 2025 y mayo 2026 es un **candidato espectral** para que Sebast
 | Barnard (269.4520833, +4.6933889) | 240: ago-25 106 · sep-25 10 · oct-25 4 · mar-26 110 · abr-26 2 · may-26 8 | 123: ago-26 117 · sep-26 6 |
 | RW Aur (76.956453, +30.401333) | 226: sep-25 112 · feb-26 28 · mar-26 86 | 110: sep-26 110 |
 | R Dra (248.167472, +66.754988) | 422: may-25 12 · jun-25 98 · jul-25 51 · oct-25 39 · nov-25 70 · dic-25 84 · ene-26 20 · abr-26 22 · may-26 26 | 126: may-26 23 · jun-26 56 · jul-26 47 |
-| Epsilon Indi B | no resuelto hoy (ver §7.2) | — |
+| ε Indi B (331.043836, −56.782707; 2MASS vía IRSA Gator, resuelto por Mateo) | abr–jun-25 · sep–nov-25 · abr–may-26 (0010 B.1; conteo de Mateo, no repetido aquí) | sep–oct-26 |
 
 En R Dra, QR3 empieza en MJD 61176,4, justo después del último DR1 (61173,2), y no comparte ningún `(obs_id, banda)` con DR1. Los archivos QR3 usan pipeline `v27`, igual que DR1.
 
 **I. Recortes del servicio de IRSA.** `access_url?center=133.7951,-7.2451&size=0.02` respondió en 10,1 s con 4,0 MB y 7 extensiones: IMAGE, FLAGS, VARIANCE y ZODI de 12×12 px, más EPSF y WCS-WAVE completas. FLAGS llega descomprimida (`ImageHDU`, int32). El recorte conserva el origen en el detector: `CRPIX1A=CRPIX1W=-375`, `CRPIX2A=CRPIX2W=-147`, así que píxel original (base 0) = píxel del recorte + (376, 148). Comprobado: (5,20; 5,71) → (381,20; 153,71), igual al cálculo sobre el archivo completo. **Trampa:** astropy aplica la distorsión SIP también a las WCS alternas `A` y `W` si los coeficientes están en la cabecera. Hay que quitarlos antes; si no, el error es de ~0,15 px en este caso.
+
+**J. Regla de IDs contra nombres reales.** La regla de §3.1 se aplicó a 906 filas: WISE 0855 en DR1 (258), R Dra en DR1 (422) y QR3 (126), y el campo profundo del polo norte de la eclíptica (RA 270°, Dec +66,56°) en `spherex_dr1_deep` (50) y `spherex_qr3_deep` (50). Resultado: 0 nombres sin analizar, 0 discrepancias de `obs_id` o detector con SIA y 906 IDs únicos. Combinaciones vistas: `dr1`+`spherex_dr1`+`l2b` (677), `dr1`+`spherex_dr1`+`l2b_retry` (3), `qr3`+`spherex_qr3`+`l2b` (126), `dr1`+`spherex_dr1_deep`+`l2b` (50) y `qr3`+`spherex_qr3_deep`+`l2b` (50). En el campo profundo, Wide (439 archivos) y Deep (5000, respuesta truncada) no comparten ningún nombre de archivo. Es una muestra, no una garantía; si aparece un archivo compartido, la regla basada en la publicación le da un solo ID.
