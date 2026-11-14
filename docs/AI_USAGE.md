@@ -25,3 +25,4 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 
 | 2026-11-14 | Cursor (Composer) | Implementación vista serie temporal SPHEREx (`frontend/src/series/`, demo+API, Canvas2D, ADR 0043) | Orquestador aprobó diseño; humano revisa capturas en docs/reviews/series-viewer/ |
 | 2026-11-14 | Cursor (Composer) | App integrada mapa+timeline+5 targets (`frontend/src/app/`), fix timeout 60s y slug→canónico | Orquestador aprobó ronda 2; humano revisa docs/reviews/app/ |
+| 2026-11-14 | Claude Code (orquestador) + Codex + Cursor | Integración de ramas (backend, motor del cielo, app, búsqueda), renumeración de ADRs 0040–0044, revisión de commits y PR | Dax revisa el PR antes del merge |
