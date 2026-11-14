@@ -3,4 +3,5 @@
 .marker{position:absolute;transform:translate(-50%,-50%);color:var(--accent);font-size:30px;pointer-events:none}.selection{background:var(--surface);padding:8px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .grid-label{position:absolute;color:var(--muted);font:16px 'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;pointer-events:none;background:var(--bg);padding:1px 3px}
 .shell{color:var(--text)}[data-theme="projector"]{--bg:#f4f6f7;--surface:#fff;--line:#3d4b53;--accent:#075c65;--muted:#344b55;--text:#17242b;--input:#fff;--notice:#eef3f4;font-size:18px}[data-theme="projector"] .readout,[data-theme="projector"] .grid-label{font-size:18px}details{position:relative}details[open]{background:var(--surface);border:1px solid var(--line);padding:8px}summary{cursor:pointer}
+.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 select{max-width:100%}@media(max-width:600px){footer>label{width:100%;min-width:0}footer>label select{min-width:0;flex:1}.grid-label{font-size:16px}.readout{max-width:100%;overflow-wrap:anywhere}}
