@@ -1,4 +1,6 @@
 > Estado tras revisión 2026-11-14: ver docs/reviews/2026-11-14-triage-specs-main.md. Implementación vigente: contracts/openapi.yaml v0.2 y docs/specs/0002.
+>
+> **Revisión de Mateo (14-nov, noche):** esta versión corrige los puntos ERRÓNEO/CONTRADICE del triage (pasadas > 45 d, máscara `COMPARE_MASK`, paralaje, WCS-WAVE para selección), incorpora el 2.º mensaje de Sebastián (R12 con χ², C_WCS por eje, R6 como preselección) y la revisión de Johann. `AnalysisResult` **no** está en `contracts/openapi.yaml` v0.2: sigue siendo propuesta.
 
 # Ficha de tarea para agente — Mediciones temporales (`AnalysisResult`)
 
@@ -116,7 +118,9 @@ AnalysisResult:
     cov_delta_arcsec2: [[number, number], [number, number]]  # covarianza de la diferencia: suma de ambas épocas + correlaciones
     rate_arcsec_per_yr: number
     cov_rate: [[number, number], [number, number]] | null    # (arcsec/año)², si model = linear_fit
-    test: {statistic: chi2, value, dof: 2, p_value, equivalent_sigma}   # Δᵀ C⁻¹ Δ; NO separation/σ
+    test: {statistic: chi2, value, dof: 2, p_value, equivalent_sigma_two_sided, tested_quantity: displacement | proper_motion}
+                                 # Q = Δᵀ C⁻¹ Δ; p = exp(−Q/2); z = Φ⁻¹(1 − p/2). NO separation/σ, NO √Q (§4.3)
+    covariance_assumption: independent_epochs | with_cross_covariance
     fit_residual_rms_arcsec: number | null
     residuals_vs_wavelength: {slope_arcsec_per_um, sigma, n} | null     # control Ba/Bb (sección 4.4)
     reference_star_check: {n_stars, rms_arcsec, catalog, catalog_version} | null
@@ -125,7 +129,8 @@ AnalysisResult:
          parallax_mas, object_relation: same_object | common_proper_motion_companion,
          independence_note}
   photometry:                    # solo si kind = flux_change; null si no se midió
-    wavelength_match: {lambda_a_um, lambda_b_um, delta_lambda_um, delta_over_min_cband, tolerance, tolerance_source}
+    wavelength_match: {lambda_a_um, lambda_b_um, delta_lambda_um, delta_over_min_cband, preselection_tolerance, tolerance_source,
+                       spectral_bias_validated: boolean}   # pasar 0,02 NO valida; ver R6
     flux_a_ujy: number
     flux_b_ujy: number
     delta_flux_ujy: number
@@ -153,8 +158,8 @@ AnalysisResult:
 | `identity_unresolved` | alguna entrada con `identity_status = unresolved` | `block` |
 | `calibration_unresolved` | no hay `CWAVE`/`CBAND` vinculados (0001 §3.5) | `block` en flujo; `info` en posición |
 | `wavelength_mismatch` | Δλ/CBAND por encima de la tolerancia | `block` en flujo; `info` en posición |
-| `bad_pixels_near_target` | bits de la lista "fotometría" en r ≤ 2,5 px | `block` esa medición |
-| `suspect_pixels_near_target` | resto de bits de `CONTAINS_BAD_PIXEL` en r ≤ 2,5 px | `warn` |
+| `bad_pixels_near_target` | algún bit de `COMPARE_MASK` (`0x3FD2CEC7`, D12 §3) en r ≤ 2,5 px | `block` esa medición |
+| `outlier_near_target` | bit `OUTLIER` (19) en r ≤ 2,5 px: se marca, no se enmascara (D12 §3) | `warn` (impide "evaluado") |
 | `saturation_risk` | objetivo más brillante que el límite de la Tabla 25, o bits `OVERFLOW`/`NONLINEAR` | `block` en flujo; `warn` en posición `[VERIFICAR]` |
 | `low_snr` | SNR < 5 en esa exposición (R11) | esa exposición no se usa; si no queda ninguna → `no_usable_detection` |
 | `wavelength_dependent_position` | los residuos de posición dependen de λ (sección 4.4, Ba/Bb) | `warn`; `block` si la pendiente explica el movimiento `[DECISIÓN SEBASTIÁN]` |
@@ -162,9 +167,9 @@ AnalysisResult:
 | `uncertainty_inflated` | los residuos superan lo esperado y se infló σ_wcs (sección 4.3) | `info` |
 | `target_off_footprint` | el objetivo cae fuera de la imagen o del recorte | `block` |
 | `neighbor_confusion` | otra fuente a < 2 px | `warn` |
-| `insufficient_epochs` | < 2 adquisiciones distintas utilizables | `block` → `not_evaluable` (mismo nombre que 0001 §4.4) |
+| `insufficient_epochs` | < 2 **pasadas** distintas utilizables (salto > 45 d, D12 §5.2) | `block` → `not_evaluable` (mismo nombre que 0001 §4.4) |
 | `insufficient_baseline` | Δt tan corto que el movimiento esperado < σ | `warn` |
-| `parallax_not_modeled` | modelo lineal con objeto cercano | `info` |
+| `parallax_not_modeled` | no hay paralaje conocido para propagar la posición esperada (D12 §7 exige movimiento propio + paralaje cuando se conocen) | `warn`; impide "evaluado" |
 | `pipeline_quality_unexpected` | `FINAST` ≠ 0 o `L2DQAFLG` ≠ `Pass` (no debería ocurrir en lo publicado) | `block` |
 | `synthetic_data` | `is_synthetic = true` | `info` (la UI lo muestra siempre) |
 
@@ -180,18 +185,18 @@ AnalysisResult:
 
 | # | Regla | Tarea | Si falla | Fuente |
 | --- | --- | --- | --- | --- |
-| R1 | ≥ 2 **adquisiciones** distintas (`acquisition_id` y tiempo distintos; no cuentan detectores ni versiones de la misma) | a, b | `not_evaluable` (`insufficient_epochs`) | onboarding §2.5; 0001 §4.1 |
+| R1 | ≥ 2 **pasadas** distintas: imágenes ordenadas por tiempo, nueva pasada si el salto es > 45 d (`domain/visits.py`). Varias adquisiciones, detectores o versiones dentro de una pasada no cuentan como épocas | a, b | `not_evaluable` (`insufficient_epochs`) | D12 §5.2 y §6 paso 4; triage 14-nov; 0001 §4.1 |
 | R2 | El objetivo cae dentro de cada imagen o recorte | a, b | descartar esa imagen | — |
 | R3 | Guarda defensiva: `FINAST == 0` y `L2DQAFLG == 'Pass'` | a, b | `pipeline_quality_unexpected` | Expsupp §3.2.8; IRSA solo publica imágenes así (0001 §7.4 E), así que **no discrimina** entre productos |
 | R4 | Identidad resuelta y calibración vinculada | a, b (calibración solo en b) | `identity_unresolved` / `calibration_unresolved` | 0001 §3.1 y §3.5 |
 | R5 | Mezclar DR1 y QR3 está permitido: mismo pipeline `v27` y las mismas 15 calibraciones [medido por Johann]. QR2 no aparece en la búsqueda actual | a, b | — | 0001 §7.4 C; Expsupp §2.1 |
-| R6 | λ compatible en la posición medida de cada época: **Δλ / min(CBAND₁, CBAND₂) ≤ 0,02**, con `CWAVE`/`CBAND`. Válido **solo** para el control de brillo de ε Indi B; otro objeto necesita su propio criterio (depende del espectro y de la respuesta de ambas bandas) | b | `not_comparable` (`wavelength_mismatch`). Fuera del criterio, la diferencia **no** se interpreta como variabilidad | Sebastián (14-nov) + trampa LVF [doc] + anexo B.3 [medido] |
-| R7 | Sin bits de la lista "fotometría" en r ≤ 2,5 px: `SUR_ERROR, NONFUNC, MISSING_DATA, HOT, COLD, NONLINEAR, PERSIST, BLOOM, SNOWBALL, HALO, SATELLITE_HALO` | a, b | descartar esa medición | Expsupp §3.3 "Flag usage" |
-| R8 | Resto de la lista `CONTAINS_BAD_PIXEL` (`TRANSIENT, OVERFLOW, DICHROIC, CROSSTALK, GHOST*, STREAK`) → advertir, no bloquear | a, b | `warn` | Expsupp §3.3: "should only be interpreted as a warning" |
+| R6 | **Preselección, no validación:** Δλ / min(CBAND₁, CBAND₂) ≤ 0,02 con `CWAVE`/`CBAND` en la posición medida de cada época, solo para el control de brillo de ε Indi B. Pasarla **no** basta: además hay que demostrar que el sesgo espectral `|δF/F| ≈ |d ln F̄/dλ|·|Δλ|` (espectro integrado sobre la respuesta) es menor que el margen del método. Ejemplo calculado: con CBAND ≈ 0,0469 µm, 0,02 admite Δλ ≈ 0,94 nm; para un sesgo ≤ 3 % haría falta una pendiente efectiva < ≈ 32 µm⁻¹, **no medida todavía**. No se puede estimar la pendiente con el mismo par que se evalúa | b | Falla → `not_comparable` (`wavelength_mismatch`). Pasa sin sesgo validado → `spectral_bias_validated = false`, `issue` `spectral_bias_unverified` y la diferencia **no** se interpreta como variabilidad | Sebastián (14-nov, 2.º mensaje) + 0032 §3.2 + trampa LVF [doc] |
+| R7 | Ningún bit de **`COMPARE_MASK` = `0x3FD2CEC7`** en r ≤ 2,5 px del objetivo (bits 0, 1, 2, 6, 7, 9–11, 14, 15, 17, 20, 22–29; incluye `OVERFLOW` y `GHOST*`). Se reutiliza `domain/flags.py`. Contiene la lista de fotometría de Expsupp §3.3, así que vale para posición y flujo | a, b | descartar esa medición | D12 §3 y §6 paso 13; triage 14-nov |
+| R8 | `OUTLIER` (bit 19) no se enmascara: se marca y baja el semáforo | a, b | `outlier_near_target` | D12 §3 |
 | R9 | **`SOURCE` no es un problema**: marca píxeles de fuentes conocidas (51 % del detector en una imagen de prueba) | a, b | — | Expsupp Tabla 16 + `PXSRCMSK=51.16` [medido] |
 | R10 | Objetivo no saturado: más débil que ~11,3–11,7 AB (D1–D4), 10,2 AB (D5), 9,75 AB (D6) | b (a: advertir) | `not_comparable` | Expsupp Tabla 25 (modelo pre-lanzamiento de no linealidad) |
 | R11 | Detección utilizable: **SNR ≥ 5 por exposición usada**, además de calidad (R7), identificación y ajuste aceptables. Política del MVP, no garantía de detección | a, b | esa exposición no se usa; sin ninguna → `no_usable_detection`, conservando flujo, incertidumbre y límite superior. Nunca flujo cero ni "desapareció" | Sebastián (14-nov) |
-| R12 | Solo `change_measured` si el cambio es **≥ 5σ**. En posición: prueba χ² en 2D con la covarianza de la diferencia (`test.equivalent_sigma`), no separation/σ. En flujo: \|Δ\|/σ_Δ propagando ambas épocas | a, b | `change_below_criterion`: se conserva la medición; no se afirma que el objeto sea inmóvil o constante | Sebastián (14-nov) |
+| R12 | Solo `change_measured` si el cambio es **≥ 5σ bilateral**. En posición: `Q = Δᵀ C_Δ⁻¹ Δ` (χ², 2 g.l.); se cumple si `p = e^{−Q/2} ≤ 5,7330314376 × 10⁻⁷`, es decir `Q ≥ 28,7437024269`. El código **calcula** el umbral (no usa 28,7 redondeado, ni 25, ni √Q, ni separation/σ). Con varias fechas se prueba el **vector de movimiento** con su covarianza, no el χ² de los residuos. En flujo: \|F_B − F_A\| / σ_ΔF | a, b | `change_below_criterion`: se conserva la medición; no se afirma que el objeto sea inmóvil o constante. La significancia es local a esta prueba y supone errores y covarianzas adecuados | Sebastián (14-nov, 2.º mensaje) + 0032 §3.3 |
 
 ### 4.2 Cosas que **no** se deben asumir
 
@@ -199,14 +204,16 @@ AnalysisResult:
 - Fecha de publicación (`time.release_date`) y fecha de procesamiento ≠ fecha de adquisición.
 - Colores reescalados para la pantalla no son flujo. El flujo se mide en MJy/sr → µJy, nunca sobre el PNG.
 - Una "época" dura semanas (anexo B.1). Un objeto rápido se mueve **dentro** de ella: se usa el tiempo de cada exposición.
-- `WCS-WAVE` es aproximada (0001 §3.5). En las 12 imágenes de ε Indi B difiere de `CWAVE` solo entre +0,15 y +0,75 nm [medido], pero cerca del borde llega a 0,52 µm (0001 §7.4 D). Para decidir comparabilidad se usa `CWAVE`.
+- `WCS-WAVE` es aproximada (0001 §3.5). Sirve para **seleccionar** imágenes (D12 §2.2, ficha 0002, `build_series.py`), con la advertencia de los bordes. Para **medir** y para R6 se usa `CWAVE`/`CBAND`. En las 12 imágenes de ε Indi B difieren solo entre +0,15 y +0,75 nm [medido], pero cerca del borde llega a 0,52 µm (0001 §7.4 D).
+- Hay **dos criterios de λ con fines distintos**: la serie/blink usa `|Δλ| ≤ λ/(4R)` (D12 §6.6, ≈ 0,25 × CBAND) y el control de brillo de ε Indi B usa la preselección R6 (0,02 × CBAND), unas 12 veces más estricta. D12 justifica λ/(4R) con un espectro suave, pero advierte que las enanas marrones (CH₄, H₂O) pueden cambiar más. **Sebastián y Dax deben confirmar que esta diferencia es intencional** `[DECISIÓN SEBASTIÁN]`.
 
 ### 4.3 Modelo de incertidumbre (provisional, revisado con Sebastián)
 
-- **Posición, por imagen:** covarianza `C = C_stat + σ_wcs²·I`, con `σ_wcs = 0,3″` **provisional**. Ese 0,3″ es el **rendimiento RMS observado** contra Gaia (Expsupp §4.2.2), **no** un piso obligatorio universal. Se contrasta con estrellas de referencia del mismo recorte (`reference_star_check`); si sus residuos son mayores, se infla `σ_wcs` y se marca `uncertainty_inflated`. Motivo [medido]: el error estadístico del ajuste salió ~0,02″, pero la dispersión real entre imágenes fue de 0,2–0,4″.
-- **Diferencia de posición:** `C_Δ = C_A + C_B` (más correlaciones si las hay; por ejemplo, dos detectores de la misma adquisición comparten apuntado). Estadístico `Δᵀ C_Δ⁻¹ Δ` ~ χ² con 2 grados de libertad, reportado también como σ gaussiana equivalente.
-- **Ajuste lineal:** con N fechas, la covarianza del movimiento sale del ajuste ponderado; si χ²/dof > 1, se escala.
-- **Flujo:** `σ_total = √(σ_stat² + (0,03·F)²)`. El 3 % **sí** está documentado como término añadido a la incertidumbre fotométrica oficial (Expsupp §3.3, ec. 19).
+- **Posición, por imagen:** `C = C_stat + C_WCS`, con `C_WCS = diag(0,09; 0,09) arcsec²` (0,3″ **por eje**, RA·cos Dec y Dec). Expsupp §4.2.2, figura 20, da RMS separados por eje, no un RMS radial: **no** se divide entre √2. Es una aproximación isotrópica **provisional**, no una covarianza garantizada por IRSA, y se contrasta con estrellas de referencia del mismo recorte (`reference_star_check`). Si sus residuos son mayores, se infla y se marca `uncertainty_inflated`. Motivo [medido]: el error estadístico del ajuste salió ~0,02″, pero la dispersión real entre imágenes fue de 0,2–0,4″. Sebastián midió un registro local exploratorio de ≈ 0,70″ RMS vectorial en ε Indi B (0032 §4.1), todavía no validado: no reemplaza 0,3″, pero muestra que el control local es obligatorio.
+- **Diferencia de posición:** `C_Δ = C_A + C_B − C_AB − C_ABᵀ`. Si se supone independencia entre épocas, se documenta (`covariance_assumption = independent_epochs`) y se usa `C_A + C_B`. Ejemplo de correlación: dos detectores de la misma adquisición comparten apuntado.
+- **Prueba:** `Q = Δᵀ C_Δ⁻¹ Δ` ~ χ² con 2 g.l.; `p = e^{−Q/2}`; σ equivalente bilateral `z = Φ⁻¹(1 − p/2)`. Para 5σ: `p ≤ 5,7330314376 × 10⁻⁷` y `Q ≥ 28,7437024269` [verificado con scipy]. **No** usar `√Q` como σ.
+- **Ajuste lineal (N fechas):** se ajusta el vector de movimiento con su covarianza (ajuste ponderado; si χ²/g.l. de los residuos > 1, se escala la covarianza) y la prueba anterior se aplica a **ese vector**, no al χ² de los residuos.
+- **Flujo:** `σ_total = √(σ_stat² + (0,03·F)²)` por medición, una sola vez. El 3 % **sí** está documentado como dispersión adicional del método de fotometría oficial (Expsupp §3.3, nota 1). Sebastián advierte (0032 §2) que la ecuación impresa parece dimensionalmente inconsistente y que no debe sumarse dos veces ni a métodos distintos sin justificar: se usa la descripción textual y se marca `[VERIFICAR]` para nuestra fotometría de apertura.
 - La significancia se reporta siempre, incluso por debajo de 5σ.
 
 ### 4.4 Condiciones antes de evaluar el candidato ε Indi B (Sebastián, 14-nov)
@@ -216,10 +223,10 @@ AnalysisResult:
 | C1 | Recalcular aplicando FLAGS (R7/R8) | Excluir las exposiciones con `SUR_ERROR`/`HALO` cerca del objetivo (anexo B.2 tiene dos) | Pendiente |
 | C2 | Documentar archivos y fechas exactos | Lista de `product_id`, URL, versión y `MJD-AVG` de cada recorte en el manifiesto (`contracts/package-manifest.schema.json`) | Pendiente |
 | C3 | Comprobar el registro con estrellas de referencia | Estrellas Gaia del recorte, no saturadas y aisladas: RMS de sus residuos por imagen | Pendiente |
-| C4 | Revisar paralaje | ε Indi B está a ~3,6 pc (paralaje ≈ 0,27″ `[VERIFICAR]`): modelar o al menos cuantificar su efecto en las fechas usadas | Pendiente |
+| C4 | Propagar paralaje | Gaia DR3 da paralaje 270,658 ± 0,690 mas (D12 §7). La posición esperada se propaga con movimiento propio + paralaje (`domain/motion.py`); D12 estima ~0,2″ de efecto entre pasadas | Pendiente (método disponible) |
 | C5 | Revisar sesgo del centroide | PSF sub-muestreada (FWHM ≈ 1,2 px): pruebas sintéticas con fase de píxel variable (plan 0011) o ajuste con ePSF | Pendiente |
 | C6 | **Ba/Bb no resueltas** | SPHEREx no separa las dos enanas: a distinta λ cambia el peso de cada una y el centro de luz puede moverse. Probar si los residuos de posición dependen de λ (`residuals_vs_wavelength`) y, si hace falta, usar solo λ parecidas | Pendiente |
-| C7 | Referencia externa adecuada | Buscar una solución astrométrica publicada de Ba/Bb (movimiento, paralaje y órbita). Gaia no es del todo independiente: el WCS de SPHEREx ya usa ese marco | Pendiente |
+| C7 | Referencia externa adecuada | Gaia DR3 6412596012146801152 (época J2016,0): μα* = +3981,977 ± 0,602, μδ = −2466,832 ± 0,626 mas/año, paralaje 270,658 ± 0,690 mas (D12 §7). Es el **fotocentro** de Ba+Bb `[VERIFICAR]` y no es del todo independiente (el WCS de SPHEREx usa Gaia). Falta una solución publicada que separe Ba/Bb y su órbita | Parcial |
 
 ## 5. Casos de prueba
 
@@ -232,7 +239,7 @@ Las pruebas **sintéticas** son para el código y van rotuladas (`is_synthetic: 
 | T3 | sintético | Fuente gaussiana desplazada 1,0 px conocido, ruido conocido | `change_measured`, separación ≈ 6,15″ ± σ; el valor inyectado queda dentro de 2σ `[VERIFICAR criterio]` |
 | T4 | sintético | Misma fuente, flujo ×1,5 en B, misma λ | `flux_change`, ratio ≈ 1,5 ± σ |
 | T5 | sintético | B con escala/exposición distinta pero flujo físico igual | ratio ≈ 1 (no se compara "brillo de pantalla") |
-| T6 | sintético | Píxel `HOT` o `NONLINEAR` sobre el objetivo en B | medición B descartada (`bad_pixels_near_target`); `not_evaluable` si quedan < 2 |
+| T6 | sintético | Píxel `HOT`, `OVERFLOW` o `GHOST` sobre el objetivo en B; aparte, `OUTLIER` | los tres primeros: medición B descartada (`bad_pixels_near_target`); `OUTLIER`: se conserva con `outlier_near_target` |
 | T7 | sintético | `CWAVE` A = 1,65 µm, B = 2,38 µm | `flux_change` → `not_comparable` (`wavelength_mismatch`) |
 | T8 | sintético | Objetivo con SNR < 5 en todas las exposiciones | `no_usable_detection`, con flujo, σ y límite superior (nunca 0) |
 | T9 | sintético | Recorte con `CRPIX1A` = −375: el píxel original debe ser recorte + 376 | λ leída del píxel correcto; con un error de origen, `calibration_unresolved` |
@@ -296,9 +303,9 @@ Opciones con pros y contras. **La selección es humana.** No se propone entrenar
 | Barnard | ago–oct-25 · mar–may-26 | ago–sep-26 | 3 |
 | ε Indi B | abr–jun-25 · sep–nov-25 · abr–may-26 | sep–oct-26 | **4** |
 | RW Aur | sep-25 · feb–mar-26 | sep-26 | 3 |
-| R Dra | may–jul-25 · oct-25–ene-26 · abr–may-26 | may–jul-26 | 4 |
+| R Dra | may–jul-25 · oct-25–ene-26 · abr–may-26 | may–jul-26 | **3** (la última pasada junta DR1 abr–may-26 y QR3 may–jul-26: salto de 3 días) |
 
-Coincide con el conteo independiente de Johann (0001 §7.4 H) para los objetos que ambos consultamos. ε Indi B se resolvió sin SIMBAD (caído hoy), con 2MASS vía IRSA Gator: J2000 ≈ 331,043836°, −56,782707°.
+La columna de la derecha usa la **regla de pasadas** de D12 §5.2 (salto > 45 d, mezclando colecciones). La primera versión de esta ficha agrupaba por colección y contó 4 en R Dra: estaba mal (triage 14-nov). Las fechas coinciden con el conteo de Johann (0001 §7.4 H). ε Indi B se resolvió sin SIMBAD (caído hoy), con 2MASS vía IRSA Gator: J2000 ≈ 331,043836°, −56,782707°.
 
 ### B.2 Sondeo de movimiento: ε Indi B (exploratorio)
 
@@ -306,7 +313,8 @@ Coincide con el conteo independiente de Johann (0001 §7.4 H) para los objetos q
 
 - Desplazamiento de la primera a la última: **6,45″ = 1,05 px en 1,42 años**.
 - Ajuste lineal: μα* = **3,88″/año**, μδ = **−2,57″/año**; RMS de residuos 0,38″ (RA) y 0,19″ (Dec).
-- Contraste: el movimiento de Hipparcos de **ε Indi A** es 3,97 / −2,54 ″/año. Como A es la compañera de movimiento común, esto muestra **consistencia con la compañera**, no una astrometría independiente de B. Falta una solución publicada de Ba/Bb (C7).
+- Contraste 1: Hipparcos de **ε Indi A** da 3,97 / −2,54 ″/año: **consistencia con la compañera** de movimiento común, no astrometría independiente de B.
+- Contraste 2: Gaia DR3 del fotocentro Ba+Bb da +3,982 / −2,467 ″/año (D12 §7). La diferencia con el sondeo (−0,10 / −0,10 ″/año) está en el rango esperable para un ajuste lineal sin paralaje, sin FLAGS y sin covarianzas; no se interpreta hasta cumplir C1–C6. Gaia no es independiente del WCS de SPHEREx.
 - SNR 95–163; FWHM 1,0–1,3 px.
 - Dos imágenes tenían `HALO`/`TRANSIENT` (y una `SUR_ERROR`) cerca del objetivo: R7/R8 las habrían descartado o advertido.
 
@@ -325,7 +333,8 @@ Apertura r = 2 px, fondo en anillo, conversión con `OMEGA_MEDIAN`, solo error e
 | 2026-09-28 | 1,9333 | 0,0476 | 12 387 ± 120 |
 | 2025-04-30 | 2,3753 | 0,0589 | 11 965 ± 124 |
 
-- Con el **criterio R6** (Δλ/min(CBAND) ≤ 0,02) solo pasa 1,9341 vs. 1,9333 µm (0,017; 15 meses): **+1,0 %**, por debajo de 5σ → `change_below_criterion`. El par 1,6464 vs. 1,6377 µm (0,22) **no** cumple R6: su −2,3 % no se interpreta (una diferencia pequeña también puede salir de efectos que se compensan).
+- Con la **preselección R6** (Δλ/min(CBAND) ≤ 0,02) solo pasa 1,9341 vs. 1,9333 µm (0,017; 15 meses): **+1,0 %**, por debajo de 5σ → `change_below_criterion`, con `spectral_bias_unverified` (falta la pendiente espectral).
+- **Discrepancia abierta:** Sebastián reprodujo ese par (0032 §4.1) con fondo en anillo de 3–5 px y obtuvo 12 340,79 ± 121,15 / 12 256,68 ± 120,01 µJy: diferencia de **signo opuesto** a la mía (fondo en anillo de 5–9 px). Ninguno de los dos sondeos aplicó máscara de vecinos ni corrección de apertura. Hay que fijar un solo método (tareas 10 y 13 del plan 0011) antes de comparar. El par 1,6464 vs. 1,6377 µm (0,22) **no** cumple R6: su −2,3 % no se interpreta (una diferencia pequeña también puede salir de efectos que se compensan).
 - A **λ distinta** (1,6464 vs. 2,3753 µm, con un día de diferencia) parece haber un "−62 %". Es el espectro de la enana marrón, no un cambio temporal. **Es la mejor demostración de por qué existe la regla R6** (útil para Sebastián y para el pitch).
 
 ### B.4 Brillo de los objetos propuestos frente a la saturación (bloqueante para elegir casos)
@@ -371,8 +380,8 @@ Conversión Vega→AB usada: K +1,85, W2 +3,34 `[VERIFICAR fuente exacta]`.
 
 | Para | Pregunta |
 | --- | --- |
-| Johann | **Respondido (STATE 14-nov):** la λ de cada medición la lee este módulo en el píxel medido; `spectral.local` queda como punto de referencia. **Pendiente:** ¿el recorte entra como `products.derived` con su `Transformation`? ¿Carpeta del módulo (ADR 0010)? |
-| Sebastián | **Respondido el 14-nov (provisional):** R6 = Δλ/min(CBAND) ≤ 0,02 solo para ε Indi B; R11 = SNR ≥ 5 por exposición; R12 = ≥ 5σ con covarianza; ε Indi B como candidato; Hipparcos/Gaia solo como contraste. **Pendiente:** que su ficha publique estos criterios; severidad final de los códigos; umbral para `wavelength_dependent_position`; solución publicada de Ba/Bb (C7). |
+| Johann | **Respondido (STATE 14-nov):** la λ de cada medición la lee este módulo en el píxel medido; `spectral.local` queda como punto de referencia. **Respondido:** el recorte entra como `products.derived` con `Transformation operation="cutout"` (0001 §3.5); carpeta `backend/app/analysis/` (ADR 0010). **Pendiente:** ¿quién descarga las estrellas Gaia de la tarea 9b? |
+| Sebastián | **Respondido el 14-nov (provisional):** R6 = Δλ/min(CBAND) ≤ 0,02 solo para ε Indi B; R11 = SNR ≥ 5 por exposición; R12 = ≥ 5σ con covarianza; ε Indi B como candidato; Hipparcos/Gaia solo como contraste. **2.º mensaje:** R12 con Q ≥ 28,7437024269; C_WCS = diag(0,09; 0,09) arcsec²; R6 solo como preselección. Ficha 0032 en la rama `scientific-rules`. **Pendiente:** fusión de 0030–0033 en `main`; pendiente espectral para validar R6; severidad final de los códigos; umbral para `wavelength_dependent_position`; solución publicada de Ba/Bb (C7). |
 | Daniel | ¿La UI necesita `zone_of_interest` en grados o en píxeles del recorte reproyectado? ¿Cómo muestra `is_synthetic`? |
 | Equipo | ADR de alcance (guiado vs. libre); ¿todo precalculado offline (recomendado) o backend en vivo? |
 
