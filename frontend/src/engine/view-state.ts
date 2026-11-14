@@ -1,10 +1,10 @@
 export type Projection = 'SIN' | 'TAN' | 'AIT';
 export interface ViewState {
-  ra: number;
-  dec: number;
-  fov: number;
-  plane: number;
-  proj: Projection;
+  readonly ra: number;
+  readonly dec: number;
+  readonly fov: number;
+  readonly plane: number;
+  readonly proj: Projection;
 }
 
 export const DEFAULT_VIEW: Readonly<ViewState> = Object.freeze({
@@ -14,7 +14,7 @@ export const DEFAULT_VIEW: Readonly<ViewState> = Object.freeze({
 /** Parse the complete view atomically: a malformed known parameter resets it. */
 export function parseViewState(query: string): { view: ViewState; invalid: boolean } {
   const params = new URLSearchParams(query);
-  const view: ViewState = { ...DEFAULT_VIEW };
+  const view: { -readonly [K in keyof ViewState]: ViewState[K] } = { ...DEFAULT_VIEW };
   const keys = ['ra', 'dec', 'fov', 'plane', 'proj'] as const;
   for (const key of keys) {
     const values = params.getAll(key);

@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { createSkyEngine, type SkyEngine } from '../engine/engine';
-import { browserUrlState } from '../engine/adapters/url-state';
+import { createSkyEngine, coordinates, WAVELENGTHS, type SkyEngine } from '../engine/engine';
 import { parseViewState, type Projection, type ViewState } from '../engine/view-state';
-import { WAVELENGTHS } from '../engine/core/wavelengths';
-import { coordinates } from '../engine/core/camera/coordinates';
 
 const initial = parseViewState(window.location.search);
 export function App() {
@@ -17,14 +14,14 @@ export function App() {
     let sky: SkyEngine;
     try { sky = createSkyEngine(canvas.current, {initialView: initial.view}); }
     catch (error) { setStatus(error instanceof Error ? error.message : 'Sky renderer unavailable'); return; }
-    engine.current = sky; const url = browserUrlState(); let timer: ReturnType<typeof setTimeout>;
-    sky.on('viewchange', next => { setView(next); url.write(next); clearTimeout(timer); timer=setTimeout(() => { setAnnouncement(`Center ${coordinates(next.ra,next.dec)}`); }, 400); });
+    engine.current = sky; let timer: ReturnType<typeof setTimeout>;
+    sky.on('viewchange', next => { setView(next); clearTimeout(timer); timer=setTimeout(() => { setAnnouncement(`Center ${coordinates(next.ra,next.dec)}`); }, 400); });
     sky.on('cursor', setCursor); sky.on('status', setStatus);
     sky.on('pick', p => { setAnnouncement(`Selected ${coordinates(p.ra,p.dec)}`); });
     return () => { clearTimeout(timer); sky.destroy(); engine.current = null; };
   }, []);
   return <main className="shell">
-    <header><div><strong>SkyShift</strong><span className="subtitle">SPHEREx DR1 HiPS · IRSA · visualization only</span></div><div className="observed">2025-04–2026-05 · asinh display</div></header>
+    <header><div><strong>SkyShift</strong><span className="subtitle">SPHEREx DR1 HiPS · IRSA · visualization only</span></div><div className="observed">2025-04-24–2026-05-14 · asinh · uncertainty unavailable</div></header>
     <section className="viewer" aria-label="Interactive sky map">
       <canvas ref={canvas} tabIndex={0} aria-label="Sky map. Drag to pan, use wheel or plus and minus to zoom, arrows to move, Page Up and Page Down to change band." />
       {status && <p className="notice" role="status">{status}</p>}
