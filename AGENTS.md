@@ -21,6 +21,7 @@ Nunca separar una imagen de sus metadatos de procedencia (archivo, fecha, banda/
 | --- | --- |
 | `docs/Onboarding_Planet_X_SPHEREx_v0.1.md` | **Guía del equipo** (autoridad humana): problema, fundamentos, flujo, decisiones acordadas |
 | `docs/STATE.md` | Qué está pasando ahora, quién tiene qué, bloqueos. **Léelo siempre primero.** |
+| `docs/ciclos-entrega-skyshift.md` | Ciclos y dependencias del equipo; guía propuesta, consultar el estado actual en `STATE` |
 | `docs/context/01-reto-y-jurado.md` | Reto oficial, rúbrica de Sangolquí, entregables y plazos |
 | `docs/context/02-ciencia-para-cs.md` | Física explicada para personas de CS (sin asumir nada) |
 | `docs/context/03-datos-y-apis.md` | APIs de NASA/IRSA medidas: endpoints, latencias, trampas |
@@ -31,7 +32,7 @@ Nunca separar una imagen de sus metadatos de procedencia (archivo, fecha, banda/
 | `docs/context/08-entorno-y-comandos.md` | Instalar y correr todo igual en Fedora y Windows |
 | `docs/GLOSARIO.md` | Términos de astronomía en lenguaje simple |
 | `docs/fuentes/` | Rúbrica oficial de Sangolquí (PDF) y otras fuentes primarias |
-| `docs/adr/` | Decisiones tomadas. No propongas lo contrario sin leer el ADR |
+| `docs/adr/` | Decisiones tomadas. No propongas lo contrario sin leer el ADR. Rangos de 10 por integrante (Dax: 0040–0049; 0000–0005 compartidos) |
 
 `docs/archive/` es material viejo: **no es fuente de verdad**; úsalo solo como referencia y verifica todo dato que tomes de ahí.
 
