@@ -1,0 +1,111 @@
+[
+ {
+  "object": "Barnard's Star",
+  "detector": 1,
+  "lambda_um": 1.01722,
+  "tol_nm": 6.52,
+  "frames": [
+   "2025-09-01",
+   "2026-03-11",
+   "2026-08-25"
+  ],
+  "rejected": 0,
+  "level": "OBSERVED",
+  "cold_s": 13.76,
+  "warm_s": 0.001,
+  "warm_layer": "memory",
+  "frame0_bytes": 9604,
+  "grid": [
+   49,
+   49
+  ],
+  "warnings": []
+ },
+ {
+  "object": "Epsilon Indi B",
+  "detector": 2,
+  "lambda_um": 1.33584,
+  "tol_nm": 8.15,
+  "frames": [
+   "2025-04-27",
+   "2025-10-06",
+   "2026-04-25",
+   "2026-10-01"
+  ],
+  "rejected": 1,
+  "level": "OBSERVED",
+  "cold_s": 17.27,
+  "warm_s": 0.001,
+  "warm_layer": "memory",
+  "frame0_bytes": 9604,
+  "grid": [
+   49,
+   49
+  ],
+  "warnings": []
+ },
+ {
+  "object": "WISE 0855-0714",
+  "detector": 1,
+  "lambda_um": 0.96837,
+  "tol_nm": 6.21,
+  "frames": [
+   "2025-10-31",
+   "2026-05-04"
+  ],
+  "rejected": 1,
+  "level": "OBSERVED",
+  "cold_s": 18.06,
+  "warm_s": 0.001,
+  "warm_layer": "memory",
+  "frame0_bytes": 9604,
+  "grid": [
+   49,
+   49
+  ],
+  "warnings": []
+ },
+ {
+  "object": "RW Aurigae",
+  "detector": 1,
+  "lambda_um": 0.96524,
+  "tol_nm": 6.19,
+  "frames": [
+   "2025-09-04",
+   "2026-03-06"
+  ],
+  "rejected": 1,
+  "level": "OBSERVED",
+  "cold_s": 8.52,
+  "warm_s": 0.001,
+  "warm_layer": "memory",
+  "frame0_bytes": 9604,
+  "grid": [
+   49,
+   49
+  ],
+  "warnings": []
+ },
+ {
+  "object": "R Draconis",
+  "detector": 1,
+  "lambda_um": 0.96357,
+  "tol_nm": 6.18,
+  "frames": [
+   "2025-07-07",
+   "2025-10-19",
+   "2026-07-14"
+  ],
+  "rejected": 7,
+  "level": "OBSERVED",
+  "cold_s": 13.84,
+  "warm_s": 0.001,
+  "warm_layer": "memory",
+  "frame0_bytes": 9604,
+  "grid": [
+   49,
+   49
+  ],
+  "warnings": []
+ }
+]
