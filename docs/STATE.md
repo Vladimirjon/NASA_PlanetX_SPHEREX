@@ -12,7 +12,7 @@ Actualizado: sáb 14-nov-2026, tarde (UTC−5). Regla: cada sesión de agente o 
 - Plan anterior del 13-nov archivado en `docs/archive/v0-2026-11-13/` (no es fuente de verdad).
 - Ciclo 1 (rama `docs/arquitectura-observation`): **borrador** `docs/specs/0001-arquitectura-observation.md` (flujo de datos, `Observation` propuesto, matriz de interfaces, fallos). Johann lo propone; roles y contrato **sin ratificar**. Falta la revisión de Mateo y Daniel, de Sebastián (requisitos científicos) y de Dax (frontera `Region`).
 - Contrastado con un producto DR1 real: el tiempo de la cabecera es UTC; `obs_id` no distingue detector ni versión; `em_min/em_max` cubren el detector entero; λ científica = `CWAVE`/`CBAND`, no `WCS-WAVE`. Esto contradice `context/03` §3 y `context/06` §5.2, que aún no se corrigen.
-- Mateo: borrador `docs/specs/0010-analysis-result.md` (`AnalysisResult`), alineado con `Observation` 0001; rama `docs/analysis-measurements`. Para cerrarla faltan los umbrales de Sebastián y la revisión de Johann. Rango de fichas de Mateo: 0010–0019.
+- Mateo: ficha `0010` (`AnalysisResult`) en `main`, **borrador** (falta aprobación de Sebastián y Johann). Preparados sin código: plan TDD `0011` y ADR `0010` (stack Python/uv, versiones fijadas). Bloqueos: umbrales de Sebastián; carpeta y `spectral.local` con Johann. Rango de Mateo: 0010–0019.
 
 ## Hitos (Ecuador, UTC−5)
 | Hora | Hito |
