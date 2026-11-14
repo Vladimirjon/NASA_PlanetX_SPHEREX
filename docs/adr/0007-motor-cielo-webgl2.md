@@ -1,0 +1,7 @@
+# 0007 · Motor de cielo WebGL2
+
+- Estado: implementación inicial, pendiente de revisión científica y de rendimiento.
+- Contexto: la ficha 0003 requiere HiPS SPHEREx DR1 sin código de Aladin y con una fuente intercambiable.
+- Decisión: usar TypeScript sin dependencias de ejecución en el motor, con núcleo funcional, puertos y adaptadores; React solo presenta el visor. Una textura WebGL2 por tesela se indexa por celda HEALPix NESTED y los padres se dibujan cuando no está disponible el hijo. IRSA y el proxy implementan el puerto de imágenes cancelables.
+- Extensión: añadir una fuente implementando `TileSource`; añadir una estrategia al registro de proyecciones; parametrizar y verificar metadatos antes de utilizar otra encuesta. La conexión del registro al shader y los parámetros para encuestas distintas aún no están terminados.
+- Consecuencias y límites: ang2pix se comparó con un millón de puntos Astropy; centros y vecinos se compararon para los 12.288 píxeles de orden 5, y esquinas para diez píxeles. SIN no cubre todo el cielo: para FOV mayor de 180° se utiliza temporalmente AIT. Faltan verificación WCS de orientación, cobertura completa de esquinas y órdenes inferiores, selección visible exhaustiva, inercia, prueba de restauración de contexto y revisión de paridad visual. El pellizco está implementado pero todavía no se ha probado en dispositivo táctil. Las capturas y métricas no demuestran precisión científica ni los objetivos de rendimiento en GPU integrada.
