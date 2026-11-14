@@ -1,7 +1,12 @@
 # 0007 · Motor de cielo WebGL2
 
-- Estado: implementación inicial, pendiente de revisión científica y de rendimiento.
+- Estado: navegación ronda 3 (proyección fija, arrastre con punto bajo el puntero, zoom anclado, flyTo, inercia).
 - Contexto: la ficha 0003 requiere HiPS SPHEREx DR1 sin código de Aladin y con una fuente intercambiable.
-- Decisión: usar TypeScript sin dependencias de ejecución en el motor, con núcleo funcional, puertos y adaptadores; React solo presenta el visor. Un arreglo de texturas WebGL2 R8 se indexa por celda HEALPix NESTED y usa padres cuando no está disponible el hijo. El bitmap se cierra tras subirlo; los PNG comprimidos se conservan durante la sesión para evitar descargas repetidas tras el desalojo. IRSA y el proxy implementan el puerto de imágenes cancelables.
-- Extensión: añadir una fuente implementando `TileSource`; añadir una estrategia al registro de proyecciones; parametrizar y verificar metadatos antes de utilizar otra encuesta. La conexión del registro al shader y los parámetros para encuestas distintas aún no están terminados.
-- Consecuencias y límites: ang2pix se comparó con un millón de puntos Astropy; centros y vecinos se compararon para los 12.288 píxeles de orden 5, y esquinas para diez píxeles. SIN no cubre todo el cielo: para FOV mayor de 180° se utiliza temporalmente AIT. La orientación este-izquierda se contrastó con WCS independiente. Faltan cobertura completa de esquinas y órdenes inferiores, selección visible exhaustiva, inercia, prueba de restauración de contexto y revisión de paridad visual. La memoria de PNG comprimidos no tiene límite durante la sesión. El pellizco está implementado pero todavía no se ha probado en dispositivo táctil. Las capturas y métricas no demuestran precisión científica ni paridad visual completa.
+- Decisión: TypeScript sin dependencias de ejecución en el motor; núcleo funcional, puertos y adaptadores; React solo presenta. Texturas WebGL2 R8 indexadas por HEALPix NESTED con padres mientras faltan hijos. IRSA/proxy implementan el puerto cancelable.
+- Navegación (ronda 3):
+  - La proyección **no cambia sola**. SIN es un globo ortográfico: FOV máximo 180° (un hemisferio en disco; fuera del disco = fondo). TAN máx. ~90°. AIT solo si el usuario la elige (hasta 360°).
+  - Arrastre = rotación celeste que mantiene el punto del cielo bajo el puntero (`keepPointUnder`, Newton en RA/Dec con semilla de rotación 3D; sin deltas RA/Dec ni gimbal en polos). Norte arriba se conserva como convención de la cámara.
+  - Zoom de rueda/pellizco anclado al cursor, amortiguado exponencial independiente del frame rate; `+`/`−` al centro. Inercia ~300 ms tras soltar; desactivada con `prefers-reduced-motion`.
+  - API pública: `flyTo({ ra, dec, fov }, { durationMs })` → Promise al llegar; slerp del centro + FOV en log; cancelable por entrada del usuario; emite `viewchange`. Compatible con `setView` / `zoomBy` previos.
+- Extensión: nueva fuente vía `TileSource`; proyecciones vía registro (shader aún con ramas explícitas SIN/TAN/AIT).
+- Consecuencias y límites: fixtures Astropy para HEALPix/proyecciones; orientación este-izquierda contrastada. Faltan intersección exhaustiva de celdas, cobertura completa de esquinas en todos los órdenes y prueba de pellizco en dispositivo real. Memoria PNG de sesión sin tope. Métricas: `docs/reviews/sky-engine/perf.md`.

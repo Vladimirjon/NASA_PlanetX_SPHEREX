@@ -15,3 +15,4 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-14 | Codex y agentes revisores | Renderizador propio experimental de esfera HiPS, verificación de orientación y pruebas de interacción | Revisión científica y humana pendientes |
 | 2026-11-14 | Codex | Inventario de prototipos, datos locales y brecha frente a IRSA | Revisión humana y científica pendientes |
 | 2026-11-14 | Claude Code (Claude Opus 5.5) + agente físico | Verificación de épocas reales en IRSA (DR1+QR3) de los 5 objetos; ADR 0006, contrato OpenAPI v0.1, fichas 0002/0003; mapa de datos SPHEREx (docs/context/12) | Dax aprueba ADR y fichas; ciencia revisada por el rol de física |
+| 2026-11-14 | Cursor (Composer) | Ronda 3 motor cielo: proyección fija SIN/TAN/AIT, arrastre keep-under-pointer, zoom anclado, flyTo, inercia, tests y remediación perf | Product owner / orchestrator; evidencia en docs/reviews/sky-engine |
