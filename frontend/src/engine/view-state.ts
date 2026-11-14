@@ -7,8 +7,15 @@ export interface ViewState {
   readonly proj: Projection;
 }
 
+/** Hard FOV ceilings: SIN shows at most one hemisphere; TAN stays near the gnomonic regime. */
+export function maxFov(proj: Projection): number {
+  if (proj === 'SIN') return 180;
+  if (proj === 'TAN') return 90;
+  return 360;
+}
+
 export const DEFAULT_VIEW: Readonly<ViewState> = Object.freeze({
-  ra: 180, dec: -57.99462, fov: 359.62, plane: 0, proj: 'SIN',
+  ra: 180, dec: -57.99462, fov: 180, plane: 0, proj: 'SIN',
 });
 
 /** Parse the complete view atomically: a malformed known parameter resets it. */
@@ -36,5 +43,6 @@ export function parseViewState(query: string): { view: ViewState; invalid: boole
     if (!valid) return { view: { ...DEFAULT_VIEW }, invalid: true };
     view[key] = value;
   }
+  view.fov = Math.min(view.fov, maxFov(view.proj));
   return { view, invalid: false };
 }

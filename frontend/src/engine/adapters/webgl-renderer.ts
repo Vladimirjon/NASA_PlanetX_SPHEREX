@@ -35,10 +35,11 @@ uint skyIndex(vec3 v){
 }
 void main(){
  float fov=camera.z*PI/180.; float aspect=camera.w; vec2 p=screen*vec2(1.,1./aspect);
- int pr=projection; if(pr==0 && fov>PI) pr=2;
- float scale=pr==0?sin(min(fov,PI)*.5):(pr==1?tan(min(fov,2.6)*.5):2.82842712*min(fov/(2.*PI),1.));
- p*=scale; p.x=-p.x; float c,e,n;
- if(pr==0){float r=dot(p,p);if(r>1.){color=vec4(0.,0.,0.,1.);return;}c=sqrt(1.-r);e=p.x;n=p.y;}
+ int pr=projection;
+ // Projection never switches implicitly: SIN stays orthographic (hemisphere disc at FOV=180).
+ float scale=pr==0?sin(min(fov,PI)*.5):(pr==1?tan(min(fov,1.5707963)*.5):2.82842712*min(fov/(2.*PI),1.));
+ p*=scale; p.x=-p.x; float c,e,n; float disc=0.;
+ if(pr==0){float r=dot(p,p);if(r>1.){color=vec4(0.,0.,0.,1.);return;}disc=r;c=sqrt(1.-r);e=p.x;n=p.y;}
  else if(pr==1){c=inversesqrt(1.+dot(p,p));e=p.x*c;n=p.y*c;}
  else {if(p.x*p.x/8.+p.y*p.y/2.>1.){color=vec4(0.,0.,0.,1.);return;}float z=sqrt(max(0.,1.-p.x*p.x/16.-p.y*p.y/4.));float lon=2.*atan(z*p.x,2.*(2.*z*z-1.));float lat=asin(clamp(z*p.y,-1.,1.));c=cos(lat)*cos(lon);e=cos(lat)*sin(lon);n=sin(lat);}
  float a=camera.x*PI/180.,d=camera.y*PI/180.;
@@ -51,9 +52,12 @@ void main(){
  float size=exp2(float(bits));vec2 uv=(vec2(float(y),float(x))+.5)/size;
  float brightness=texture(tiles,vec3(uv,float(info.r-1u))).r; color=vec4(vec3(brightness),1.);
  float ra=mod(atan(v.y,v.x)+2.*PI,2.*PI)*180./PI, dec=asin(clamp(v.z,-1.,1.))*180./PI;
- float spacing=camera.z>180.?30.:camera.z>45.?15.:camera.z>10.?5.:camera.z>2.?1.:camera.z>0.5?.2:.05;
+ float spacing=camera.z>90.?30.:camera.z>45.?15.:camera.z>10.?5.:camera.z>2.?1.:camera.z>0.5?.2:.05;
  float rx=abs(fract(ra/spacing+.5)-.5),dy=abs(fract(dec/spacing+.5)-.5);
- float line=max(1.-smoothstep(0.,max(fwidth(ra/spacing),.00001),rx),1.-smoothstep(0.,max(fwidth(dec/spacing),.00001),dy));
+ // Clamp fwidth so RA wrap / SIN limb does not blow grid thickness into a filled band.
+ float raW=min(max(fwidth(ra/spacing),.00001),.08), decW=min(max(fwidth(dec/spacing),.00001),.08);
+ float line=max(1.-smoothstep(0.,raW,rx),1.-smoothstep(0.,decW,dy));
+ if(pr==0) line*=smoothstep(1.,.92,disc);
  color.rgb=mix(color.rgb,vec3(.38,.53,.54),line*.38);
 }`;
 
