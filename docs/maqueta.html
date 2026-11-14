@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<!-- Design reference only (team decision, 13 Nov 2026): do not copy this file into the app as code. The product name is still undecided. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1500">
+<title>[Name TBD] — High-Fidelity Mockup (4 Screens)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET ===== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+
+/* ===== TOKENS ===== */
+:root{
+  --bg:#07080B;
+  --panel:rgba(14,15,19,0.88);
+  --panel-solid:#0E0F13;
+  --surface:rgba(236,234,228,0.04);
+  --text-1:#ECEAE4;
+  --text-2:#A7A9B0;
+  --text-3:rgba(236,234,228,0.40);
+  --border:rgba(236,234,228,0.10);
+  --border-strong:rgba(236,234,228,0.18);
+  --d1:#B8336A;--d2:#D9483B;--d3:#EE6A24;
+  --d4:#F7931A;--d5:#F9B934;--d6:#F6D86B;
+  --cyan:#5CE1E6;
+  --error:#FF5D5D;
+  --focus:#F9B934;
+  --success:rgba(92,225,230,0.25);
+  --font-t:'Barlow Semi Condensed',sans-serif;
+  --font-b:'Barlow',sans-serif;
+  --font-m:'JetBrains Mono',monospace;
+  --radius:6px;
+  --radius-lg:10px;
+}
+
+/* ===== PAGE ===== */
+body{
+  background:#020203;
+  font-family:var(--font-b);
+  color:var(--text-1);
+  padding:48px 0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+}
+.screen-label{
+  width:1440px;
+  font-family:var(--font-t);
+  font-size:12px;font-weight:600;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-2);
+  margin-top:40px;
+  padding-left:4px;
+}
+.screen-label:first-child{margin-top:0}
+.screen-frame{
+  width:1440px;height:900px;
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  position:relative;
+  background:var(--bg);
+}
+
+/* ===== NAVBAR ===== */
+.navbar{
+  position:absolute;top:0;left:0;right:0;
+  height:48px;display:flex;align-items:center;
+  padding:0 24px;z-index:30;
+  border-bottom:1px solid var(--border);
+}
+.navbar--glass{
+  background:rgba(7,8,11,0.55);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom-color:transparent;
+}
+.navbar--solid{background:var(--panel-solid)}
+.nav-logo{
+  font-family:var(--font-t);font-weight:700;font-size:18px;
+  color:var(--text-1);letter-spacing:0.02em;
+  margin-right:32px;white-space:nowrap;
+}
+.nav-links{display:flex;gap:4px;flex:1}
+.nav-link{
+  font-family:var(--font-t);font-size:13px;font-weight:600;
+  letter-spacing:0.04em;text-transform:uppercase;
+  color:var(--text-2);
+  padding:6px 14px;border-radius:var(--radius);
+  text-decoration:none;cursor:pointer;
+  transition:color .15s,background .15s;
+}
+.nav-link:hover{color:var(--text-1);background:var(--surface)}
+.nav-link--active{color:var(--text-1)}
+.nav-right{display:flex;align-items:center;gap:12px;margin-left:auto}
+.nav-back{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--font-t);font-size:13px;font-weight:600;
+  color:var(--text-2);cursor:pointer;
+  letter-spacing:0.04em;text-transform:uppercase;
+  padding:6px 10px;border-radius:var(--radius);
+}
+.nav-back:hover{color:var(--text-1);background:var(--surface)}
+.nav-search-expanded{
+  flex:1;display:flex;align-items:center;gap:8px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:5px 14px;margin:0 16px;
+  font-family:var(--font-m);font-size:13px;
+  color:var(--text-1);
+  font-variant-numeric:tabular-nums;
+}
+.nav-search-expanded .coord-sep{color:var(--text-3);margin:0 6px}
+.nav-search-expanded .obj-name{color:var(--text-2);font-family:var(--font-b);font-size:13px}
+
+/* ===== ICON BASE ===== */
+.icon{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.icon svg{display:block}
+
+/* ===== BUTTONS ===== */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--font-b);font-size:13px;font-weight:500;
+  color:var(--text-1);
+  padding:7px 16px;
+  border:1px solid var(--border-strong);
+  border-radius:var(--radius);
+  background:transparent;
+  cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s;
+  white-space:nowrap;
+  line-height:1.3;
+}
+.btn:hover{background:var(--surface);border-color:rgba(236,234,228,0.28)}
+.btn:focus-visible,.btn.mock-focus{
+  outline:2px solid var(--focus);
+  outline-offset:2px;
+}
+.btn--play{
+  padding:8px 20px 8px 16px;
+  background:rgba(236,234,228,0.08);
+  border-color:rgba(236,234,228,0.20);
+  font-weight:600;
+}
+.btn--play:hover{background:rgba(236,234,228,0.14)}
+.btn--sm{padding:4px 10px;font-size:12px}
+.btn--icon{padding:6px;border:1px solid transparent}
+.btn--icon:hover{background:var(--surface);border-color:var(--border)}
+.btn--error{color:var(--error);border-color:rgba(255,93,93,0.35)}
+.btn--error:hover{background:rgba(255,93,93,0.08)}
+.btn--ghost{border-color:transparent}
+.btn--ghost:hover{background:var(--surface);border-color:var(--border)}
+.btn:disabled,.btn.is-disabled{
+  opacity:0.35;cursor:not-allowed;pointer-events:none;
+}
+
+/* ===== SEGMENTED CONTROL ===== */
+.seg{
+  display:inline-flex;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.seg__item{
+  font-family:var(--font-b);font-size:12px;font-weight:500;
+  color:var(--text-2);
+  padding:4px 11px;
+  border-right:1px solid var(--border);
+  cursor:pointer;
+  transition:color .15s,background .15s;
+  white-space:nowrap;
+  position:relative;
+}
+.seg__item:last-child{border-right:none}
+.seg__item:hover{color:var(--text-1);background:var(--surface)}
+.seg__item--active{color:var(--text-1);background:rgba(236,234,228,0.10)}
+.seg__item--d6.seg__item--active{color:var(--d6);background:rgba(246,216,107,0.10)}
+.seg__item.is-disabled{opacity:0.30;cursor:not-allowed;pointer-events:none}
+.seg__item .shortcut{
+  font-family:var(--font-m);font-size:9px;
+  color:var(--text-3);margin-left:4px;
+  vertical-align:super;
+}
+
+/* ===== BADGES ===== */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:var(--font-t);font-size:10px;font-weight:600;
+  letter-spacing:0.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:4px;
+  line-height:1.2;
+}
+.badge--offline{color:var(--text-2);background:var(--surface);border:1px solid var(--border)}
+.badge--type{color:var(--text-2);background:transparent;border:1px solid var(--border)}
+.badge--gold{
+  color:#07080B;background:var(--d5);
+  animation:glow 2.5s ease-in-out infinite;
+}
+.badge--success{color:var(--cyan);background:var(--success);border:1px solid rgba(92,225,230,0.20)}
+.badge--error{color:var(--error);background:rgba(255,93,93,0.10);border:1px solid rgba(255,93,93,0.20)}
+
+/* ===== SKY SCREEN ===== */
+.sky-search-wrap{
+  position:absolute;left:50%;top:37%;transform:translate(-50%,-50%);
+  z-index:20;text-align:center;
+  width:520px;
+}
+.sky-search{
+  width:100%;
+  padding:14px 20px 14px 48px;
+  background:var(--panel);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--border-strong);
+  border-radius:var(--radius-lg);
+  font-family:var(--font-b);font-size:15px;
+  color:var(--text-2);
+  outline:none;
+  position:relative;
+}
+.sky-search-icon{
+  position:absolute;left:18px;top:50%;transform:translateY(-50%);
+  color:var(--text-2);pointer-events:none;
+}
+.sky-search-wrap .sky-shortcut{
+  position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  font-family:var(--font-m);font-size:11px;color:var(--text-3);
+  border:1px solid var(--border);border-radius:4px;
+  padding:2px 7px;
+}
+.sky-welcome{
+  margin-top:20px;
+  font-family:var(--font-b);font-size:17px;font-weight:400;
+  color:var(--text-1);opacity:0.6;
+}
+.sky-cards{
+  position:absolute;bottom:48px;left:24px;right:24px;
+  display:flex;gap:16px;z-index:20;
+}
+.stellarium-bar{
+  position:absolute;bottom:0;left:0;right:0;height:38px;
+  background:rgba(7,8,11,0.85);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;z-index:25;
+}
+.cursor-readout{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--font-m);font-size:11px;
+  color:var(--text-2);font-variant-numeric:tabular-nums;
+}
+.cursor-readout .coord-val{color:var(--text-1)}
+.cursor-readout .coord-sep{color:var(--text-3);margin:0 4px}
+.sky-ribbon-bar{display:flex;align-items:center;gap:8px}
+.sky-ribbon-label{
+  font-family:var(--font-t);font-size:10px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.08em;
+  color:var(--text-3);
+}
+.sky-ribbon-items{display:flex;gap:3px}
+.sky-ribbon-item{
+  display:flex;align-items:center;gap:5px;
+  padding:2px 8px;border-radius:4px;
+  border:1px solid var(--border);
+  background:rgba(236,234,228,0.03);
+  font-family:var(--font-t);font-size:11px;font-weight:600;
+  color:var(--text-2);cursor:pointer;
+  transition:all .15s;
+}
+.sky-ribbon-item .dot{width:6px;height:6px;border-radius:50%}
+.sky-ribbon-item:hover{
+  background:var(--surface);border-color:var(--border-strong);color:var(--text-1);
+}
+.sky-ribbon-item--active{
+  border-color:var(--d6);background:rgba(246,216,107,0.12);color:var(--text-1);
+}
+.sky-status-meta{
+  font-family:var(--font-m);font-size:10px;color:var(--text-3);
+  letter-spacing:0.02em;text-transform:uppercase;
+}
+.sky-card{
+  flex:1;min-width:0;
+  background:var(--panel);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  cursor:pointer;
+  transition:border-color .2s,transform .2s;
+}
+.sky-card:hover{border-color:var(--border-strong);transform:translateY(-2px)}
+.sky-card__preview{
+  height:120px;position:relative;
+  overflow:hidden;
+}
+.sky-card__preview-label{
+  position:absolute;bottom:4px;right:6px;
+  font-family:var(--font-m);font-size:8px;color:var(--text-3);
+  letter-spacing:0.02em;
+}
+.sky-card__body{padding:12px 14px 14px}
+.sky-card__name{
+  font-family:var(--font-t);font-size:15px;font-weight:600;
+  color:var(--text-1);margin-bottom:2px;
+}
+.sky-card__sub{
+  font-size:12px;color:var(--text-2);margin-bottom:10px;
+  line-height:1.35;
+}
+.sky-card__badges{display:flex;flex-wrap:wrap;gap:6px}
+
+/* ===== INVESTIGATE LAYOUT ===== */
+.inv{display:flex;height:calc(900px - 48px);margin-top:48px}
+.inv-main{
+  flex:1;min-width:0;
+  display:flex;flex-direction:column;
+  padding:16px 20px 12px;
+}
+.inv-panel{
+  width:352px;
+  border-left:1px solid var(--border);
+  background:var(--panel-solid);
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+
+/* ===== PLAYER ===== */
+.player{
+  flex:1;min-height:0;
+  border-radius:var(--radius);
+  overflow:hidden;position:relative;
+  border:1px solid var(--border);
+  background:#0A0B0E;
+}
+.player__meta-tl{
+  position:absolute;bottom:10px;left:12px;z-index:5;
+  display:flex;gap:10px;align-items:center;
+}
+.player__meta-tl span{
+  font-family:var(--font-m);font-size:11px;
+  color:var(--text-2);font-variant-numeric:tabular-nums;
+}
+.player__meta-tl .sep{color:var(--text-3)}
+.player__meta-br{
+  position:absolute;bottom:10px;right:12px;z-index:5;
+  font-family:var(--font-m);font-size:11px;
+  color:var(--text-2);font-variant-numeric:tabular-nums;
+}
+.player__label{
+  position:absolute;top:10px;right:12px;z-index:5;
+  font-family:var(--font-m);font-size:9px;
+  color:var(--text-3);letter-spacing:0.04em;
+  text-transform:uppercase;
+  background:rgba(7,8,11,0.6);
+  padding:2px 7px;border-radius:3px;
+}
+
+/* ===== TRANSPORT ===== */
+.transport{
+  display:flex;flex-direction:column;gap:6px;
+  padding:10px 0 4px;
+}
+.transport-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.transport-row--main{gap:6px}
+.transport-group{display:flex;align-items:center;gap:3px}
+.transport-sep{width:1px;height:20px;background:var(--border);margin:0 6px}
+.frame-slider{
+  flex:1;height:4px;
+  background:rgba(236,234,228,0.08);
+  border-radius:2px;position:relative;
+  margin:0 6px;min-width:80px;
+}
+.frame-slider__fill{
+  position:absolute;top:0;left:0;height:100%;
+  border-radius:2px;
+}
+.frame-slider__thumb{
+  position:absolute;top:50%;transform:translate(-50%,-50%);
+  width:12px;height:12px;
+  background:var(--text-1);
+  border-radius:50%;
+  border:2px solid var(--bg);
+  box-shadow:0 0 0 1px rgba(236,234,228,0.3);
+}
+.frame-pos{
+  font-family:var(--font-m);font-size:12px;
+  color:var(--text-2);font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.transport-label{
+  font-family:var(--font-t);font-size:11px;font-weight:600;
+  color:var(--text-3);text-transform:uppercase;
+  letter-spacing:0.06em;margin-right:4px;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress{padding:8px 0}
+.progress-bar{display:flex;gap:3px;height:8px;margin-bottom:6px}
+.progress-seg{
+  flex:1;border-radius:4px;
+  position:relative;overflow:hidden;
+}
+.progress-seg--done{background:var(--d6)}
+.progress-seg--active{
+  background:rgba(246,216,107,0.25);
+  overflow:hidden;
+}
+.progress-seg--active::after{
+  content:'';position:absolute;inset:0;
+  background:var(--d6);
+  border-radius:4px;
+  width:45%;
+  animation:loading 1.8s ease-in-out infinite;
+}
+.progress-seg--queued{background:rgba(236,234,228,0.06)}
+.progress-seg--error{background:rgba(255,93,93,0.30)}
+.progress-text{
+  font-size:12px;color:var(--text-2);
+  display:flex;justify-content:space-between;
+}
+.progress-text .eta{font-family:var(--font-m);font-variant-numeric:tabular-nums}
+
+/* ===== SIDE PANEL SECTIONS ===== */
+.ps{padding:14px 18px;border-bottom:1px solid var(--border)}
+.ps:last-child{border-bottom:none}
+.ps__title{
+  font-family:var(--font-t);font-size:11px;font-weight:600;
+  letter-spacing:0.10em;text-transform:uppercase;
+  color:var(--text-2);margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.ps__title .icon{color:var(--text-3)}
+
+/* Epochs table */
+.epoch-table{width:100%;border-collapse:collapse}
+.epoch-table th{
+  font-family:var(--font-t);font-size:10px;font-weight:600;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--text-3);text-align:left;
+  padding:0 0 6px;
+}
+.epoch-table td{
+  font-family:var(--font-m);font-size:12px;
+  font-variant-numeric:tabular-nums;
+  color:var(--text-2);padding:5px 0;
+  border-top:1px solid var(--border-subtle);
+}
+.epoch-table tr.is-active td{color:var(--text-1)}
+.epoch-dot{
+  display:inline-block;width:8px;height:8px;
+  border-radius:50%;margin-right:6px;
+  vertical-align:middle;
+}
+.epoch-dot--done{background:var(--d6)}
+.epoch-dot--active{
+  background:var(--d6);
+  animation:pulse 1.5s ease-in-out infinite;
+}
+.epoch-dot--queued{
+  border:1.5px solid var(--text-3);
+  background:transparent;width:7px;height:7px;
+}
+.epoch-dot--error{background:var(--error)}
+
+/* Detector buttons */
+.det-grid{display:flex;gap:4px;margin-bottom:8px}
+.det-btn{
+  width:42px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-t);font-size:12px;font-weight:600;
+  color:var(--text-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  cursor:pointer;
+  transition:all .15s;
+  position:relative;
+}
+.det-btn:hover{border-color:var(--border-strong);color:var(--text-1)}
+.det-btn--active{
+  color:var(--d6)!important;
+  border-color:var(--d6)!important;
+  background:rgba(246,216,107,0.08);
+}
+.det-btn[data-det="1"]:hover,.det-btn[data-det="1"].det-btn--active{color:var(--d1);border-color:var(--d1);background:rgba(184,51,106,0.08)}
+.det-btn[data-det="2"]:hover,.det-btn[data-det="2"].det-btn--active{color:var(--d2);border-color:var(--d2);background:rgba(217,72,59,0.08)}
+.det-btn[data-det="3"]:hover,.det-btn[data-det="3"].det-btn--active{color:var(--d3);border-color:var(--d3);background:rgba(238,106,36,0.08)}
+.det-btn[data-det="4"]:hover,.det-btn[data-det="4"].det-btn--active{color:var(--d4);border-color:var(--d4);background:rgba(247,147,26,0.08)}
+.det-btn[data-det="5"]:hover,.det-btn[data-det="5"].det-btn--active{color:var(--d5);border-color:var(--d5);background:rgba(249,185,52,0.08)}
+.det-btn .det-key{
+  position:absolute;top:-1px;right:2px;
+  font-family:var(--font-m);font-size:8px;color:var(--text-3);
+}
+.det-info{
+  font-family:var(--font-m);font-size:12px;
+  color:var(--text-2);font-variant-numeric:tabular-nums;
+}
+
+/* Metadata table */
+.meta-table{width:100%}
+.meta-table tr{border-bottom:1px solid var(--border-subtle)}
+.meta-table td{padding:4px 0;font-size:12px;vertical-align:top}
+.meta-table td:first-child{
+  color:var(--text-3);width:95px;
+  font-family:var(--font-b);
+}
+.meta-table td:last-child{
+  font-family:var(--font-m);
+  color:var(--text-2);
+  font-variant-numeric:tabular-nums;
+}
+
+/* Collapsible section */
+.collapsible-head{
+  display:flex;align-items:center;gap:6px;
+  cursor:pointer;
+  font-family:var(--font-t);font-size:11px;font-weight:600;
+  letter-spacing:0.10em;text-transform:uppercase;
+  color:var(--text-2);
+  padding:14px 18px;
+  border-bottom:1px solid var(--border);
+}
+.collapsible-head:hover{color:var(--text-1)}
+.collapsible-body{display:none}
+.collapsible-body.is-open{display:block;padding:12px 18px 16px;border-bottom:1px solid var(--border)}
+
+/* Spectral profile */
+.profile-chart{width:100%;margin-top:4px}
+.profile-axis-label{
+  font-family:var(--font-m);font-size:9px;
+  fill:var(--text-3);
+}
+.profile-det-label{
+  font-family:var(--font-t);font-size:10px;font-weight:600;
+}
+.profile-line{
+  fill:none;stroke:var(--text-3);stroke-width:1;
+  stroke-dasharray:3,3;
+}
+
+/* What am I seeing */
+.what-body{
+  font-size:13px;line-height:1.6;
+  color:var(--text-2);
+}
+.what-body strong{color:var(--text-1);font-weight:500}
+
+/* ===== PREDICTED PATH ===== */
+.path-circle{
+  fill:none;stroke:var(--cyan);stroke-width:1.5;
+}
+.path-line{
+  fill:none;stroke:var(--cyan);stroke-width:1;
+  stroke-dasharray:4,4;
+  opacity:0.5;
+}
+.path-num{
+  font-family:var(--font-t);font-size:11px;font-weight:700;
+  fill:var(--cyan);
+}
+.path-legend{
+  font-family:var(--font-m);font-size:10px;
+  color:var(--cyan);
+  position:absolute;top:10px;left:12px;z-index:5;
+  display:flex;align-items:center;gap:6px;
+}
+
+/* ===== DIFF CAPTION ===== */
+.diff-caption{
+  font-size:13px;color:var(--text-2);
+  padding:6px 0 0;
+  line-height:1.4;
+}
+.diff-caption em{color:var(--text-1);font-style:normal;font-weight:500}
+
+/* ===== STATUS BAR ===== */
+.status-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:4px 0;
+}
+
+/* ===== ERROR / OFFLINE ===== */
+.offline-banner{
+  position:absolute;top:48px;left:0;right:0;z-index:25;
+  background:rgba(255,93,93,0.08);
+  border-bottom:1px solid rgba(255,93,93,0.18);
+  padding:8px 24px;
+  display:flex;align-items:center;gap:10px;
+  font-size:13px;color:var(--error);
+}
+.offline-banner .text-muted{color:var(--text-2)}
+.error-state{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  height:100%;gap:14px;
+  text-align:center;
+  padding:0 48px;
+}
+.error-state__icon{color:var(--error);margin-bottom:4px}
+.error-state__title{
+  font-family:var(--font-t);font-size:20px;font-weight:600;
+  color:var(--text-1);
+}
+.error-state__text{
+  font-size:14px;color:var(--text-2);
+  max-width:360px;line-height:1.5;
+}
+.error-state__actions{
+  display:flex;gap:10px;margin-top:6px;
+}
+.error-state__fallback{
+  margin-top:10px;font-size:13px;color:var(--text-2);
+}
+.error-state__fallback a{color:var(--text-1);text-decoration:underline;text-underline-offset:2px}
+.nav-search-disabled{
+  opacity:0.35;cursor:not-allowed;pointer-events:none;
+  position:relative;
+}
+
+/* ===== FOOTER ===== */
+.inv-footer{
+  padding:6px 20px;
+  font-size:11px;color:var(--text-3);
+  border-top:1px solid var(--border);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes pulse{
+  0%,100%{opacity:.45}
+  50%{opacity:1}
+}
+@keyframes glow{
+  0%,100%{box-shadow:0 0 6px rgba(249,185,52,0.25)}
+  50%{box-shadow:0 0 14px rgba(249,185,52,0.50)}
+}
+@keyframes loading{
+  0%{opacity:.4}
+  50%{opacity:1}
+  100%{opacity:.4}
+}
+
+/* ===== HELPERS ===== */
+.flex{display:flex}.items-center{align-items:center}.gap-6{gap:6px}.gap-8{gap:8px}.gap-10{gap:10px}
+.ml-auto{margin-left:auto}.mr-4{margin-right:4px}
+.text-2{color:var(--text-2)}.text-3{color:var(--text-3)}
+.mono{font-family:var(--font-m);font-variant-numeric:tabular-nums}
+.uppercase{text-transform:uppercase;letter-spacing:0.06em}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+</style>
+</head>
+<body>
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗
+     ║  SCREEN 1 — SKY / EXPLORE  (First Visit)                      ║
+     ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="screen-label">1 &mdash; Sky / Explore (First Visit)</div>
+<div class="screen-frame">
+
+  <!-- Synthetic infrared sky -->
+  <svg width="1440" height="900" viewBox="0 0 1440 900" style="position:absolute;inset:0" aria-hidden="true">
+    <defs>
+      <radialGradient id="neb1" cx="28%" cy="38%" r="38%">
+        <stop offset="0%" stop-color="#B8336A" stop-opacity="0.055"/>
+        <stop offset="100%" stop-color="#07080B" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="neb2" cx="72%" cy="55%" r="32%">
+        <stop offset="0%" stop-color="#EE6A24" stop-opacity="0.04"/>
+        <stop offset="100%" stop-color="#07080B" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="neb3" cx="50%" cy="25%" r="45%">
+        <stop offset="0%" stop-color="#F9B934" stop-opacity="0.025"/>
+        <stop offset="100%" stop-color="#07080B" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="neb4" cx="85%" cy="30%" r="25%">
+        <stop offset="0%" stop-color="#D9483B" stop-opacity="0.035"/>
+        <stop offset="100%" stop-color="#07080B" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="neb5" cx="15%" cy="70%" r="30%">
+        <stop offset="0%" stop-color="#F6D86B" stop-opacity="0.02"/>
+        <stop offset="100%" stop-color="#07080B" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="vign" cx="50%" cy="50%" r="55%">
+        <stop offset="60%" stop-color="#07080B" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#07080B" stop-opacity="0.55"/>
+      </radialGradient>
+    </defs>
+    <rect width="1440" height="900" fill="#07080B"/>
+    <rect width="1440" height="900" fill="url(#neb1)"/>
+    <rect width="1440" height="900" fill="url(#neb2)"/>
+    <rect width="1440" height="900" fill="url(#neb3)"/>
+    <rect width="1440" height="900" fill="url(#neb4)"/>
+    <rect width="1440" height="900" fill="url(#neb5)"/>
+    <!-- Stars (only inside the sky area) -->
+    <circle cx="120" cy="134" r="1.2" fill="#ECEAE4" opacity=".55"/>
+    <circle cx="310" cy="88" r="0.8" fill="#ECEAE4" opacity=".35"/>
+    <circle cx="435" cy="210" r="1.4" fill="#ECEAE4" opacity=".48"/>
+    <circle cx="560" cy="160" r="0.7" fill="#ECEAE4" opacity=".30"/>
+    <circle cx="680" cy="310" r="1.1" fill="#ECEAE4" opacity=".50"/>
+    <circle cx="780" cy="76" r="0.9" fill="#ECEAE4" opacity=".42"/>
+    <circle cx="870" cy="260" r="1.5" fill="#F6D86B" opacity=".20"/>
+    <circle cx="950" cy="180" r="0.8" fill="#ECEAE4" opacity=".38"/>
+    <circle cx="1050" cy="330" r="1.0" fill="#ECEAE4" opacity=".44"/>
+    <circle cx="1180" cy="120" r="1.3" fill="#ECEAE4" opacity=".52"/>
+    <circle cx="1290" cy="240" r="0.7" fill="#ECEAE4" opacity=".28"/>
+    <circle cx="1350" cy="90" r="1.1" fill="#ECEAE4" opacity=".40"/>
+    <circle cx="200" cy="420" r="0.9" fill="#ECEAE4" opacity=".33"/>
+    <circle cx="380" cy="380" r="1.6" fill="#ECEAE4" opacity=".22"/>
+    <circle cx="600" cy="480" r="1.0" fill="#ECEAE4" opacity=".47"/>
+    <circle cx="820" cy="400" r="0.6" fill="#ECEAE4" opacity=".25"/>
+    <circle cx="1000" cy="440" r="1.2" fill="#F9B934" opacity=".15"/>
+    <circle cx="1130" cy="360" r="0.8" fill="#ECEAE4" opacity=".38"/>
+    <circle cx="1300" cy="480" r="1.0" fill="#ECEAE4" opacity=".30"/>
+    <circle cx="250" cy="560" r="0.7" fill="#ECEAE4" opacity=".32"/>
+    <circle cx="500" cy="530" r="1.3" fill="#ECEAE4" opacity=".28"/>
+    <circle cx="730" cy="580" r="0.9" fill="#ECEAE4" opacity=".40"/>
+    <circle cx="980" cy="560" r="1.1" fill="#ECEAE4" opacity=".35"/>
+    <circle cx="1200" cy="520" r="0.8" fill="#ECEAE4" opacity=".45"/>
+    <circle cx="150" cy="680" r="1.0" fill="#ECEAE4" opacity=".27"/>
+    <circle cx="400" cy="650" r="0.7" fill="#ECEAE4" opacity=".20"/>
+    <circle cx="660" cy="700" r="1.4" fill="#D9483B" opacity=".12"/>
+    <circle cx="900" cy="660" r="0.8" fill="#ECEAE4" opacity=".33"/>
+    <circle cx="1100" cy="630" r="1.0" fill="#ECEAE4" opacity=".38"/>
+    <!-- Vignette -->
+    <rect width="1440" height="900" fill="url(#vign)"/>
+  </svg>
+
+  <!-- Illustrative render label -->
+  <div style="position:absolute;bottom:8px;right:12px;z-index:5;font-family:var(--font-m);font-size:9px;color:var(--text-3);letter-spacing:0.04em;text-transform:uppercase;background:rgba(7,8,11,0.5);padding:2px 7px;border-radius:3px">Illustrative render &middot; SPHEREx infrared sky</div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar--glass">
+    <div class="nav-logo">[Name TBD]</div>
+    <div class="nav-links">
+      <span class="nav-link nav-link--active">Sky</span>
+      <span class="nav-link">Gallery</span>
+      <span class="nav-link">Missions</span>
+      <span class="nav-link">About</span>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn--icon" aria-label="Search" style="color:var(--text-2)">
+        <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Search bar (centered) -->
+  <div class="sky-search-wrap">
+    <div style="position:relative">
+      <div class="sky-search-icon icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      </div>
+      <div class="sky-search">Enter RA, Dec or an object name&hellip;</div>
+      <span class="sky-shortcut">Ctrl K</span>
+    </div>
+    <p class="sky-welcome">Explore the infrared sky. Spot what moves.</p>
+  </div>
+
+  <!-- Object cards -->
+  <div class="sky-cards">
+    <!-- WISE 0855 -->
+    <div class="sky-card">
+      <div class="sky-card__preview" style="background:linear-gradient(135deg,#0E0F13 0%,#1a120e 40%,#0E0F13 100%)">
+        <svg width="100%" height="100%" viewBox="0 0 240 120" style="position:absolute;inset:0" aria-hidden="true">
+          <circle cx="120" cy="58" r="3" fill="#F6D86B" opacity=".30"/>
+          <circle cx="120" cy="58" r="8" fill="#F6D86B" opacity=".06"/>
+          <circle cx="80" cy="40" r="1" fill="#ECEAE4" opacity=".25"/>
+          <circle cx="170" cy="80" r="1.2" fill="#ECEAE4" opacity=".20"/>
+          <circle cx="50" cy="90" r="0.8" fill="#ECEAE4" opacity=".18"/>
+        </svg>
+        <span class="sky-card__preview-label">Illustrative</span>
+      </div>
+      <div class="sky-card__body">
+        <div class="sky-card__name">WISE 0855&minus;0714</div>
+        <div class="sky-card__sub">One of the coldest neighbors</div>
+        <div class="sky-card__badges">
+          <span class="badge badge--gold">60-second challenge</span>
+          <span class="badge badge--type"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,18 8,10 12,14 16,6 20,12"/></svg> Moving</span>
+          <span class="badge badge--offline"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><polyline points="15 14 17 16 19 14"/></svg> Offline</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barnard's Star -->
+    <div class="sky-card">
+      <div class="sky-card__preview" style="background:linear-gradient(135deg,#0E0F13 0%,#15100e 50%,#0E0F13 100%)">
+        <svg width="100%" height="100%" viewBox="0 0 240 120" style="position:absolute;inset:0" aria-hidden="true">
+          <circle cx="115" cy="55" r="4" fill="#D9483B" opacity=".25"/>
+          <circle cx="115" cy="55" r="10" fill="#D9483B" opacity=".05"/>
+          <circle cx="60" cy="80" r="1" fill="#ECEAE4" opacity=".20"/>
+          <circle cx="190" cy="35" r="0.9" fill="#ECEAE4" opacity=".22"/>
+        </svg>
+        <span class="sky-card__preview-label">Illustrative</span>
+      </div>
+      <div class="sky-card__body">
+        <div class="sky-card__name">Barnard&rsquo;s Star</div>
+        <div class="sky-card__sub">The fastest star in the sky</div>
+        <div class="sky-card__badges">
+          <span class="badge badge--type"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,18 8,10 12,14 16,6 20,12"/></svg> Moving</span>
+          <span class="badge badge--offline"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><polyline points="15 14 17 16 19 14"/></svg> Offline</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Epsilon Indi B -->
+    <div class="sky-card">
+      <div class="sky-card__preview" style="background:linear-gradient(135deg,#0E0F13 0%,#110e14 50%,#0E0F13 100%)">
+        <svg width="100%" height="100%" viewBox="0 0 240 120" style="position:absolute;inset:0" aria-hidden="true">
+          <circle cx="108" cy="60" r="3" fill="#F7931A" opacity=".22"/>
+          <circle cx="130" cy="52" r="2.5" fill="#F9B934" opacity=".18"/>
+          <circle cx="70" cy="90" r="1" fill="#ECEAE4" opacity=".20"/>
+          <circle cx="200" cy="40" r="0.8" fill="#ECEAE4" opacity=".15"/>
+        </svg>
+        <span class="sky-card__preview-label">Illustrative</span>
+      </div>
+      <div class="sky-card__body">
+        <div class="sky-card__name">Epsilon Indi B</div>
+        <div class="sky-card__sub">Binary brown dwarfs</div>
+        <div class="sky-card__badges">
+          <span class="badge badge--type"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,18 8,10 12,14 16,6 20,12"/></svg> Moving</span>
+          <span class="badge badge--offline"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><polyline points="15 14 17 16 19 14"/></svg> Offline</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RW Aurigae -->
+    <div class="sky-card">
+      <div class="sky-card__preview" style="background:linear-gradient(135deg,#0E0F13 0%,#14100d 50%,#0E0F13 100%)">
+        <svg width="100%" height="100%" viewBox="0 0 240 120" style="position:absolute;inset:0" aria-hidden="true">
+          <circle cx="120" cy="58" r="5" fill="#EE6A24" opacity=".20"/>
+          <circle cx="120" cy="58" r="14" fill="#EE6A24" opacity=".04"/>
+          <circle cx="55" cy="35" r="0.9" fill="#ECEAE4" opacity=".18"/>
+          <circle cx="185" cy="85" r="1.1" fill="#ECEAE4" opacity=".22"/>
+        </svg>
+        <span class="sky-card__preview-label">Illustrative</span>
+      </div>
+      <div class="sky-card__body">
+        <div class="sky-card__name">RW Aurigae</div>
+        <div class="sky-card__sub">Erratic youth</div>
+        <div class="sky-card__badges">
+          <span class="badge badge--type"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M3 12l4-4 4 4M17 8l-4 4 4 4"/></svg> Variable</span>
+          <span class="badge badge--offline"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><polyline points="15 14 17 16 19 14"/></svg> Offline</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- R Draconis -->
+    <div class="sky-card">
+      <div class="sky-card__preview" style="background:linear-gradient(135deg,#0E0F13 0%,#160d0d 50%,#0E0F13 100%)">
+        <svg width="100%" height="100%" viewBox="0 0 240 120" style="position:absolute;inset:0" aria-hidden="true">
+          <circle cx="120" cy="58" r="6" fill="#B8336A" opacity=".18"/>
+          <circle cx="120" cy="58" r="16" fill="#B8336A" opacity=".04"/>
+          <circle cx="40" cy="70" r="0.7" fill="#ECEAE4" opacity=".17"/>
+          <circle cx="200" cy="30" r="1.0" fill="#ECEAE4" opacity=".20"/>
+        </svg>
+        <span class="sky-card__preview-label">Illustrative</span>
+      </div>
+      <div class="sky-card__body">
+        <div class="sky-card__name">R Draconis</div>
+        <div class="sky-card__sub">Pulsing giant</div>
+        <div class="sky-card__badges">
+          <span class="badge badge--type"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M3 12l4-4 4 4M17 8l-4 4 4 4"/></svg> Variable</span>
+          <span class="badge badge--offline"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><polyline points="15 14 17 16 19 14"/></svg> Offline</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stellarium-style Bottom Layers Bar & Cursor Readout -->
+  <div class="stellarium-bar">
+    <div class="cursor-readout">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+      <span>Cursor: <span class="coord-val">RA 08h 55m 10.8s</span> <span class="coord-val">Dec &minus;07&deg; 14&prime; 22.4&Prime;</span></span>
+      <span class="coord-sep">&vert;</span>
+      <span>J2000 &middot; FOV 45.0&deg;</span>
+    </div>
+
+    <div class="sky-ribbon-bar">
+      <span class="sky-ribbon-label">SPHEREx Layers</span>
+      <div class="sky-ribbon-items">
+        <div class="sky-ribbon-item"><span class="dot" style="background:var(--d1)"></span>D1 <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3)">0.75&mu;m</span></div>
+        <div class="sky-ribbon-item"><span class="dot" style="background:var(--d2)"></span>D2 <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3)">1.25&mu;m</span></div>
+        <div class="sky-ribbon-item"><span class="dot" style="background:var(--d3)"></span>D3 <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3)">2.00&mu;m</span></div>
+        <div class="sky-ribbon-item"><span class="dot" style="background:var(--d4)"></span>D4 <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3)">2.60&mu;m</span></div>
+        <div class="sky-ribbon-item"><span class="dot" style="background:var(--d5)"></span>D5 <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3)">3.80&mu;m</span></div>
+        <div class="sky-ribbon-item sky-ribbon-item--active"><span class="dot" style="background:var(--d6)"></span>D6 <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3)">4.60&mu;m</span></div>
+      </div>
+    </div>
+
+    <div class="sky-status-meta">SPHEREx All-Sky HiPS &middot; Illustrative render</div>
+  </div>
+
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗
+     ║  SCREEN 2 — INVESTIGATE: STREAMING  (2 of 4 frames)           ║
+     ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="screen-label">2 &mdash; Investigate: Streaming (2 of 4 frames of WISE 0855&minus;0714)</div>
+<div class="screen-frame">
+
+  <!-- Navbar (opaque) -->
+  <nav class="navbar navbar--solid">
+    <div class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+      Sky
+    </div>
+    <div class="nav-search-expanded">
+      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      <span>08h55m09s &minus;07&deg;14&prime;41&Prime;</span>
+      <span class="coord-sep">|</span>
+      <span class="obj-name">WISE 0855&minus;0714</span>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn--sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Share<span class="mono" style="font-size:10px;color:var(--text-3);margin-left:4px">S</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Layout -->
+  <div class="inv">
+    <!-- Main player area -->
+    <div class="inv-main">
+
+      <!-- Player canvas -->
+      <div class="player">
+        <svg width="100%" height="100%" viewBox="0 0 1060 520" preserveAspectRatio="xMidYMid slice" aria-label="SPHEREx observation of WISE 0855-0714 on 2025-05-05 at 4.60 µm, detector D6, epoch 1 of 4">
+          <defs>
+            <radialGradient id="fieldBg" cx="50%" cy="50%" r="55%">
+              <stop offset="0%" stop-color="#111214"/>
+              <stop offset="100%" stop-color="#0A0B0E"/>
+            </radialGradient>
+            <radialGradient id="src1" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#F6D86B" stop-opacity="0.20"/>
+              <stop offset="40%" stop-color="#F6D86B" stop-opacity="0.06"/>
+              <stop offset="100%" stop-color="#F6D86B" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect width="1060" height="520" fill="url(#fieldBg)"/>
+          <!-- Field noise simulation -->
+          <circle cx="530" cy="255" r="5" fill="url(#src1)"/>
+          <circle cx="530" cy="255" r="2" fill="#F6D86B" opacity=".12"/>
+          <!-- Field stars -->
+          <circle cx="280" cy="180" r="2.5" fill="#ECEAE4" opacity=".08"/>
+          <circle cx="280" cy="180" r="1" fill="#ECEAE4" opacity=".14"/>
+          <circle cx="720" cy="140" r="1.8" fill="#ECEAE4" opacity=".10"/>
+          <circle cx="720" cy="140" r="0.8" fill="#ECEAE4" opacity=".15"/>
+          <circle cx="400" cy="380" r="2" fill="#ECEAE4" opacity=".07"/>
+          <circle cx="400" cy="380" r="0.8" fill="#ECEAE4" opacity=".12"/>
+          <circle cx="800" cy="350" r="3" fill="#ECEAE4" opacity=".06"/>
+          <circle cx="800" cy="350" r="1.2" fill="#ECEAE4" opacity=".12"/>
+          <circle cx="650" cy="420" r="1.5" fill="#ECEAE4" opacity=".08"/>
+          <circle cx="180" cy="320" r="1.2" fill="#ECEAE4" opacity=".09"/>
+          <circle cx="900" cy="230" r="2" fill="#ECEAE4" opacity=".07"/>
+          <circle cx="350" cy="100" r="1" fill="#ECEAE4" opacity=".10"/>
+          <circle cx="600" cy="80" r="1.4" fill="#ECEAE4" opacity=".06"/>
+          <circle cx="150" cy="450" r="1.6" fill="#ECEAE4" opacity=".05"/>
+          <circle cx="950" cy="440" r="1.1" fill="#ECEAE4" opacity=".08"/>
+          <!-- Noise texture (subtle) -->
+          <rect x="100" y="100" width="1" height="1" fill="#ECEAE4" opacity=".03"/>
+          <rect x="300" y="250" width="1" height="1" fill="#ECEAE4" opacity=".02"/>
+          <rect x="500" y="150" width="1" height="1" fill="#ECEAE4" opacity=".025"/>
+          <rect x="700" y="300" width="1" height="1" fill="#ECEAE4" opacity=".02"/>
+          <rect x="850" y="180" width="1" height="1" fill="#ECEAE4" opacity=".03"/>
+        </svg>
+        <div class="player__label">Illustrative render</div>
+        <div class="player__meta-tl">
+          <span>2025-05-05</span>
+          <span class="sep">&middot;</span>
+          <span>&lambda; 4.60 &mu;m</span>
+          <span class="sep">&middot;</span>
+          <span>D6</span>
+          <span class="sep">&middot;</span>
+          <span>spherex_dr1</span>
+        </div>
+        <div class="player__meta-br">6.2&Prime;/px &middot; 2.1&prime; &times; 2.1&prime;</div>
+      </div>
+
+      <!-- Transport bar -->
+      <div class="transport">
+        <div class="transport-row transport-row--main">
+          <!-- Playback buttons -->
+          <div class="transport-group">
+            <button class="btn btn--icon btn--sm is-disabled" aria-label="First frame" title="First frame (Home)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="6" y2="18"/><polyline points="18,18 10,12 18,6"/></svg>
+            </button>
+            <button class="btn btn--icon btn--sm is-disabled" aria-label="Previous frame" title="Previous frame (&larr;)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17,18 9,12 17,6"/></svg>
+            </button>
+            <button class="btn btn--play is-disabled" title="Play (Space)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6,3 20,12 6,21"/></svg>
+              Play
+            </button>
+            <button class="btn btn--icon btn--sm" aria-label="Next frame" title="Next frame (&rarr;)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7,6 15,12 7,18"/></svg>
+            </button>
+            <button class="btn btn--icon btn--sm is-disabled" aria-label="Last frame" title="Last frame (End)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,6 14,12 6,18"/><line x1="18" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <!-- Frame slider -->
+          <div class="frame-slider">
+            <div class="frame-slider__fill" style="width:50%;background:var(--d6)"></div>
+            <div class="frame-slider__thumb" style="left:50%"></div>
+          </div>
+          <span class="frame-pos">2 / 4</span>
+
+          <div class="transport-sep"></div>
+
+          <!-- Speed -->
+          <span class="transport-label">Speed</span>
+          <div class="seg">
+            <span class="seg__item">0.5</span>
+            <span class="seg__item seg__item--active">1</span>
+            <span class="seg__item">2</span>
+            <span class="seg__item">3 fps</span>
+          </div>
+        </div>
+
+        <div class="transport-row">
+          <!-- Mode -->
+          <span class="transport-label">Mode</span>
+          <div class="seg">
+            <span class="seg__item seg__item--d6 seg__item--active">Blink<span class="shortcut">B</span></span>
+            <span class="seg__item is-disabled" title="Needs all frames to compute difference">Diff<span class="shortcut">D</span></span>
+            <span class="seg__item is-disabled" title="Needs all frames">Neg<span class="shortcut">N</span></span>
+            <span class="seg__item">D1&ndash;6<span class="shortcut">C</span></span>
+          </div>
+
+          <div class="transport-sep"></div>
+
+          <!-- Stretch -->
+          <span class="transport-label">Stretch</span>
+          <div class="seg">
+            <span class="seg__item seg__item--active">Asinh</span>
+            <span class="seg__item">Linear</span>
+            <span class="seg__item">Zscale</span>
+          </div>
+
+          <div class="transport-sep"></div>
+
+          <!-- Colormap -->
+          <span class="transport-label">Cmap</span>
+          <div class="seg">
+            <span class="seg__item seg__item--active">Grayscale</span>
+            <span class="seg__item">Viridis</span>
+            <span class="seg__item">Inferno</span>
+          </div>
+
+          <span class="ml-auto" style="font-size:11px;color:var(--text-3)">
+            <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            Fullscreen<span class="mono" style="font-size:9px;margin-left:3px">F</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Progress bar (streaming) -->
+      <div class="progress">
+        <div class="progress-bar">
+          <div class="progress-seg progress-seg--done"></div>
+          <div class="progress-seg progress-seg--done"></div>
+          <div class="progress-seg progress-seg--active"></div>
+          <div class="progress-seg progress-seg--queued"></div>
+        </div>
+        <div class="progress-text">
+          <span>Frame 2 of 4 &mdash; downloading&hellip; Blink needs &ge; 2 frames at the same &lambda;. <strong style="color:var(--text-1)">2 loaded</strong>, waiting for more.</span>
+          <span class="eta">~18 s remaining</span>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="inv-footer" style="margin-top:auto;border-top:1px solid var(--border);padding:6px 0;font-size:10px;color:var(--text-3)">
+        Data: NASA/IPAC Infrared Science Archive (IRSA) &middot; SPHEREx DR1 &middot; spherex_dr1 &middot; DOI pending &middot; Team Na za
+      </div>
+    </div>
+
+    <!-- Side panel -->
+    <div class="inv-panel">
+
+      <!-- Epochs -->
+      <div class="ps">
+        <div class="ps__title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Epochs
+        </div>
+        <table class="epoch-table">
+          <thead><tr><th>#</th><th>Date</th><th>&lambda; (<span style="text-transform:none">&micro;m</span>)</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr class="is-active">
+              <td>1</td>
+              <td>2025-05-05</td>
+              <td>4.60</td>
+              <td><span class="epoch-dot epoch-dot--done"></span>Loaded</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>2025-11-07</td>
+              <td>4.61</td>
+              <td><span class="epoch-dot epoch-dot--done"></span>Loaded</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>2025-12-12</td>
+              <td>4.62</td>
+              <td><span class="epoch-dot epoch-dot--active"></span>Downloading&hellip;</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>2026-05-02</td>
+              <td>4.63</td>
+              <td><span class="epoch-dot epoch-dot--queued"></span>Queued</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Detector selector -->
+      <div class="ps">
+        <div class="ps__title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+          Detector
+        </div>
+        <div class="det-grid">
+          <div class="det-btn" data-det="1">D1<span class="det-key">1</span></div>
+          <div class="det-btn" data-det="2">D2<span class="det-key">2</span></div>
+          <div class="det-btn" data-det="3">D3<span class="det-key">3</span></div>
+          <div class="det-btn" data-det="4">D4<span class="det-key">4</span></div>
+          <div class="det-btn" data-det="5">D5<span class="det-key">5</span></div>
+          <div class="det-btn det-btn--active" data-det="6">D6<span class="det-key">6</span></div>
+        </div>
+        <div class="det-info">&lambda; &asymp; 4.60&ndash;4.63 &mu;m</div>
+        <!-- Wavelength ramp visualization -->
+        <div style="display:flex;gap:2px;margin-top:8px;height:4px;border-radius:2px;overflow:hidden">
+          <div style="flex:1;background:var(--d1)"></div>
+          <div style="flex:1;background:var(--d2)"></div>
+          <div style="flex:1;background:var(--d3)"></div>
+          <div style="flex:1;background:var(--d4)"></div>
+          <div style="flex:1;background:var(--d5)"></div>
+          <div style="flex:1.5;background:var(--d6);border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(246,216,107,0.3)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:3px">
+          <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3)">0.75 &mu;m</span>
+          <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3)">5.0 &mu;m</span>
+        </div>
+      </div>
+
+      <!-- Frame metadata -->
+      <div class="ps">
+        <div class="ps__title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          Frame Metadata
+        </div>
+        <table class="meta-table">
+          <tr><td>Date</td><td>2025-05-05</td></tr>
+          <tr><td>&lambda; center</td><td>4.60 &mu;m</td></tr>
+          <tr><td>Detector</td><td>D6</td></tr>
+          <tr><td>Collection</td><td>spherex_dr1</td></tr>
+          <tr><td>Pixel scale</td><td>6.2&Prime;/px</td></tr>
+          <tr><td>Flags</td><td>0.6 %</td></tr>
+          <tr><td>Obs ID</td><td>2025W19_1B_0116_1</td></tr>
+        </table>
+      </div>
+
+      <!-- Spectral profile (collapsed) -->
+      <div class="collapsible-head">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,6 15,12 9,18"/></svg>
+        Spectral Profile D1&ndash;D6
+      </div>
+
+      <!-- What am I seeing (collapsed) -->
+      <div class="collapsible-head">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,6 15,12 9,18"/></svg>
+        What am I seeing?
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗
+     ║  SCREEN 3 — INVESTIGATE: COMPLETE &middot; DIFFERENCE + PATH      ║
+     ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="screen-label">3 &mdash; Investigate: Complete (Difference Mode + Predicted Path + Spectral Profile)</div>
+<div class="screen-frame">
+
+  <!-- Navbar (opaque) -->
+  <nav class="navbar navbar--solid">
+    <div class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+      Sky
+    </div>
+    <div class="nav-search-expanded">
+      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      <span>08h55m09s &minus;07&deg;14&prime;41&Prime;</span>
+      <span class="coord-sep">|</span>
+      <span class="obj-name">WISE 0855&minus;0714</span>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn--sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Share<span class="mono" style="font-size:10px;color:var(--text-3);margin-left:4px">S</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Layout -->
+  <div class="inv">
+    <!-- Main player area -->
+    <div class="inv-main">
+
+      <!-- Player canvas (Difference image + Predicted path overlay) -->
+      <div class="player">
+        <svg width="100%" height="100%" viewBox="0 0 1060 490" preserveAspectRatio="xMidYMid slice" aria-label="Difference image of WISE 0855-0714 between epoch 2026-05-02 and 2025-05-05, showing motion dipole and predicted path">
+          <defs>
+            <radialGradient id="diffBg" cx="50%" cy="50%" r="55%">
+              <stop offset="0%" stop-color="#141519"/>
+              <stop offset="100%" stop-color="#090A0D"/>
+            </radialGradient>
+            <!-- Negative depression (where object was at epoch 1) -->
+            <radialGradient id="dipoleDark" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#020305" stop-opacity="0.95"/>
+              <stop offset="50%" stop-color="#07080B" stop-opacity="0.70"/>
+              <stop offset="100%" stop-color="#141519" stop-opacity="0"/>
+            </radialGradient>
+            <!-- Positive emission (where object moved to at epoch 4) -->
+            <radialGradient id="dipoleLight" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+              <stop offset="30%" stop-color="#F6D86B" stop-opacity="0.80"/>
+              <stop offset="65%" stop-color="#EE6A24" stop-opacity="0.30"/>
+              <stop offset="100%" stop-color="#141519" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Background difference noise floor -->
+          <rect width="1060" height="490" fill="url(#diffBg)"/>
+
+          <!-- Stationary field subtraction residuals (subtle speckles) -->
+          <circle cx="280" cy="180" r="1.5" fill="#ECEAE4" opacity=".03"/>
+          <circle cx="282" cy="180" r="1.5" fill="#020305" opacity=".04"/>
+          <circle cx="720" cy="140" r="1.2" fill="#ECEAE4" opacity=".03"/>
+          <circle cx="400" cy="380" r="1.8" fill="#ECEAE4" opacity=".02"/>
+          <circle cx="800" cy="350" r="2.0" fill="#020305" opacity=".03"/>
+          <circle cx="180" cy="320" r="1.0" fill="#ECEAE4" opacity=".03"/>
+          <circle cx="900" cy="230" r="1.4" fill="#020305" opacity=".02"/>
+
+          <!-- THE MOTION DIPOLE (Epoch 1 negative depression + Epoch 4 positive peak) -->
+          <!-- Epoch 1 negative hole -->
+          <circle cx="440" cy="245" r="18" fill="url(#dipoleDark)"/>
+          <circle cx="440" cy="245" r="5" fill="#010203" opacity=".95"/>
+
+          <!-- Epoch 4 positive peak -->
+          <circle cx="620" cy="245" r="22" fill="url(#dipoleLight)"/>
+          <circle cx="620" cy="245" r="4.5" fill="#FFFFFF"/>
+
+          <!-- Annotations of dipole poles -->
+          <text x="420" y="249" font-family="var(--font-b)" font-size="11" fill="var(--text-3)" text-anchor="end">&minus; Ep 1 (2025-05-05)</text>
+          <text x="648" y="249" font-family="var(--font-b)" font-size="11" fill="var(--d6)" text-anchor="start">+ Ep 4 (2026-05-02)</text>
+          <text x="530" y="320" font-family="var(--font-m)" font-size="10" fill="var(--text-3)" text-anchor="middle">Zoom &times;8 &middot; spacing proportional to time</text>
+
+          <!-- PREDICTED TRAJECTORY (cyan reserved) -->
+          <line x1="440" y1="245" x2="620" y2="245" stroke="#5CE1E6" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.85"/>
+          <circle cx="440" cy="245" r="10" stroke="#5CE1E6" stroke-width="1.5" fill="none"/>
+          <text x="440" y="226" font-family="var(--font-t)" font-size="11" font-weight="700" fill="#5CE1E6" text-anchor="middle">1</text>
+          <text x="440" y="276" font-family="var(--font-m)" font-size="9" fill="#5CE1E6" text-anchor="middle">May 25</text>
+          <circle cx="532" cy="245" r="10" stroke="#5CE1E6" stroke-width="1.5" fill="none"/>
+          <text x="532" y="226" font-family="var(--font-t)" font-size="11" font-weight="700" fill="#5CE1E6" text-anchor="middle">2</text>
+          <text x="526" y="276" font-family="var(--font-m)" font-size="9" fill="#5CE1E6" text-anchor="end">Nov 25</text>
+          <circle cx="550" cy="245" r="10" stroke="#5CE1E6" stroke-width="1.5" fill="none"/>
+          <text x="552" y="226" font-family="var(--font-t)" font-size="11" font-weight="700" fill="#5CE1E6" text-anchor="middle">3</text>
+          <text x="556" y="276" font-family="var(--font-m)" font-size="9" fill="#5CE1E6" text-anchor="start">Dec 25</text>
+          <circle cx="620" cy="245" r="10" stroke="#5CE1E6" stroke-width="1.5" fill="none"/>
+          <text x="620" y="226" font-family="var(--font-t)" font-size="11" font-weight="700" fill="#5CE1E6" text-anchor="middle">4</text>
+          <text x="620" y="276" font-family="var(--font-m)" font-size="9" fill="#5CE1E6" text-anchor="middle">May 26</text>
+        </svg>
+
+        <!-- Legend / Path overlay badge -->
+        <div class="path-legend">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5CE1E6" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="17"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+          <span>Predicted path (Proper motion: &mu; = &minus;8.11&Prime;/yr &middot; 4 epochs)</span>
+        </div>
+
+        <div class="player__label">Difference: Ep 4 &minus; Ep 1 &middot; Illustrative render</div>
+
+        <!-- Canvas bottom metadata -->
+        <div class="player__meta-tl">
+          <span>&Delta;t: 362 days</span>
+          <span class="sep">&middot;</span>
+          <span>&lambda; 4.60&ndash;4.63 &mu;m</span>
+          <span class="sep">&middot;</span>
+          <span>D6</span>
+          <span class="sep">&middot;</span>
+          <span>SPHEREx DR1</span>
+        </div>
+        <div class="player__meta-br">6.2&Prime;/px &middot; Total shift: 1.3 px (8.1&Prime;)</div>
+      </div>
+
+      <!-- Difference descriptive caption -->
+      <div class="diff-caption">
+        WISE 0855&minus;0714 shifted ~8.1&Prime; (~1.3 px) across 362 days. The <em>bright-dark dipole</em> reveals the motion vector: dark depression at initial position (2025-05-05) and bright peak at final position (2026-05-02), matching the catalog predicted proper motion path.
+      </div>
+
+      <!-- Transport bar -->
+      <div class="transport">
+        <div class="transport-row transport-row--main">
+          <!-- Playback buttons -->
+          <div class="transport-group">
+            <button class="btn btn--icon btn--sm" aria-label="First frame" title="First frame (Home)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="6" y2="18"/><polyline points="18,18 10,12 18,6"/></svg>
+            </button>
+            <button class="btn btn--icon btn--sm" aria-label="Previous frame" title="Previous frame (&larr;)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17,18 9,12 17,6"/></svg>
+            </button>
+            <button class="btn btn--play" title="Play (Space)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6,3 20,12 6,21"/></svg>
+              Play
+            </button>
+            <button class="btn btn--icon btn--sm" aria-label="Next frame" title="Next frame (&rarr;)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7,6 15,12 7,18"/></svg>
+            </button>
+            <button class="btn btn--icon btn--sm" aria-label="Last frame" title="Last frame (End)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,6 14,12 6,18"/><line x1="18" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <!-- Frame slider -->
+          <div class="frame-slider">
+            <div class="frame-slider__fill" style="width:100%;background:var(--d6)"></div>
+            <div class="frame-slider__thumb" style="left:100%"></div>
+          </div>
+          <span class="frame-pos">4 / 4</span>
+
+          <div class="transport-sep"></div>
+
+          <!-- Speed -->
+          <span class="transport-label">Speed</span>
+          <div class="seg">
+            <span class="seg__item">0.5</span>
+            <span class="seg__item seg__item--active">1</span>
+            <span class="seg__item">2</span>
+            <span class="seg__item">3 fps</span>
+          </div>
+
+          <div class="transport-sep"></div>
+
+          <span class="badge badge--success">All 4 frames loaded &check;</span>
+        </div>
+
+        <div class="transport-row">
+          <!-- Mode -->
+          <span class="transport-label">Mode</span>
+          <div class="seg">
+            <span class="seg__item">Blink<span class="shortcut">B</span></span>
+            <span class="seg__item seg__item--d6 seg__item--active">Diff<span class="shortcut">D</span></span>
+            <span class="seg__item">Neg<span class="shortcut">N</span></span>
+            <span class="seg__item">D1&ndash;6<span class="shortcut">C</span></span>
+          </div>
+
+          <div class="transport-sep"></div>
+
+          <!-- Stretch -->
+          <span class="transport-label">Stretch</span>
+          <div class="seg">
+            <span class="seg__item seg__item--active">Asinh</span>
+            <span class="seg__item">Linear</span>
+            <span class="seg__item">Zscale</span>
+          </div>
+
+          <div class="transport-sep"></div>
+
+          <!-- Colormap -->
+          <span class="transport-label">Cmap</span>
+          <div class="seg">
+            <span class="seg__item seg__item--active">Grayscale</span>
+            <span class="seg__item">Viridis</span>
+            <span class="seg__item">Inferno</span>
+          </div>
+
+          <span class="ml-auto" style="font-size:11px;color:var(--text-3)">
+            <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            Fullscreen<span class="mono" style="font-size:9px;margin-left:3px">F</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="inv-footer" style="margin-top:auto;border-top:1px solid var(--border);padding:6px 0;font-size:10px;color:var(--text-3)">
+        Data: NASA/IPAC Infrared Science Archive (IRSA) &middot; SPHEREx DR1 &middot; spherex_dr1 &middot; DOI pending &middot; Team Na za
+      </div>
+    </div>
+
+    <!-- Side panel -->
+    <div class="inv-panel">
+
+      <!-- Epochs -->
+      <div class="ps">
+        <div class="ps__title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Epochs (All 4 Verified)
+        </div>
+        <table class="epoch-table">
+          <thead><tr><th>#</th><th>Date</th><th>&lambda; (<span style="text-transform:none">&micro;m</span>)</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>2025-05-05</td>
+              <td>4.60</td>
+              <td><span class="epoch-dot epoch-dot--done"></span>Loaded</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>2025-11-07</td>
+              <td>4.61</td>
+              <td><span class="epoch-dot epoch-dot--done"></span>Loaded</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>2025-12-12</td>
+              <td>4.62</td>
+              <td><span class="epoch-dot epoch-dot--done"></span>Loaded</td>
+            </tr>
+            <tr class="is-active">
+              <td>4</td>
+              <td>2026-05-02</td>
+              <td>4.63</td>
+              <td><span class="epoch-dot epoch-dot--done"></span>Loaded</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Detector selector -->
+      <div class="ps">
+        <div class="ps__title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+          Detector
+        </div>
+        <div class="det-grid">
+          <div class="det-btn" data-det="1">D1<span class="det-key">1</span></div>
+          <div class="det-btn" data-det="2">D2<span class="det-key">2</span></div>
+          <div class="det-btn" data-det="3">D3<span class="det-key">3</span></div>
+          <div class="det-btn" data-det="4">D4<span class="det-key">4</span></div>
+          <div class="det-btn" data-det="5">D5<span class="det-key">5</span></div>
+          <div class="det-btn det-btn--active" data-det="6">D6<span class="det-key">6</span></div>
+        </div>
+        <div class="det-info">&lambda; &asymp; 4.60&ndash;4.63 &mu;m</div>
+        <!-- Wavelength ramp visualization -->
+        <div style="display:flex;gap:2px;margin-top:8px;height:4px;border-radius:2px;overflow:hidden">
+          <div style="flex:1;background:var(--d1)"></div>
+          <div style="flex:1;background:var(--d2)"></div>
+          <div style="flex:1;background:var(--d3)"></div>
+          <div style="flex:1;background:var(--d4)"></div>
+          <div style="flex:1;background:var(--d5)"></div>
+          <div style="flex:1.5;background:var(--d6);border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(246,216,107,0.3)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:3px">
+          <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3)">0.75 &mu;m</span>
+          <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3)">5.0 &mu;m</span>
+        </div>
+      </div>
+
+      <!-- Frame metadata -->
+      <div class="ps">
+        <div class="ps__title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          Frame Metadata (Ep 4)
+        </div>
+        <table class="meta-table">
+          <tr><td>Date</td><td>2026-05-02</td></tr>
+          <tr><td>&lambda; center</td><td>4.63 &mu;m</td></tr>
+          <tr><td>Detector</td><td>D6</td></tr>
+          <tr><td>Collection</td><td>spherex_dr1</td></tr>
+          <tr><td>Pixel scale</td><td>6.2&Prime;/px</td></tr>
+          <tr><td>Flags</td><td>4.9 %</td></tr>
+          <tr><td>Obs ID</td><td>2026W18_2A_0342_1</td></tr>
+        </table>
+      </div>
+
+      <!-- Spectral profile D1-D6 (EXPANDED) -->
+      <div class="collapsible-head" style="border-bottom:none">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 12,15 18,9"/></svg>
+        Spectral Profile D1&ndash;D6
+        <span class="badge badge--type" style="margin-left:auto;font-size:9px">Observable Plot</span>
+      </div>
+      <div class="collapsible-body is-open">
+        <!-- SVG Spectral Profile Chart -->
+        <svg class="profile-chart" viewBox="0 0 316 110" height="110" aria-label="Spectral energy distribution across detectors D1 to D6">
+          <defs>
+            <linearGradient id="chartFill" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#B8336A" stop-opacity="0.10"/>
+              <stop offset="30%" stop-color="#EE6A24" stop-opacity="0.15"/>
+              <stop offset="70%" stop-color="#F9B934" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#F6D86B" stop-opacity="0.35"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Grid horizontal lines -->
+          <line x1="24" y1="15" x2="304" y2="15" stroke="var(--border)" stroke-width="1"/>
+          <line x1="24" y1="45" x2="304" y2="45" stroke="var(--border)" stroke-width="1"/>
+          <line x1="24" y1="75" x2="304" y2="75" stroke="var(--border)" stroke-width="1"/>
+          <line x1="24" y1="95" x2="304" y2="95" stroke="var(--border-strong)" stroke-width="1"/>
+
+          <!-- Area fill -->
+          <polygon points="30,95 30,93 82,90 134,84 186,68 238,36 290,14 290,95" fill="url(#chartFill)"/>
+
+          <!-- Connecting curve line -->
+          <polyline points="30,93 82,90 134,84 186,68 238,36 290,14" fill="none" stroke="rgba(236,234,228,0.4)" stroke-width="1.5" stroke-dasharray="2,2"/>
+
+          <!-- D1 to D6 points with thermal ramp colors -->
+          <!-- D1 -->
+          <circle cx="30" cy="93" r="3.5" fill="var(--d1)"/>
+          <text x="30" y="106" font-family="var(--font-t)" font-size="9" font-weight="600" fill="var(--d1)" text-anchor="middle">D1</text>
+          <!-- D2 -->
+          <circle cx="82" cy="90" r="3.5" fill="var(--d2)"/>
+          <text x="82" y="106" font-family="var(--font-t)" font-size="9" font-weight="600" fill="var(--d2)" text-anchor="middle">D2</text>
+          <!-- D3 -->
+          <circle cx="134" cy="84" r="3.5" fill="var(--d3)"/>
+          <text x="134" y="106" font-family="var(--font-t)" font-size="9" font-weight="600" fill="var(--d3)" text-anchor="middle">D3</text>
+          <!-- D4 -->
+          <circle cx="186" cy="68" r="4" fill="var(--d4)"/>
+          <text x="186" y="106" font-family="var(--font-t)" font-size="9" font-weight="600" fill="var(--d4)" text-anchor="middle">D4</text>
+          <!-- D5 -->
+          <circle cx="238" cy="36" r="4.5" fill="var(--d5)"/>
+          <text x="238" y="106" font-family="var(--font-t)" font-size="9" font-weight="600" fill="var(--d5)" text-anchor="middle">D5</text>
+          <!-- D6 (Peak) -->
+          <circle cx="290" cy="14" r="5" fill="var(--d6)"/>
+          <circle cx="290" cy="14" r="9" fill="none" stroke="var(--d6)" stroke-width="1" opacity=".5"/>
+          <text x="290" y="106" font-family="var(--font-t)" font-size="9" font-weight="600" fill="var(--d6)" text-anchor="middle">D6</text>
+
+          <!-- Y axis label -->
+          <text x="20" y="18" class="profile-axis-label" text-anchor="end">1.0</text>
+          <text x="20" y="58" class="profile-axis-label" text-anchor="end">0.5</text>
+          <text x="20" y="96" class="profile-axis-label" text-anchor="end">0</text>
+        </svg>
+        <div style="font-size:11px;color:var(--text-2);margin-top:4px;line-height:1.4">
+          Peak flux in <strong style="color:var(--d6)">D5&ndash;D6 (&lambda; &gt; 4 &mu;m)</strong>. Undetected in D1&ndash;D3: expected for a very cold Y dwarf (~250 K). <em>Illustrative profile &mdash; validate with real fluxes.</em>
+        </div>
+      </div>
+
+      <!-- What am I seeing (EXPANDED) -->
+      <div class="collapsible-head" style="border-bottom:none">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 12,15 18,9"/></svg>
+        What am I seeing?
+      </div>
+      <div class="collapsible-body is-open">
+        <div class="what-body">
+          <strong>WISE 0855&minus;0714</strong> is one of the coldest known sub-stellar objects, situated just 7.4 light-years away. With a surface temperature around &minus;23 &deg;C (250 K)&mdash;colder than Antarctic ice&mdash;it emits almost exclusively in the thermal infrared.
+          <p style="margin-top:6px">In <strong>Difference Mode</strong>, subtracting the first epoch (2025-05-05) from the latest (2026-05-02) cancels static background stars, isolating the brown dwarf as a distinct <em>bright-dark dipole</em>. The 4 numbered cyan markers confirm its observed shift matches the catalog proper motion vector (&mu; &asymp; 8.1&Prime;/yr).</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗
+     ║  SCREEN 4 — ERROR / OFFLINE: IRSA UNAVAILABLE                 ║
+     ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="screen-label">4 &mdash; Error / Offline: IRSA Server Unavailable (Graceful Degradation)</div>
+<div class="screen-frame">
+
+  <!-- Navbar (opaque) -->
+  <nav class="navbar navbar--solid">
+    <div class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+      Sky
+    </div>
+    <div class="nav-search-expanded nav-search-disabled" title="Search requires a live connection to IRSA">
+      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/><line x1="8" y1="8" x2="14" y2="14"/></svg>
+      <span style="color:var(--text-3)">Search unavailable offline (connection lost)</span>
+      <span class="coord-sep">|</span>
+      <span class="obj-name" style="color:var(--text-3)">IRSA Required</span>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn--sm is-disabled">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Share<span class="mono" style="font-size:10px;color:var(--text-3);margin-left:4px">S</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Offline banner directly beneath navbar -->
+  <div class="offline-banner">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.61 16.95A5 5 0 0 0 18 10h-1.26a8 8 0 0 0-7.05-6M5 5a8 8 0 0 0-4 7h1.18a3 3 0 0 0 .82 4.41M1 1l22 22"/></svg>
+    <span><strong>Offline &mdash; IRSA data server unreachable.</strong> Showing precomputed cache options. Free-coordinate search requires an active connection.</span>
+    <span class="ml-auto" style="display:flex;gap:12px;align-items:center">
+      <span class="text-muted" style="font-size:12px">5 demo objects cached</span>
+      <button class="btn btn--sm btn--error" style="background:rgba(255,93,93,0.12)">Switch to Gallery &rarr;</button>
+    </span>
+  </div>
+
+  <!-- Layout (adjusted height for banner) -->
+  <div class="inv" style="margin-top:84px;height:calc(900px - 84px)">
+    <!-- Main area -->
+    <div class="inv-main">
+
+      <!-- Player canvas replaced by full Error State -->
+      <div class="player">
+        <div class="error-state">
+          <svg class="error-state__icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+            <line x1="6" y1="6" x2="6.01" y2="6"/>
+            <line x1="6" y1="18" x2="6.01" y2="18"/>
+            <path d="M13 2l-2 10h4l-2 10" stroke="var(--error)" stroke-width="1.5"/>
+          </svg>
+          <div class="error-state__title">Couldn&rsquo;t reach the data server</div>
+          <div class="error-state__text">
+            IRSA (NASA/IPAC TAP service at <span class="mono" style="font-size:12px;color:var(--text-1)">spherex.obscore</span>) did not respond after 30 seconds. This might be temporary archive maintenance or wifi disruption in the venue.
+          </div>
+          <div class="error-state__actions">
+            <!-- Recommended primary action with focus ring -->
+            <button class="btn btn--play mock-focus" style="border-color:var(--focus);background:rgba(236,234,228,0.12)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Load precomputed data
+            </button>
+            <!-- Secondary retry action -->
+            <button class="btn btn--error">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              Retry connection
+            </button>
+          </div>
+          <div class="error-state__fallback">
+            Or explore offline: <a href="#" style="color:var(--text-1);text-decoration:underline">Load Gallery (5 precomputed objects) &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transport bar (disabled) -->
+      <div class="transport" style="opacity:0.35;pointer-events:none">
+        <div class="transport-row transport-row--main">
+          <div class="transport-group">
+            <button class="btn btn--icon btn--sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="6" y2="18"/><polyline points="18,18 10,12 18,6"/></svg></button>
+            <button class="btn btn--icon btn--sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17,18 9,12 17,6"/></svg></button>
+            <button class="btn btn--play"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6,3 20,12 6,21"/></svg> Play</button>
+            <button class="btn btn--icon btn--sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7,6 15,12 7,18"/></svg></button>
+            <button class="btn btn--icon btn--sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,6 14,12 6,18"/><line x1="18" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+          <div class="frame-slider">
+            <div class="frame-slider__fill" style="width:0%"></div>
+            <div class="frame-slider__thumb" style="left:0%"></div>
+          </div>
+          <span class="frame-pos">0 / 0</span>
+          <div class="transport-sep"></div>
+          <span class="badge badge--error">Disconnected</span>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="inv-footer" style="margin-top:auto;border-top:1px solid var(--border);padding:6px 0;font-size:10px;color:var(--text-3)">
+        Offline fallback active &middot; Static precalculated assets available from GitHub Pages &middot; Team Na za
+      </div>
+    </div>
+
+    <!-- Side panel -->
+    <div class="inv-panel">
+
+      <!-- Epochs (all failed) -->
+      <div class="ps">
+        <div class="ps__title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Epochs (Query Failed)
+        </div>
+        <table class="epoch-table">
+          <thead><tr><th>#</th><th>Date</th><th>&lambda; (<span style="text-transform:none">&micro;m</span>)</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>2025-05-05</td>
+              <td>&mdash;</td>
+              <td style="color:var(--error)"><span class="epoch-dot epoch-dot--error"></span>Timeout</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>2025-11-07</td>
+              <td>&mdash;</td>
+              <td style="color:var(--error)"><span class="epoch-dot epoch-dot--error"></span>Timeout</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>2025-12-12</td>
+              <td>&mdash;</td>
+              <td style="color:var(--error)"><span class="epoch-dot epoch-dot--error"></span>Timeout</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>2026-05-02</td>
+              <td>&mdash;</td>
+              <td style="color:var(--error)"><span class="epoch-dot epoch-dot--error"></span>Timeout</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Detector selector -->
+      <div class="ps" style="opacity:0.5">
+        <div class="ps__title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+          Detector (Offline Default)
+        </div>
+        <div class="det-grid">
+          <div class="det-btn is-disabled">D1</div>
+          <div class="det-btn is-disabled">D2</div>
+          <div class="det-btn is-disabled">D3</div>
+          <div class="det-btn is-disabled">D4</div>
+          <div class="det-btn is-disabled">D5</div>
+          <div class="det-btn det-btn--active">D6</div>
+        </div>
+        <div class="det-info" style="color:var(--text-3)">&lambda; cached profile available</div>
+      </div>
+
+      <!-- Frame metadata -->
+      <div class="ps" style="opacity:0.5">
+        <div class="ps__title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          Frame Metadata
+        </div>
+        <table class="meta-table">
+          <tr><td>Date</td><td>&mdash;</td></tr>
+          <tr><td>&lambda; center</td><td>&mdash;</td></tr>
+          <tr><td>Detector</td><td>&mdash;</td></tr>
+          <tr><td>Collection</td><td>spherex_dr1</td></tr>
+          <tr><td>Pixel scale</td><td>6.2&Prime;/px</td></tr>
+          <tr><td>Flags</td><td>&mdash;</td></tr>
+          <tr><td>Obs ID</td><td>&mdash;</td></tr>
+        </table>
+      </div>
+
+      <!-- Offline recovery guidance callout -->
+      <div style="padding:14px 18px;margin:12px;border-radius:var(--radius);background:rgba(255,93,93,0.06);border:1px solid rgba(255,93,93,0.18)">
+        <div style="font-family:var(--font-t);font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--error);margin-bottom:6px">Offline Precomputed Ready</div>
+        <div style="font-size:12px;line-height:1.45;color:var(--text-2)">
+          All 5 hackathon challenge targets (WISE 0855, Barnard&rsquo;s Star, Epsilon Indi B, RW Aurigae, and R Draconis) are pre-packaged in static storage and can be inspected without internet connectivity.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
