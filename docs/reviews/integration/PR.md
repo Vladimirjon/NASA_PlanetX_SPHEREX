@@ -20,13 +20,13 @@ mise run smoke     # live series for the 5 objects (needs api-dev)
 ## Gates (run on this branch, 2026-11-14)
 | Check | Result |
 | --- | --- |
-| backend `pytest` | 141 passed |
+| backend `pytest` | 143 passed |
 | backend `ruff check` / `ruff format --check` | All checks passed / 59 files formatted |
 | backend `pyright` (strict) | 0 errors |
 | `contracts/openapi.yaml` | valid, v0.3.0 |
 | frontend `pnpm lint` | OK |
 | frontend `pnpm build` | OK |
-| frontend `pnpm test` | 98 passed, **1 intermittent** (`tests/navigation.test.ts` SIN drag property test fails ~1/3 runs on a large drag near the disc limb at Dec −74°) |
+| frontend `pnpm test` | 105 passed; full suite 10/10 runs green (navigation property test made deterministic, polar SIN drag limit explicit) |
 | live smoke, 5 objects | all build series (2–4 visits), cold 8–18 s, cached 1 ms |
 
 ## ADR renumbering (team ranges of 10; Dax = 0040–0049)
@@ -42,9 +42,7 @@ mise run smoke     # live series for the 5 objects (needs api-dev)
 Strict reviewers (science, UX, performance, parity) under `docs/reviews/sky-engine/`, `docs/reviews/app/`, `docs/reviews/search/`, `docs/reviews/analyzer/`. Fixed: mirrored sky, duplicate tile requests, per-frame allocations, touch controls, coordinate formatting, single shared circuit breaker. 
 
 ## Known gaps / Pendiente
-- App search box does not call `/api/v1/search` yet (types already generated).
-- App uses its own fly-to tween instead of `engine.flyTo`.
-- Intermittent navigation property test (above).
+- Fixed in this PR after review: IRSA 503 bursts during fly-to (tiles now via our backend proxy with retries/concurrency limit and destination-first loading), search box wired to `/api/v1/search`, native `engine.flyTo`, flaky navigation test. A separate intermittent case in AIT near the pole is still under investigation.
 - Visual parity review vs IRSA/Aladin (R1) must be re-run on the new engine.
 - UI needs another design round (product owner feedback).
 - `frontend/tests/fixtures/healpix-million.bin` is 1.9 MB (test fixture; consider generating at test time).
