@@ -28,3 +28,11 @@ run = "uv run --no-project python scripts/sync_skills.py --check"
 
 # Added when the stack is approved and frontend/ + backend/ exist (see docs/context/08):
 # dev, dev:api, dev:web, test, lint, fmt, build, gen-api, precompute
+
+[tasks.grid-spherex]
+description = "Generate the reproducible SPHEREx DR1 sky grid"
+run = "uv run --locked --script scripts/generate-spherex-grid.py --output spherex-grid"
+
+[tasks.grid-test]
+description = "Test SPHEREx grid generation"
+run = "uv run --python 3.13 --with astropy==8.0.2 --with astropy-healpix==1.1.3 --with numpy==2.5.4 --with hpgeom==1.7.1 python -m unittest discover -s tests -p test_spherex_grid.py"

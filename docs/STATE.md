@@ -3,6 +3,15 @@
 Actualizado: sáb 14-nov-2026, tarde (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- **Fase 0 (bases)** en rama `feat/phase0-foundations`: ADR 0006 (dos pistas, caché local→IRSA, Rust/Redis solo si se mide), `contracts/openapi.yaml` v0.1 válido, fichas 0002 (analizador) y 0003 (visor propio, sin Aladin) en borrador; agente físico redacta `docs/context/12`.
+- Datos reales medidos hoy (SIA2): QR3 **sí** tiene datos de Barnard, Eps Indi B, RW Aur y R Dra (ago–oct 2026); WISE 0855 solo DR1. Cada objeto tiene 3–6 pasadas en 13–17 meses.
+- Inventario y brecha frente a IRSA: `docs/context/11-inventario-prototipos-y-brecha-irsa.md`; sin paridad visual ni científica demostrada.
+- Globo celeste experimental propio en `~/Desktop/skyshift-demo/visor-propio.py` (puerto 8767): arrastre, rueda y HiPS órdenes 3–4; faltan orden 5 y serie temporal.
+- Prototipo local de mapa HiPS en `~/Desktop/skyshift-demo/mapa.html`: navegación, λ y celda; usa teselas en línea; comparación temporal para otras regiones pendiente.
+- Cuadrícula DR1 reproducible: `mise run grid-spherex` y `mise run grid-test`; geometría de 12.288 celdas, datos espectrales y visor aún no incluidos.
+- Protocolo experimental HiPS: `docs/context/10-protocolo-hips-reproducible.md`; 4 millones de posiciones comparadas sin discrepancias; un cubo FITS descargado y verificado; índice temporal y visor pendientes.
+- Índice experimental HiPS: 12.288 celdas geométricas fuera del repo; cubos agregados, no índice temporal; detalles en `docs/context/09-referencia-irsa-exploracion.md`.
+- Exploración de todo el cielo y análisis de IRSA: `docs/context/09-referencia-irsa-exploracion.md`; ficha base aprobada por Dax `docs/specs/0001-exploracion-cache-borrador.md`. WISE es un ejemplo, con validación pendiente.
 - Fase: **investigación y estándares** (sin código de producto todavía).
 - Contexto para agentes listo: `AGENTS.md`, `docs/context/00–05`, `docs/GLOSARIO.md`, 14 skills en `.agents/skills/`.
 - Investigación hecha: reto + rúbrica oficial (01), ciencia simple (02), APIs medidas en vivo (03), UX y competidores (04), estándares de agentes (05).
@@ -36,7 +45,7 @@ Actualizado: sáb 14-nov-2026, tarde (UTC−5). Regla: cada sesión de agente o 
 4. Nombre de la app (provisional: SkyShift).
 
 ## Bloqueos y riesgos
-- [VERIFICAR] QR3 devolvió 0 imágenes en WISE 0855 vía SIA; Barnard solo ~2 visitas en DR1. Confirmar épocas reales de los 5 objetos antes de prometer "3–5 épocas".
+- Resuelto 14-nov tarde: QR3 vacío solo en WISE 0855; los otros 4 objetos suman una pasada QR3 (ver Ahora).
 - IRSA TAP muy lento hoy (315 s / 502): usar SIA2.
 
 ## Preguntas para mentores (Bloque 4)

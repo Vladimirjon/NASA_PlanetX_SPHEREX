@@ -28,7 +28,7 @@ Etiquetas: **[medido]** = probado hoy con llamadas reales · **[doc]** = documen
 | Copia en S3 | `https://nasa-irsa-spherex.s3.us-east-1.amazonaws.com/dr1/level2/...` (la ruta IRSA sin `/ibe/data/spherex/`); bytes idénticos | `cmp` |
 | CORS en S3 | `Access-Control-Allow-Origin: *`, permite `range`; 28 KB en 0,56 s, 240 KB en 0,80 s | `curl -X OPTIONS` |
 | CORS en IRSA (TAP, SIA, recortes) | **Ninguno** | `curl -I -H Origin` |
-| HiPS SPHEREx | Cubo de todo el cielo DR1, 102 cortes de longitud de onda, ~6,4″/px, PNG 512 px, **con CORS**. Solo un mapa acumulado: **no hay HiPS por visita** | `https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/properties` |
+| HiPS SPHEREx | Cubo de todo el cielo DR1, 102 cortes de longitud de onda, 12,88″/px según `hips_pixel_scale=0,0035786°` en propiedades actuales, PNG 512 px, **con CORS**. Solo un mapa acumulado: **no hay HiPS por visita** | `https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube/properties` |
 | JPL `sb_ident` (asteroides conocidos en un campo) | 21 s para 1°×1°, 2490 objetos con velocidades. Sin CORS. `obs-time=YYYY-MM-DD`; `mpc-code=500` sirve como aproximación | `https://ssd-api.jpl.nasa.gov/sb_ident.api?...` |
 | Gaia DR3 TAP | 3,6 s, 630 estrellas en 0,05° alrededor de Barnard. Sin CORS | `https://gea.esac.esa.int/tap-server/tap/sync` |
 

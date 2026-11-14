@@ -43,3 +43,6 @@ AGENTS.override.md
 data/raw/
 data/derived/
 .cache/
+
+# Locally generated SPHEREx grid
+/spherex-grid/
