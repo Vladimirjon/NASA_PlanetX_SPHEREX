@@ -1,0 +1,45 @@
+[project]
+name = "skyshift"
+version = "0.1.0"
+description = "SkyShift backend: temporal SPHEREx series with local-first tiered cache"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi==0.163.0",
+    "httpx==0.28.1",
+    "pydantic==2.14.3",
+    "pydantic-settings==2.16.3",
+    "uvicorn==0.54.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.23,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "anyio==4.16.0",
+    "hypothesis==6.170.15",
+    "pyright==1.1.414",
+    "pytest==9.2.0",
+    "ruff==0.17.5",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "BLE", "RUF", "ASYNC", "PT", "SIM", "ANN"]
+ignore = ["S101"]  # assert is how pytest asserts
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ANN", "S", "ASYNC240"]  # blocking fs checks in tests are fine
+
+[tool.pyright]
+typeCheckingMode = "strict"
+pythonVersion = "3.13"
+include = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
