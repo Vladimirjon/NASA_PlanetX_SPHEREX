@@ -1,0 +1,18 @@
+import { chromium } from '@playwright/test';
+const b=await chromium.launch({executablePath:process.env.CHROME_PATH || '/usr/bin/google-chrome',args:['--no-sandbox','--use-angle=gl','--enable-gpu','--ignore-gpu-blocklist']});
+const page=await b.newPage({viewport:{width:1280,height:800}});
+let tileRequests=0;page.on('request',r=>{if(r.url().includes('/spherex_allsky_cube/Norder'))tileRequests++});
+await page.goto('http://127.0.0.1:5173/?capture=1&plane=50');
+await page.getByText(/blank by design: a dichroic transition/).waitFor({timeout:10000});await page.waitForTimeout(300);
+if(tileRequests!==0)throw new Error('Blank plane unexpectedly fetched tiles');
+await page.getByLabel('Go to').fill('133.7951 -7.2451');await page.getByRole('button',{name:'Go',exact:true}).click();
+await page.waitForFunction(()=>location.href.includes('ra=133.7951'),null,{timeout:5000});
+if(!page.url().includes('ra=133.7951'))throw new Error('Go to did not update coordinates');
+await page.getByRole('button',{name:'Zoom in'}).click();await page.locator('canvas').focus();await page.keyboard.press('Enter');
+if(!await page.getByRole('button',{name:'Open time series here'}).isVisible())throw new Error('Keyboard selection missing');
+await page.getByRole('button',{name:'Projector mode'}).click();if(await page.locator('[data-theme=projector]').count()!==1)throw new Error('Projector mode failed');
+await page.route('**/spherex_allsky_cube/Norder**',route=>route.abort());await page.goto('http://127.0.0.1:5173/?capture=1');
+await page.getByText(/Can't reach IRSA right now/).waitFor({timeout:15000});if(!await page.getByRole('button',{name:'Retry'}).isVisible())throw new Error('Retry missing');
+await page.unroute('**/spherex_allsky_cube/Norder**');await page.getByRole('button',{name:'Retry'}).click();
+await page.getByText(/Can't reach IRSA right now/).waitFor({state:'hidden',timeout:30000});
+console.log('UI regression: blank plane no fetch; go-to, zoom, keyboard pick, projector offline retry and recovery OK');await b.close();

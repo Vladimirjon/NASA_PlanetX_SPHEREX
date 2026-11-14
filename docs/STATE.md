@@ -13,6 +13,10 @@ Actualizado: sáb 14-nov-2026, tarde (UTC−5). Regla: cada sesión de agente o 
 - Backend hexagonal con caché por capas y proxy HiPS (53 tests); visor propio dibuja (rama `feat/sky-engine`, en revisión). Ficha 0002 v2 espera aprobación.
 - **Fase 0 (bases)** en rama `feat/phase0-foundations`: ADR 0006 (dos pistas, caché local→IRSA, Rust/Redis solo si se mide), `contracts/openapi.yaml` v0.1 válido, fichas 0002 (analizador) y 0003 (visor propio, sin Aladin) en borrador; agente físico redacta `docs/context/12`.
 - Datos reales medidos hoy (SIA2): QR3 **sí** tiene datos de Barnard, Eps Indi B, RW Aur y R Dra (ago–oct 2026); WISE 0855 solo DR1. Cada objeto tiene 3–6 pasadas en 13–17 meses.
+
+- **Pista B / sky-engine** en `feat/sky-engine`: ronda 3 navegación Aladin-like — SIN máx. 180° (disco), sin auto-AIT; arrastre con punto bajo el puntero; zoom anclado + `flyTo`; inercia; tests + smoke GPU (p95 ~16,8 ms, 0 URL duplicadas).
+- **Fase 0 (bases)** también en docs: ADR 0006, `contracts/openapi.yaml` v0.1, fichas 0002/0003; agente físico `docs/context/12`.
+- Datos reales medidos (SIA2): QR3 **sí** tiene datos de Barnard, Eps Indi B, RW Aur y R Dra (ago–oct 2026); WISE 0855 solo DR1. Cada objeto tiene 3–6 pasadas en 13–17 meses.
 - Inventario y brecha frente a IRSA: `docs/context/11-inventario-prototipos-y-brecha-irsa.md`; sin paridad visual ni científica demostrada.
 - Globo celeste experimental propio en `~/Desktop/skyshift-demo/visor-propio.py` (puerto 8767): arrastre, rueda y HiPS órdenes 3–4; faltan orden 5 y serie temporal.
 - Prototipo local de mapa HiPS en `~/Desktop/skyshift-demo/mapa.html`: navegación, λ y celda; usa teselas en línea; comparación temporal para otras regiones pendiente.

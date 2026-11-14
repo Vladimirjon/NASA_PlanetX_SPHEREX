@@ -20,3 +20,5 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-14 | Claude Code (Claude Opus 5.5) | Research for the measurements module: read SPHEREx Explanatory Supplement v2.0 and IRSA tutorials, queried IRSA SIA2/Gator for real epochs and magnitudes, exploratory centroid/flux probe on real eps Ind B cutouts (λ from CWAVE/CBAND); drafted `docs/specs/0010-analysis-result.md` aligned with `Observation` 0001 | Mateo reviews; Sebastián and Johann review contract and science rules before approval |
 | 2026-11-14 | Codex | Integración documental y revisión de fichas de main contra contrato, código y D12 | Revisión humana y científica pendientes |
 | 2026-11-14 | Codex | Ficha aprobada e implementación de búsqueda local y Sesame con pruebas | Dax aprobó ficha; revisión de código y ciencia pendientes |
+
+| 2026-11-14 | Cursor (Composer) | Ronda 3 motor cielo: proyección fija SIN/TAN/AIT, arrastre keep-under-pointer, zoom anclado, flyTo, inercia, tests y remediación perf | Product owner / orchestrator; evidencia en docs/reviews/sky-engine |

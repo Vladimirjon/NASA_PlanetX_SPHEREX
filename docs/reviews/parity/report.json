@@ -1,0 +1,66 @@
+[
+  {
+    "view": "allsky",
+    "ssim": 0.0037,
+    "pearson": 0.132,
+    "ours_blank_fraction": 0.6447,
+    "irsa_blank_fraction": 0.0,
+    "composite": "allsky.png"
+  },
+  {
+    "view": "wise0855",
+    "ssim": 0.3437,
+    "pearson": -0.0034,
+    "ours_blank_fraction": 0.8698,
+    "irsa_blank_fraction": 0.0,
+    "composite": "wise0855.png"
+  },
+  {
+    "view": "barnard",
+    "ssim": 0.109,
+    "pearson": -0.0137,
+    "ours_blank_fraction": 0.0334,
+    "irsa_blank_fraction": 0.0,
+    "composite": "barnard.png"
+  },
+  {
+    "view": "eps-indi-b",
+    "ssim": 0.1612,
+    "pearson": -0.107,
+    "ours_blank_fraction": 0.5859,
+    "irsa_blank_fraction": 0.0,
+    "composite": "eps-indi-b.png"
+  },
+  {
+    "view": "rw-aur",
+    "ssim": 0.0274,
+    "pearson": -0.0179,
+    "ours_blank_fraction": 0.3059,
+    "irsa_blank_fraction": 0.0,
+    "composite": "rw-aur.png"
+  },
+  {
+    "view": "r-dra",
+    "ssim": 0.3602,
+    "pearson": 0.3925,
+    "ours_blank_fraction": 0.7374,
+    "irsa_blank_fraction": 0.0,
+    "composite": "r-dra.png"
+  },
+  {
+    "view": "north-pole",
+    "ssim": 0.0064,
+    "pearson": 0.0167,
+    "ours_blank_fraction": 0.3147,
+    "irsa_blank_fraction": 0.0,
+    "composite": "north-pole.png"
+  },
+  {
+    "view": "ra-wrap",
+    "ssim": 0.1932,
+    "pearson": 0.0042,
+    "ours_blank_fraction": 0.9339,
+    "irsa_blank_fraction": 0.0,
+    "composite": "ra-wrap.png"
+  }
+]

@@ -1,0 +1,219 @@
+{
+ "mode": "angle-gl",
+ "drag_dupes": [
+  [
+   "Norder2/Dir0/Npix106_19.png",
+   2,
+   [
+    "aborted",
+    200
+   ]
+  ],
+  [
+   "Norder3/Dir0/Npix424_19.png",
+   5,
+   [
+    "aborted",
+    "aborted",
+    "aborted",
+    "aborted",
+    "aborted"
+   ]
+  ],
+  [
+   "Norder3/Dir0/Npix426_19.png",
+   3,
+   [
+    "aborted",
+    "aborted",
+    200
+   ]
+  ],
+  [
+   "Norder4/Dir0/Npix2548_19.png",
+   2,
+   [
+    "aborted",
+    200
+   ]
+  ],
+  [
+   "Norder4/Dir0/Npix1698_19.png",
+   5,
+   [
+    "aborted",
+    "aborted",
+    "aborted",
+    "aborted",
+    "aborted"
+   ]
+  ],
+  [
+   "Norder4/Dir0/Npix2549_19.png",
+   3,
+   [
+    "aborted",
+    "aborted",
+    "aborted"
+   ]
+  ],
+  [
+   "Norder4/Dir0/Npix1704_19.png",
+   3,
+   [
+    "aborted",
+    "aborted",
+    null
+   ]
+  ]
+ ],
+ "drag_5s": {
+  "pointer_moves": 280,
+  "frame_interval_ms": {
+   "n": 319,
+   "p50": 16.7,
+   "p95": 16.7,
+   "p99": 16.8,
+   "max": 16.8
+  },
+  "fps_p95_equiv": 59.9,
+  "frames_over_18ms": 0,
+  "gpu_draw_ms": {
+   "n": 281,
+   "p50": 0.33,
+   "p95": 0.39,
+   "p99": 0.46,
+   "max": 0.62
+  },
+  "texImage2D_lookup_uploads": 281,
+  "lookup_upload_cpu_ms": 6.8,
+  "texSubImage3D": 4,
+  "getUniformLocation_calls": 562,
+  "drawArrays": 281,
+  "script_ms": 425.0,
+  "task_ms": 799.1,
+  "layout_count": 281,
+  "recalc_style": 3,
+  "longtasks": 2,
+  "requests": 59,
+  "unique": 43,
+  "duplicateUrls": 7,
+  "duplicateExtra": 16,
+  "aborted": 19,
+  "maxInflight": 16,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 313,
+   "texSubImage3D": 39,
+   "getUniformLocation": 628,
+   "drawArrays": 313,
+   "uniform": 313,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 53.80000000447035,
+   "lookupMs": 8.100000001490116
+  },
+  "bitmapsLive": 39,
+  "bitmapsCreated": 39,
+  "longtaskMax": 332,
+  "coverage": 0.39296875
+ },
+ "zoom_180_to_0.5": {
+  "wheel_steps": 148,
+  "duration_ms": 7418,
+  "frame_interval_ms": {
+   "n": 444,
+   "p50": 16.7,
+   "p95": 16.7,
+   "p99": 16.8,
+   "max": 16.8
+  },
+  "fps_p95_equiv": 59.9,
+  "gpu_draw_ms": {
+   "n": 157,
+   "p50": 0.36,
+   "p95": 0.44,
+   "p99": 0.55,
+   "max": 0.64
+  },
+  "settle_after_last_wheel_ms": -2554.7,
+  "requests_during": 97,
+  "requests": 109,
+  "unique": 107,
+  "duplicateUrls": 2,
+  "duplicateExtra": 2,
+  "aborted": 60,
+  "maxInflight": 16,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 160,
+   "texSubImage3D": 49,
+   "getUniformLocation": 322,
+   "drawArrays": 160,
+   "uniform": 160,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 48.100000001490116,
+   "lookupMs": 5.700000002980232
+  },
+  "bitmapsLive": 49,
+  "bitmapsCreated": 49,
+  "longtasks": 0,
+  "longtaskMax": 0,
+  "coverage": 0.16171875
+ },
+ "fast_pan_net": {
+  "canceled": 23,
+  "finished": 22,
+  "diskcache": 0,
+  "inflight_at_stop": 9,
+  "settle_ms": 2480
+ },
+ "fast_pan_away": {
+  "requests": 45,
+  "unique": 45,
+  "duplicateUrls": 0,
+  "duplicateExtra": 0,
+  "aborted": 23,
+  "maxInflight": 16,
+  "failed": 0,
+  "gl": {
+   "texImage2D": 92,
+   "texSubImage3D": 22,
+   "getUniformLocation": 186,
+   "drawArrays": 92,
+   "uniform": 92,
+   "texStorage3D": [
+    [
+     1,
+     32856,
+     512,
+     512,
+     256
+    ]
+   ],
+   "uploadMs": 18.69999999552965,
+   "lookupMs": 4.100000008940697
+  },
+  "bitmapsLive": 22,
+  "bitmapsCreated": 22,
+  "longtasks": 1,
+  "longtaskMax": 396,
+  "coverage": 0.7578125,
+  "dupe_examples": []
+ }
+}
