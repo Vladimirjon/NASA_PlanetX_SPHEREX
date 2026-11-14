@@ -1,0 +1,45 @@
+import { chromium } from '@playwright/test';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const base = resolve(dirname(fileURLToPath(import.meta.url)), '../docs/reviews/sky-engine');
+await mkdir(base, {recursive:true});
+const browser = await chromium.launch({executablePath:process.env.CHROME_PATH || '/usr/bin/google-chrome', headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader']});
+const page=await browser.newPage({viewport:{width:1280,height:800}});
+const errors=[], requests=[], responses=[];
+page.on('pageerror', e=>errors.push(e.message));
+page.on('console', m=>{if(m.type()==='error') errors.push(m.text());});
+page.on('request',r=>{if(r.url().includes('/spherex_allsky_cube/Norder')) requests.push(r.url());});
+page.on('response',r=>{if(r.url().includes('/spherex_allsky_cube/Norder')) responses.push({url:r.url(), status:r.status(),time:Date.now()});});
+const start=Date.now();
+await page.goto('http://127.0.0.1:5173/',{waitUntil:'domcontentloaded'});
+await page.waitForFunction(()=>{const canvas=document.querySelector('canvas');if(!canvas)return false;const gl=canvas.getContext('webgl2');if(!gl)return false;const pixel=new Uint8Array(4);gl.readPixels(canvas.width/2,canvas.height/2,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel);return pixel[0]+pixel[1]+pixel[2]>0;},{timeout:45000});
+const first=Date.now()-start;
+await page.waitForFunction(() => performance.getEntriesByType('resource').filter(e => e.name.includes('/Norder0/')).length >= 12, {timeout:45000});
+await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+const fullCold=Date.now()-start;
+const warmStart=Date.now();
+await page.reload({waitUntil:'domcontentloaded'});
+await page.waitForFunction(() => performance.getEntriesByType('resource').filter(e => e.name.includes('/Norder0/')).length >= 12, {timeout:45000});
+await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+const fullWarm=Date.now()-warmStart;
+await page.screenshot({path:resolve(base,'all-sky.png')});
+const sessionStart=requests.length;
+const before = page.url();
+await page.evaluate(()=>{window.__frames=[];window.__go=true;let previous=performance.now();function tick(now){if(!window.__go)return;window.__frames.push(now-previous);previous=now;requestAnimationFrame(tick)}requestAnimationFrame(tick);});
+await page.mouse.move(640,350);await page.mouse.down();await page.mouse.move(750,390,{steps:30});await page.mouse.up();
+const dragged=page.url();await page.mouse.wheel(0,-250);await page.waitForTimeout(1000);const zoomed=page.url();
+const frames=await page.evaluate(()=>{window.__go=false;return window.__frames;});
+if(before===dragged || dragged===zoomed) throw new Error('Drag or wheel did not change URL');
+const sorted=frames.slice(2).sort((a,b)=>a-b);const p95=sorted[Math.floor(sorted.length*.95)] ?? 0;
+const sessionEnd=requests.length;
+for(const [name,query] of [['wise','?ra=133.7951&dec=-7.2451&fov=1&plane=20'],['north-pole','?ra=0&dec=90&fov=90&plane=0']]){
+ await page.goto('http://127.0.0.1:5173/'+query,{waitUntil:'domcontentloaded'});await page.waitForTimeout(12000);await page.screenshot({path:resolve(base,name+'.png')});
+}
+const firstSession=requests.slice(sessionStart,sessionEnd);
+const duplicates=firstSession.length-new Set(firstSession).size;
+console.log(JSON.stringify({first,fullCold,fullWarm,p95,requests:requests.length,duplicates,errors,dragged,zoomed,responses:responses.length},null,2));
+await writeFile(resolve(base,'perf.md'),`# Rendimiento del visor\n\n- Entorno: Chromium headless, SwiftShader, 1280×800, red real IRSA; no representa GPU integrada.\n- Primer píxel no negro, carga fría: ${first} ms.
+- Doce respuestas de orden 0 y dos cuadros posteriores: ${fullCold} ms en frío, ${fullWarm} ms tras recarga con caché. No verifica que cada imagen tenga datos no negros.\n- Intervalo p95 de cuadros durante arrastre: ${p95.toFixed(2)} ms (${(1000/p95).toFixed(1)} fps equivalentes).\n- Peticiones HiPS entre tres vistas y una recarga: ${requests.length}; repetidas durante arrastre y zoom de una sesión: ${duplicates}.\n- Errores de consola: ${errors.length}.\n- Falta medir cuadro completo en laptop con GPU integrada y verificar calidad visual de todas las teselas.\n`);
+if(errors.length) throw new Error(errors.join('\n'));
+await browser.close();
