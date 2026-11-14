@@ -22,3 +22,6 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-14 | Codex | Ficha aprobada e implementación de búsqueda local y Sesame con pruebas | Dax aprobó ficha; revisión de código y ciencia pendientes |
 
 | 2026-11-14 | Cursor (Composer) | Ronda 3 motor cielo: proyección fija SIN/TAN/AIT, arrastre keep-under-pointer, zoom anclado, flyTo, inercia, tests y remediación perf | Product owner / orchestrator; evidencia en docs/reviews/sky-engine |
+
+| 2026-11-14 | Cursor (Composer) | Implementación vista serie temporal SPHEREx (`frontend/src/series/`, demo+API, Canvas2D, ADR 0009) | Orquestador aprobó diseño; humano revisa capturas en docs/reviews/series-viewer/ |
+| 2026-11-14 | Cursor (Composer) | App integrada mapa+timeline+5 targets (`frontend/src/app/`), fix timeout 60s y slug→canónico | Orquestador aprobó ronda 2; humano revisa docs/reviews/app/ |
