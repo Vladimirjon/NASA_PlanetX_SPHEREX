@@ -1,0 +1,17 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch({ executablePath: '/home/daxrpm/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome', headless: true, args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader'] });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const direct = [], tiles = [];
+page.on('request', request => { if (request.url().includes('irsa.ipac.caltech.edu/data/hips')) direct.push(request.url()); });
+page.on('response', response => { if (response.url().includes('/api/v1/hips/')) tiles.push([response.url(), response.status()]); });
+await page.goto('http://127.0.0.1:5190/?fov=120');
+await page.getByRole('combobox').fill("Barnard's Star");
+await page.getByRole('option', { name: "Barnard's Star" }).first().click();
+await page.waitForTimeout(25000);
+await page.screenshot({ path: 'docs/reviews/integration/flyto-barnard.png' });
+console.log('direct IRSA tile requests:', direct.length);
+console.log('backend order-5 successes:', tiles.filter(([url, status]) => url.includes('/hips/5/') && status === 200).length);
+console.log('tile statuses:', Object.fromEntries([...new Set(tiles.map(item => item[1]))].map(status => [status, tiles.filter(item => item[1] === status).length])));
+console.log('provenance:', await page.locator('.brand-sub').innerText());
+await browser.close();
+if (direct.length || !tiles.some(([url, status]) => url.includes('/hips/5/') && status === 200)) process.exitCode = 1;

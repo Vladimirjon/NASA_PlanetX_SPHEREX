@@ -1,4 +1,20 @@
 import { CHALLENGE_TARGETS, slugFromName } from './targets';
+import type { components } from '../../api/schema';
+
+type SearchResult = Pick<components['schemas']['SearchSuggestion'], 'name' | 'ra' | 'dec' | 'description' | 'object_type'>;
+
+export async function searchApi(query: string, signal: AbortSignal, request: typeof fetch = fetch): Promise<SearchResult[]> {
+  const response = await request(`/api/v1/search?q=${encodeURIComponent(query)}&limit=10`, { signal });
+  if (!response.ok) throw new Error(`Search failed: ${String(response.status)}`);
+  const result: unknown = await response.json();
+  if (!Array.isArray(result)) throw new Error('Invalid search response');
+  return result.filter((item: unknown): item is SearchResult =>
+    typeof item === 'object' && item !== null && 'name' in item && typeof item.name === 'string'
+    && 'ra' in item && typeof item.ra === 'number' && item.ra >= 0 && item.ra < 360
+    && 'dec' in item && typeof item.dec === 'number' && item.dec >= -90 && item.dec <= 90
+    && (!('description' in item) || typeof item.description === 'string')
+    && (!('object_type' in item) || typeof item.object_type === 'string'));
+}
 
 export type SearchQuery =
   | { readonly kind: 'empty' }

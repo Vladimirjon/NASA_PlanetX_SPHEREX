@@ -12,12 +12,14 @@ export function App() {
   const [announcement, setAnnouncement] = useState('');
   const [target, setTarget] = useState('');
   const [projector, setProjector] = useState(false);
+  const [tileSource, setTileSource] = useState('checking tile source');
   const [selected, setSelected] = useState<{ ra: number; dec: number } | null>(null);
   useEffect(() => {
     if (!canvas.current) return;
     let sky: SkyEngine;
     try {
       sky = createSkyEngine(canvas.current, {
+        onTileSource: source => { setTileSource(source === 'backend' ? 'via SkyShift backend' : 'direct from IRSA'); },
         initialView: initial.view,
         capture: new URLSearchParams(window.location.search).has('capture'),
       });
@@ -77,7 +79,7 @@ export function App() {
         <h1>SkyShift</h1>
         <span className="subtitle">Infrared images of the whole sky from NASA&apos;s SPHEREx (Data Release 1, via NASA/IPAC IRSA). Visualization only — brightness is not a measurement. Credits: NASA/JPL-Caltech/IPAC · released 2026-11-01</span>
       </div>
-      <div className="observed">Observed 24 Apr 2025 – 14 May 2026 · SPHEREx DR1 all-sky coadd</div>
+      <div className="observed">Observed 24 Apr 2025 – 14 May 2026 · SPHEREx DR1 all-sky coadd · {tileSource}</div>
     </header>
     <section className="viewer" aria-label="Interactive sky map">
       <canvas

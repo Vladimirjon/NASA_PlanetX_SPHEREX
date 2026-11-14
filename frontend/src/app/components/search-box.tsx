@@ -1,5 +1,6 @@
-import { useId, useRef, useState } from 'react';
-import { parseSearchQuery, typeaheadSuggestions } from '../core/search';
+import { useEffect, useId, useRef, useState } from 'react';
+import { parseSearchQuery, searchApi, typeaheadSuggestions } from '../core/search';
+import { slugFromName } from '../core/targets';
 
 type Props = {
   readonly onSubmitQuery: (raw: string) => void;
@@ -12,7 +13,27 @@ export function SearchBox({ onSubmitQuery, onPickTarget }: Props) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const suggestions = typeaheadSuggestions(value);
+  const [remote, setRemote] = useState<Awaited<ReturnType<typeof searchApi>>>([]);
+  useEffect(() => {
+    const query = value.trim();
+    setRemote([]);
+    if (!query || query.length > 64) return;
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      void searchApi(query, controller.signal).then(setRemote, () => { /* Local suggestions remain available. */ });
+    }, 200);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [value]);
+  const local = typeaheadSuggestions(value).map(item => ({ ...item, query: item.name }));
+  const suggestions = [...local, ...remote.filter(item => !slugFromName(item.name)).map(item => ({
+    slug: '', name: item.name, description: item.description ?? item.object_type ?? 'Catalogue result', query: `${String(item.ra)} ${String(item.dec)}`,
+  }))];
+  const pick = (suggestion: (typeof suggestions)[number]): void => {
+    if (suggestion.slug) onPickTarget(suggestion.slug);
+    else onSubmitQuery(suggestion.query);
+    setValue(suggestion.name);
+    setOpen(false);
+  };
 
   const commit = (raw: string) => {
     const q = parseSearchQuery(raw);
@@ -66,9 +87,7 @@ export function SearchBox({ onSubmitQuery, onPickTarget }: Props) {
           } else if (e.key === 'Enter') {
             e.preventDefault();
             if (open && suggestions[active]) {
-              onPickTarget(suggestions[active].slug);
-              setValue(suggestions[active].name);
-              setOpen(false);
+              pick(suggestions[active]);
             } else {
               commit(value);
             }
@@ -90,16 +109,14 @@ export function SearchBox({ onSubmitQuery, onPickTarget }: Props) {
         <ul id={listId} className="search-list" role="listbox">
           {suggestions.map((s, i) => (
             <li
-              key={s.slug}
+              key={`${s.name}-${s.query}`}
               id={`${listId}-${String(i)}`}
               role="option"
               aria-selected={i === active}
               className={i === active ? 'is-active' : undefined}
               onMouseDown={e => {
                 e.preventDefault();
-                onPickTarget(s.slug);
-                setValue(s.name);
-                setOpen(false);
+                pick(s);
               }}
             >
               <strong>{s.name}</strong>

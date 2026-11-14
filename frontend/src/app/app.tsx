@@ -62,6 +62,7 @@ export function App() {
     initial.kind === 'invalid' ? initial.reason : '',
   );
   const [announce, setAnnounce] = useState('');
+  const [tileSource, setTileSource] = useState('Checking tile source');
 
   const [seriesStatus, setSeriesStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [progress, setProgress] = useState<string | null>(null);
@@ -79,6 +80,7 @@ export function App() {
     let sky: SkyEngine;
     try {
       sky = createSkyEngine(canvasRef.current, {
+        onTileSource: source => { setTileSource(source === 'backend' ? 'via SkyShift backend' : 'direct from IRSA'); },
         initialView: {
           ra: initialState.ra ?? 180,
           dec: initialState.dec ?? -57.99,
@@ -282,7 +284,7 @@ export function App() {
       <header className="topbar">
         <div className="brand">
           <strong>SkyShift</strong>
-          <span className="brand-sub">SPHEREx sky · temporal change</span>
+          <span className="brand-sub">SPHEREx DR1 · IRSA · {tileSource}</span>
         </div>
         <SearchBox onSubmitQuery={onSubmitQuery} onPickTarget={slug => { void selectTarget(slug); }} />
         <SegmentedControl
