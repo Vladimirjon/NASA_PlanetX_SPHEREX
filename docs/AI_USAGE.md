@@ -85,6 +85,18 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 
 | 2026-11-15 | Codex | Diagnóstico de dependencia ausente y verificación del paquete estático | Revisión humana y redespliegue pendientes |
 
+| 2026-11-15 | Codex | Retoques locales en la landing y comprobaciones en Chromium. Color ajustado con CSS sobre ilustraciones existentes | Revisión del usuario pendiente |
+
+| 2026-11-15 | Codex + ImageGen | Cinco ilustraciones conceptuales con transparencia para la galería. Recortes PNG, marca de IA en la página y animación CSS | Revisión visual del usuario pendiente. Las ilustraciones no se usan como datos |
+
+| 2026-11-15 | Codex | Restauración del comparador y proyección de giro axial sobre las ilustraciones existentes | Revisión visual del usuario pendiente. La textura del hemisferio oculto se aproxima por reflejo |
+
+| 2026-11-15 | Codex | Comparador restaurado desde Git y render de las cinco ilustraciones a 800 px y 60 fps con FFmpeg | Resolución y velocidad solicitadas por el usuario. Revisión visual pendiente; el detalle parte de los PNG existentes |
+
+| 2026-11-15 | Codex | Corrección del solapamiento en ε Indi B y animación del polvo de RW Aurigae, con consulta NASA | Giro y geometría ilustrativos; revisión visual del usuario pendiente |
+
+| 2026-11-15 | Codex | Línea del comparador acortada bajo el título según solicitud del usuario | Revisión visual local pendiente |
+
 | 2026-11-15 | Codex | Análisis del repositorio, fuentes y rúbrica; redacción de referencia técnica y matriz de trazabilidad | Revisión humana y científica pendiente |
 
 | 2026-11-15 | Codex | Capturas de demo pública, README bilingüe y guía de operación del sistema | Revisión humana y científica pendiente |

@@ -3,6 +3,15 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- **15-nov · landing · PR:** retratos animados y comparador revisados en Chromium; 12 pruebas landing, build estático y recorridos ES/EN, teclado, movimiento reducido y móvil en verde.
+- **15-nov · entrega landing:** ajustes locales de la página principal preparados para PR; cambios recientes del visor revertidos a petición del usuario y pendientes de otra persona.
+- **15-nov · vista local:** reiniciado el servidor 4411 como proceso independiente tras encontrar el puerto cerrado. Página verificada en el navegador integrado; log en `/tmp/copernix-preview-4411.log`.
+- **15-nov · landing · divisor:** la línea del comparador comienza 24 px debajo del bloque del título y se ajusta al tamaño de pantalla y al idioma. Revisión local pendiente.
+- **15-nov · landing · retratos:** corrección de máscaras y muestreo entre las dos esferas de ε Indi B; polvo de RW Aurigae animado en su plano inclinado. Velocidad ilustrativa, con referencia NASA en el README. Verificados 170 tests frontend, 12 landing, lint, builds y ambos recorridos de navegador; revisión visual humana pendiente.
+- **15-nov · landing · cuarta revisión local:** comparador original restaurado con suavizado. Giro transparente a 800 px y 60 fps solicitado por el usuario; se retiran los textos extra del comparador y del ejercicio. Revisión visual local pendiente.
+- **15-nov · landing · tercera revisión local:** vuelve el barrido con scroll y el divisor se puede arrastrar. Los cinco retratos tienen giro axial ilustrativo; sigue pendiente la revisión visual antes del PR.
+- **15-nov · landing · segunda revisión local:** comparador centrado, punto del ejercicio ampliado, orden interactivo → galería → CTA y cinco retratos PNG transparentes con pausa de giro. Pendiente revisión del usuario.
+- **15-nov · landing · revisión local:** texto infrarrojo, tono de las ilustraciones estelares, simetría del grupo de variables, comparación guiada y marcador del ejercicio. Vista en `http://127.0.0.1:4411/?lang=es`. Pendiente revisión del usuario antes del PR.
 - **15-nov · Codex · README y demo:** capturas de la demo pública, README bilingüe y guía de operación; pendiente revisión científica y humana de los textos y cifras.
 - **15-nov · Codex · documentación:** referencia técnica y matriz de rúbrica en `docs/documentacion-tecnica/`; pendientes revisión humana, científica y traducción completa de entregables.
 - **15-nov · Codex · despliegue estático:** corregido empaquetado de `js/prefetch.js`; Worker público pendiente de redespliegue. Validado paquete en navegador local.

@@ -36,7 +36,11 @@ const {D}=await import(pathToFileURL(path.join(root,'js/i18n.js')));
 assert.deepEqual(Object.keys(D.en).sort(),Object.keys(D.es).sort(),'Translation key mismatch');
 for(const m of html.matchAll(/data-i(?:a)?="([^"]+)"/g))assert.ok(m[1] in D.en,`Missing translation: ${m[1]}`);
 const art=JSON.parse(fs.readFileSync(path.join(root,'assets/manifest.json'),'utf8'));
-for(const file of Object.values(art.objects))assert.ok(fs.existsSync(path.join(root,'assets',file)),`Missing image: ${file}`);
+assert.deepEqual(Object.keys(art.rotation).sort(),Object.keys(art.objects).sort(),'Every portrait needs a rotation sprite');
+for(const file of [...Object.values(art.objects),...Object.values(art.rotation)]){
+  assert.ok(fs.existsSync(path.join(root,'assets',file)),`Missing image: ${file}`);
+  if(fs.existsSync(bundle))assert.ok(fs.existsSync(path.join(bundle,'assets',file)),`Missing bundled image: ${file}`);
+}
 const gl=fs.readFileSync(path.join(root,'js/sat-gl.js'),'utf8');
 for(const rule of [/failIfMajorPerformanceCaveat/,/powerPreference:'low-power'/,/MAX_PIXELS/,/webglcontextlost/,/gl=0/])assert.ok(rule.test(gl),`sat-gl.js lost a safeguard: ${rule}`);
 assert.ok(!/high-performance|PMREMGenerator|shadowMap/.test(gl),'sat-gl.js must stay light: no high-performance, PMREM or shadows');
