@@ -30,7 +30,7 @@ Con `?dev` en la URL aparecen las notas de desarrollo y el panel de métricas lo
 ## Diseño (decisiones)
 
 - **Paleta**: la del equipo. Fondo `#030E22` (`#061F4A` llevado ~45 % hacia negro), texto blanco y `#AEB0B5`, acento `#428BCA`. Morado (`--violet`) solo en detalles: una de las dos capas de nubes, el anillo del marcador, los números de los pasos y el punto activo del menú. Botones blancos; sin amarillo.
-- **Sin brillos**: ningún `box-shadow` de color, `shadowBlur`, halo ni anillos pulsantes. El cuerpo que cambió se marca con un punto blanco y un anillo fino violeta.
+- **Luz estelar ilustrativa**: por solicitud del usuario, el fondo y el objeto del ejercicio usan un perfil de luz suave precalculado; núcleo pequeño y halo tenue. Titileo suave de intensidad, sin cambiar posiciones, sin `shadowBlur` por cuadro. Se desactiva con movimiento reducido. Los datos científicos del visor no se modifican. El marcador conserva el anillo fino.
 - **Vidrio líquido** en las etiquetas, el menú, el dock y las tarjetas de pasos (`.surface`): desenfoque + borde con luz fija. Sin efecto linterna en hover ni degradados que sigan al mouse.
 - **Vida en reposo**: dos capas de nubes (ruido fractal periódico, azul y morado) a la deriva, parpadeo suave de las estrellas, un punto que cruza el inicio, el satélite girando lento, la línea del comparador que respira y un barrido de bandas. Todo se apaga con `prefers-reduced-motion`. Las nubes se pintan a media resolución y solo cuando se mueven (el fondo cuesta ~1 ms por cuadro; `?dev` lo muestra).
 - **Satélite**: queda debajo del texto y se gira 360° arrastrando o con las flechas (en pantallas táctiles solo en horizontal, para no robar el scroll).

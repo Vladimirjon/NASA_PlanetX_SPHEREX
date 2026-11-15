@@ -1,5 +1,5 @@
 /* Copernix · landing. Escenas guiadas por scroll sobre un fondo de estrellas.
-   Sin brillos: los marcadores son un punto y un anillo fino. */
+   Las estrellas ilustrativas tienen luz suave; los marcadores conservan su anillo fino. */
 import {D} from './i18n.js';
 import {SAT3D} from './sat3d.js';
 import {createRenderScheduler} from './render-scheduler.js';
@@ -224,6 +224,20 @@ function drawClouds(g,w,h,tt,sy){
   }
   g.imageSmoothingEnabled=true;g.drawImage(cloudCv,0,0,w,h);
 }
+/* Prebaked light profile: no per-star blur or gradient allocation each frame. */
+const starLight=document.createElement('canvas');starLight.width=starLight.height=64;
+{
+  const g=starLight.getContext('2d'),light=g.createRadialGradient(32,32,0,32,32,32);
+  light.addColorStop(0,'rgba(255,255,255,1)');
+  light.addColorStop(.08,'rgba(242,248,255,.95)');
+  light.addColorStop(.2,'rgba(215,232,255,.3)');
+  light.addColorStop(.5,'rgba(190,216,255,.065)');
+  light.addColorStop(1,'rgba(190,216,255,0)');
+  g.fillStyle=light;g.fillRect(0,0,64,64);
+}
+function stellarLight(g,x,y,radius){
+  g.drawImage(starLight,x-radius,y-radius,radius*2,radius*2);
+}
 const bg=$('#bg'),L=[stars(1,170),stars(2,90),stars(3,34)];let scrollY=0;
 const pan={x:0,t:0};
 function drawBg(now){
@@ -236,8 +250,11 @@ function drawBg(now){
   L.forEach((layer,li)=>{const k=[.04,.1,.22][li],pk=[.5,1,1.6][li];for(const s of layer){
     const y=((s.y*h*1.6-scrollY*k)%(h*1.6)+h*1.6)%(h*1.6);if(y>h)continue;
     const x=(((s.x*w+pan.x*pk)%w)+w)%w;
-    const tw=RM?1:.72+.28*Math.sin(tt*s.s+s.p);
-    g.globalAlpha=(.25+.6*s.m)*(li?1:.7)*tw;g.beginPath();g.arc(x,y,(.4+s.m*(.8+li*.7)),0,7);g.fill();}});
+    const tw=RM?1:.83+.11*Math.sin(tt*s.s+s.p)+.06*Math.sin(tt*s.s*2.37+s.p*1.7);
+    const radius=.4+s.m*(.8+li*.7);
+    g.globalAlpha=(.28+.72*s.m)*(li?1:.8)*tw;
+    if(s.m>.55)stellarLight(g,x,y,radius*5);
+    g.fillStyle=C.text;g.beginPath();g.arc(x,y,radius*.65,0,7);g.fill();}});
   /* en el inicio, un punto cruza despacio el cielo: adelanta la idea de "algo se mueve" */
   if(!RM&&scrollY<h){
     const u=(tt%46)/46,fade=1-clamp(scrollY/(h*.6));
@@ -420,7 +437,8 @@ function sUse(p,now){
     const tagWidth=tagH.offsetWidth;
     tagH.style.left=Math.max(0,Math.min(x+8,w-tagWidth-30))+'px';tagH.style.top=y+'px';tagH.style.opacity=1;
   }else{
-    dot(g,x,y,rad);
+    stellarLight(g,x,y,rad*3.5);
+    dot(g,x,y,rad*.6);
     tagH.style.opacity=0;
   }
   if(ripple){const k=(now-ripple.t)/600;if(k<1){g.strokeStyle=C.text;g.globalAlpha=.5*(1-k);g.lineWidth=1.5;g.beginPath();g.arc(ripple.x,ripple.y,10+k*40,0,7);g.stroke();g.globalAlpha=1;}else ripple=null;}
