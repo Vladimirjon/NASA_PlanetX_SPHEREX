@@ -43,7 +43,16 @@ import { shouldShowIntro } from './intro';
 import { timelineDateVisibility } from './timeline-labels';
 import { formatLightLabel, formatVisitDate } from './light-label';
 import { parseNameParam } from './name-url';
-import { describeMotionAnalysis, loadMotionAnalysis, motionDetailRows, type MotionAnalysis } from './analysis/motion-analysis';
+import {
+  describeMotionAnalysis,
+  describePairCheck,
+  loadMotionAnalysis,
+  loadPairCheck,
+  motionDetailRows,
+  pairCheckRows,
+  type MotionAnalysis,
+  type PairCheck,
+} from './analysis/motion-analysis';
 import {
   createSelection,
   reduceSelection,
@@ -129,10 +138,6 @@ function modeHelpKey(mode: ViewMode): 'modeHelpLoop' | 'modeHelpDiff' | 'modeHel
   return 'modeHelpLoop';
 }
 
-function isVariableFeatured(slug: string | null): boolean {
-  return slug === 'rw-aurigae' || slug === 'r-draconis';
-}
-
 export function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const timelineRef = useRef<HTMLDivElement | null>(null);
@@ -209,6 +214,7 @@ export function App() {
   const [errorKey, setErrorKey] = useState<SeriesErrorKey>('errGeneric');
   const [loaded, setLoaded] = useState<LoadedSeries | null>(null);
   const [measured, setMeasured] = useState<MotionAnalysis | null>(null);
+  const [pairCheck, setPairCheck] = useState<PairCheck | null>(null);
   const [frameIndex, setFrameIndex] = useState(bootState.t);
   const [playing, setPlaying] = useState(!prefersReducedMotion());
   const [mode, setMode] = useState<ViewMode>(bootState.mode);
@@ -803,10 +809,14 @@ export function App() {
   const measuredSlug = selection.mode === 'target' ? selection.slug : null;
   useEffect(() => {
     setMeasured(null);
+    setPairCheck(null);
     if (!measuredSlug) return undefined;
     const ac = new AbortController();
     void loadMotionAnalysis(measuredSlug, ac.signal).then(m => {
       if (!ac.signal.aborted) setMeasured(m);
+    });
+    void loadPairCheck(measuredSlug, ac.signal).then(p => {
+      if (!ac.signal.aborted) setPairCheck(p);
     });
     return () => {
       ac.abort();
@@ -854,7 +864,7 @@ export function App() {
       ? measuredLine
       : seriesStatus === 'ready' && series
       ? describeChangeLineI18n(lang, series, titleName || '—', {
-          variableHint: isVariableFeatured(selection.slug),
+          slug: selection.mode === 'target' ? selection.slug : null,
         })
       : seriesStatus === 'ready' && !series
         ? t(lang, 'noSeriesFriendly')
@@ -992,7 +1002,7 @@ export function App() {
           <>
             <p className="explain-note">{lang === 'es' ? 'Medición de movimiento (resultado precalculado)' : 'Motion measurement (precomputed result)'}</p>
             <dl className="prov-list mono">
-              {motionDetailRows(lang, measured).map(r => (
+              {[...motionDetailRows(lang, measured), ...(pairCheck ? pairCheckRows(lang, pairCheck) : [])].map(r => (
                 <div key={r.label}>
                   <dt>{r.label}</dt>
                   <dd>{r.value}</dd>
@@ -1153,6 +1163,7 @@ export function App() {
       <div className="change-block" data-intro="change">
         <p className="change-title">{t(lang, 'whatChanged')}</p>
         <p className="change-line">{changeLine}</p>
+        {measuredLine && pairCheck && seriesStatus === 'ready' ? <p className="change-help">{describePairCheck(lang, pairCheck)}</p> : null}
         {changeExtras}
         {semaforoInline}
         <button

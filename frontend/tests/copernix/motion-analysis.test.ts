@@ -25,7 +25,8 @@ describe('motion analysis (spec 0010 result)', () => {
     expect(es).toContain('sin verificación independiente');
     expect(es).not.toMatch(/Medimos que/);
     expect(en).toContain('6.6″');
-    expect(en).toContain('Not independently verified');
+    expect(en).toContain('not independently verified');
+    expect(en).toContain('motion candidate');
   });
 
   it('rejects synthetic or malformed results', () => {

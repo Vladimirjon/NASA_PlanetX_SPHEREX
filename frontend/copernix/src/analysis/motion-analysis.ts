@@ -8,6 +8,7 @@
  * change, and synthetic examples are never shown as results.
  */
 import type { Lang } from '../i18n';
+import { readD3Measurement, type GuidedPairMeasurement } from '../../../src/series/core/guided-pair';
 
 export type MotionOutcome =
   | 'change_measured'
@@ -135,8 +136,8 @@ export function describeMotionAnalysis(lang: Lang, a: MotionAnalysis, name: stri
         : `We measured ${name} shifting ${sep}″ toward the ${dir} over ${yrs} years (≈ ${pm}″ per year).`;
     case 'threshold_exceeded_unverified':
       return lang === 'es'
-        ? `En ${String(a.nVisits)} pasadas, ${name} se desplaza ${sep}″ hacia el ${dir} en ${yrs} años (≈ ${pm}″ al año). Aún sin verificación independiente.`
-        : `Across ${String(a.nVisits)} passes, ${name} shifts ${sep}″ toward the ${dir} in ${yrs} years (≈ ${pm}″ a year). Not independently verified yet.`;
+        ? `En ${String(a.nVisits)} pasadas del detector D3, el centro de luz de ${name} se desplaza ${sep}″ hacia el ${dir} en ${yrs} años (≈ ${pm}″ al año). Observado · candidato de movimiento: aún sin verificación independiente.`
+        : `Across ${String(a.nVisits)} passes in detector D3, the centre of light of ${name} shifts ${sep}″ toward the ${dir} in ${yrs} years (≈ ${pm}″ a year). Observed · motion candidate: not independently verified yet.`;
     case 'change_below_criterion':
       return lang === 'es'
         ? `No vemos un desplazamiento mayor que nuestro criterio en estas fotos. Eso no significa que el objeto esté quieto.`
@@ -196,4 +197,52 @@ function outcomeLabel(lang: Lang, o: MotionOutcome): string {
     case 'data_error':
       return es ? 'Error de datos' : 'Data error';
   }
+}
+
+/**
+ * Independent two-image check (spec 0038, guided D3 pair). Accepted only for the exact,
+ * ordered D3 observations; the ceiling stays OBSERVED (motion candidate).
+ */
+export type PairCheck = GuidedPairMeasurement;
+
+type FrameIds = { readonly frames: readonly { readonly obs_id: string }[] };
+
+export function parsePairCheck(caseJson: unknown, series: FrameIds): PairCheck | null {
+  return readD3Measurement(caseJson, series.frames.map(f => f.obs_id));
+}
+
+/** Only ε Indi B has the guided D3 pair. */
+export async function loadPairCheck(slug: string, signal?: AbortSignal): Promise<PairCheck | null> {
+  if (slug !== 'epsilon-indi-b') return null;
+  try {
+    const [c, s] = await Promise.all(
+      ['case.json', 'series.json'].map(f => fetch(`/demo/epsilon-indi-b-d3/${f}`, { signal })),
+    );
+    if (!c.ok || !s.ok) return null;
+    const series: unknown = await s.json();
+    if (!isRecord(series) || !Array.isArray(series.frames)) return null;
+    const frames = series.frames.filter(isRecord).map(f => ({ obs_id: str(f.obs_id) ?? '' }));
+    return parsePairCheck(await c.json(), { frames });
+  } catch {
+    return null;
+  }
+}
+
+export function describePairCheck(lang: Lang, p: PairCheck): string {
+  const sep = fmt(p.separation_arcsec, lang, 2);
+  return lang === 'es'
+    ? `Una comprobación aparte con dos imágenes de D3 da ${sep}″ tras corregir el paralaje. Sigue siendo un candidato de movimiento.`
+    : `A separate two-image check in D3 gives ${sep}″ after correcting for parallax. It remains a motion candidate.`;
+}
+
+export function pairCheckRows(lang: Lang, p: PairCheck): DetailRow[] {
+  const es = lang === 'es';
+  return [
+    { label: es ? 'Par D3 (2 imágenes)' : 'D3 pair (2 images)', value: `${fmt(p.separation_arcsec, lang, 2)}″ · ${es ? 'corregido por paralaje' : 'parallax-corrected'}` },
+    {
+      label: es ? 'Incertidumbre del par' : 'Pair uncertainty',
+      value: `±${fmt(p.sigma_delta_arcsec[0], lang, 2)}″ E–O · ±${fmt(p.sigma_delta_arcsec[1], lang, 2)}″ N–S`,
+    },
+    { label: es ? 'Nivel' : 'Level', value: es ? 'Observado · candidato' : 'Observed · candidate' },
+  ];
 }

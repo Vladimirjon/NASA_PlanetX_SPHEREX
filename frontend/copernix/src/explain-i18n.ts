@@ -135,46 +135,51 @@ export function describeExpectedMotionI18n(lang: Lang, series: Series): string |
   const m = motionFacts(series);
   if (!m) return null;
   if (lang === 'es') {
-    return `Movimiento esperado ≈ ${m.pixels.toFixed(1)} px (${m.arcsec.toFixed(1)}″); píxel SPHEREx = ${m.pixelScaleArcsec.toFixed(2)}″`;
+    return `Movimiento esperado según el catálogo (no medido aquí) ≈ ${m.pixels.toFixed(1)} px (${m.arcsec.toFixed(1)}″); píxel SPHEREx = ${m.pixelScaleArcsec.toFixed(2)}″`;
   }
-  return `Expected motion ≈ ${m.pixels.toFixed(1)} px (${m.arcsec.toFixed(1)}″); SPHEREx pixel = ${m.pixelScaleArcsec.toFixed(2)}″`;
+  return `Expected motion from the catalogue (not measured here) ≈ ${m.pixels.toFixed(1)} px (${m.arcsec.toFixed(1)}″); SPHEREx pixel = ${m.pixelScaleArcsec.toFixed(2)}″`;
 }
 
 /**
- * Concrete “what changed?” line for the left column.
- * Uses real numbers from the series when motion is available;
- * otherwise a brightness / short / generic phrase (no jargon).
+ * Honest “What changed?” line (docs/reviews/regions/2026-11-14-cinco-regiones.md, spec 0034).
+ * It never turns a catalogue prediction into a measured shift and never claims a brightness
+ * change that was not measured. Regions without a measurement get the neutral 0034:46 sentence.
  */
+const REGION_LINES: Readonly<Record<string, { readonly en: string; readonly es: string }>> = {
+  'barnards-star': {
+    en: "SPHEREx observed this region three times. Barnard's Star is too bright for the detector: the pixels at its position are saturated and hidden, so its motion cannot be measured in these images. Its known motion of about 10″ per year comes from the Gaia catalogue.",
+    es: 'SPHEREx observó esta región tres veces. La estrella de Barnard es demasiado brillante para el detector: los píxeles en su posición están saturados y ocultos, así que su movimiento no se puede medir en estas imágenes. Su movimiento conocido, de unos 10″ por año, viene del catálogo Gaia.',
+  },
+  'wise-0855': {
+    en: 'SPHEREx observed this region twice, but WISE 0855 is too faint to detect in a single image at this wavelength. The ring marks where it is expected. The light next to the ring stays in place between the two dates, so it is probably a different source. No change can be measured here.',
+    es: 'SPHEREx observó esta región dos veces, pero WISE 0855 es demasiado débil para detectarla en una sola imagen a esta longitud de onda. El anillo marca dónde se espera. La luz junto al anillo no se mueve entre las dos fechas, así que probablemente es otra fuente. Aquí no se puede medir un cambio.',
+  },
+  'rw-aurigae': {
+    en: 'SPHEREx observed this region twice. RW Aurigae is brighter than the level at which the detector responds linearly, and some pixels at its position are hidden in the second image. The difference you see can be caused by those hidden pixels. These data do not establish a brightness change.',
+    es: 'SPHEREx observó esta región dos veces. RW Aurigae es más brillante que el nivel en que el detector responde de forma lineal, y algunos píxeles en su posición están ocultos en la segunda imagen. La diferencia que ves puede deberse a esos píxeles ocultos. Estos datos no establecen un cambio de brillo.',
+  },
+  'r-draconis': {
+    en: 'SPHEREx observed this region three times. R Draconis is far too bright for the detector: the pixels at its position are saturated and hidden in every image, so its brightness changes cannot be measured here.',
+    es: 'SPHEREx observó esta región tres veces. R Draconis es demasiado brillante para el detector: los píxeles en su posición están saturados y ocultos en todas las imágenes, así que aquí no se pueden medir sus cambios de brillo.',
+  },
+};
+
 export function describeChangeLineI18n(
   lang: Lang,
   series: Series,
-  objectName: string,
-  opts?: { readonly variableHint?: boolean },
+  _objectName: string,
+  opts?: { readonly slug?: string | null },
 ): string {
-  const n = series.frames.length;
-  if (n < 2) {
+  if (series.frames.length < 2) {
     return lang === 'es'
-      ? 'Aún no hay fotos suficientes para medir un cambio.'
-      : 'Not enough photos yet to measure a change.';
+      ? 'Aún no hay fotos suficientes para comparar.'
+      : 'Not enough photos yet to compare.';
   }
-  const m = motionFacts(series);
-  if (m && m.pixels >= 0.3) {
-    if (lang === 'es') {
-      return `En estas ${String(n)} fotos, ${objectName} se desplazó ≈ ${m.pixels.toFixed(1)} píxeles (≈ ${m.arcsec.toFixed(1)} segundos de arco).`;
-    }
-    return `Across these ${String(n)} photos, ${objectName} shifted by ≈ ${m.pixels.toFixed(1)} pixels (≈ ${m.arcsec.toFixed(1)} arcseconds).`;
-  }
-  // Comparability is OBSERVED | EVALUATED only (never CONFIRMED from software).
-  const preferBrightness = Boolean(opts?.variableHint) || series.comparability.level.length > 0;
-  if (preferBrightness) {
-    if (lang === 'es') {
-      return `En estas ${String(n)} fotos, su brillo cambia.`;
-    }
-    return `Across these ${String(n)} photos, its brightness changes.`;
-  }
+  const region = opts?.slug ? REGION_LINES[opts.slug] : undefined;
+  if (region) return region[lang];
   return lang === 'es'
-    ? 'Las fotos muestran una diferencia aparente.'
-    : 'The photos show an apparent difference.';
+    ? 'Puede verse una diferencia visual. Su causa no se ha establecido.'
+    : 'A visual difference may be visible. Its cause has not been established.';
 }
 
 export function motionProvenanceI18n(lang: Lang, slug: string | null | undefined): string {
