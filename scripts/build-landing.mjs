@@ -15,6 +15,7 @@ const files = [
   'apple-touch-icon.png',
   'css/styles.css',
   'js/app.js',
+  'js/prefetch.js',
   'js/i18n.js',
   'js/sat3d.js',
   'js/sat-gl.js',
