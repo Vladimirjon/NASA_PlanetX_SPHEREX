@@ -10,17 +10,25 @@ const viewerSource = path.join(root, 'frontend', 'dist-copernix');
 
 const files = [
   'index.html',
-  'favicon.svg',
+  'favicon-32.png',
+  'favicon-192.png',
+  'apple-touch-icon.png',
   'css/styles.css',
   'js/app.js',
   'js/i18n.js',
   'js/sat3d.js',
+  'js/sat-gl.js',
+  'lib/three.module.min.js',
+  'lib/addons/loaders/GLTFLoader.js',
+  'lib/addons/utils/BufferGeometryUtils.js',
+  'model/spherex.gltf',
+  'model/spherex.bin',
   'js/render-scheduler.js',
   'assets/manifest.json',
 ];
-for (const dir of ['assets', 'fonts', 'assets/spherex-views']) {
+for (const dir of ['assets', 'fonts', 'assets/spherex-views', 'model']) {
   for (const file of fs.readdirSync(path.join(source, dir))) {
-    if (/\.(webp|woff2)$/.test(file) || (dir.endsWith('spherex-views') && file === 'manifest.json')) {
+    if ((dir !== 'model' && /\.(webp|woff2)$/.test(file)) || (dir === 'model' && /\.webp$/.test(file)) || (dir.endsWith('spherex-views') && file === 'manifest.json')) {
       files.push(`${dir}/${file}`);
     }
   }
@@ -47,7 +55,13 @@ if (fs.existsSync(viewerSource)) {
     }
   };
   walk(viewerOut);
-  viewerNote = 'viewer/ included from frontend/dist-copernix';
+  // the viewer fetches the offline demo from /demo (absolute), so a static host needs it at the root too
+  const demoSource = path.join(root, 'frontend', 'public', 'demo');
+  if (fs.existsSync(demoSource)) {
+    fs.cpSync(demoSource, path.join(out, 'demo'), {recursive: true});
+    walk(path.join(out, 'demo'));
+  }
+  viewerNote = 'viewer/ and demo/ included (static hosting works without the API, offline demo of the five objects)';
 }
 
 console.log(

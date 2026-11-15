@@ -103,7 +103,7 @@ function pictogram(kind){
 }
 function whyFig(x){
   const f=ART.objects&&ART.objects[x.id];
-  if(f)return `<div class="fig"><img src="assets/${f}" alt="${esc(t('who.alt').replace('{n}',t(x.k)[0]))}" width="560" height="420" loading="lazy" decoding="async"><span class="ai">${esc(t('ai.badge'))}</span></div>`;
+  if(f)return `<div class="fig"><img src="assets/${f}" alt="${esc(t('who.alt').replace('{n}',t(x.k)[0]))}" width="560" height="420" loading="lazy" decoding="async"></div>`;
   return `<div class="fig">${pictogram(x.kind)}</div>`;
 }
 function buildWho(){
@@ -309,7 +309,7 @@ function startSat(){
   SAT3D.init(satGL);
 }
 function sData(p,now){
-  const W=satGL.clientWidth,H=satGL.clientHeight;
+  const cv=SAT3D.canvas||satGL,W=cv.clientWidth,H=cv.clientHeight;
   const top=satBox.top+14,bottom=satBox.bottom-62,diam=Math.max(120,Math.min(bottom-top,W*.7)*.95),cy=(top+bottom)/2;
   if(SAT3D.ready)SAT3D.update(now,{cx:W/2,cy,diam},RM);
   const on=SAT3D.ready;

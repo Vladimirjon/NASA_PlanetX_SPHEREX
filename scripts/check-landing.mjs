@@ -14,6 +14,7 @@ const visited=new Set();
 function inspect(file){
   if(visited.has(file))return;visited.add(file);
   const code=fs.readFileSync(file,'utf8');
+  // Only the lazily loaded real-time satellite (js/sat-gl.js) may touch WebGL, and only behind the safeguards asserted below.
   assert.ok(!/WebGLRenderer|webgl2?['"]|requestAdapter\(/.test(code),`Unexpected GPU initialization: ${file}`);
   const check=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});assert.equal(check.status,0,check.stderr);
   for(const m of code.matchAll(/from\s+['"](\.[^'"]+)['"]/g))inspect(path.resolve(path.dirname(file),m[1]));
@@ -29,7 +30,11 @@ assert.deepEqual(Object.keys(D.en).sort(),Object.keys(D.es).sort(),'Translation 
 for(const m of html.matchAll(/data-i(?:a)?="([^"]+)"/g))assert.ok(m[1] in D.en,`Missing translation: ${m[1]}`);
 const art=JSON.parse(fs.readFileSync(path.join(root,'assets/manifest.json'),'utf8'));
 for(const file of Object.values(art.objects))assert.ok(fs.existsSync(path.join(root,'assets',file)),`Missing image: ${file}`);
-console.log(`PASS: syntax, local resources, ES/EN parity, ${visited.size} active modules without WebGL, no backdrop filters`);
+const gl=fs.readFileSync(path.join(root,'js/sat-gl.js'),'utf8');
+for(const rule of [/failIfMajorPerformanceCaveat/,/powerPreference:'low-power'/,/MAX_PIXELS/,/webglcontextlost/,/gl=0/])assert.ok(rule.test(gl),`sat-gl.js lost a safeguard: ${rule}`);
+assert.ok(!/high-performance|PMREMGenerator|shadowMap/.test(gl),'sat-gl.js must stay light: no high-performance, PMREM or shadows');
+assert.ok(/importmap/.test(html)&&/"three"/.test(html),'index.html needs the import map for three');
+console.log(`PASS: syntax, local resources, ES/EN parity, ${visited.size} active modules without WebGL (real-time 3D is lazy and guarded), no backdrop filters`);
 
 const views=JSON.parse(fs.readFileSync(path.join(root,'assets/spherex-views/manifest.json'),'utf8'));
 for(let p=0;p<views.pitchDegrees.length;p++)for(let y=0;y<views.yawFrames;y++)assert.ok(fs.existsSync(path.join(root,'assets/spherex-views',p+'-'+String(y).padStart(2,'0')+'.webp')));

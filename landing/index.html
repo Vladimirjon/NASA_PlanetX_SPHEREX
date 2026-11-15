@@ -6,7 +6,9 @@
 <meta name="theme-color" content="#030e22">
 <meta name="color-scheme" content="dark">
 <title>Copernix · Planet X and SPHEREx</title>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="description" content="Pick any spot in the sky and watch real NASA SPHEREx infrared images of it change over time. / Elige un punto del cielo y mira cómo cambian las imágenes infrarrojas reales de SPHEREx (NASA).">
 <link rel="preload" href="fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/styles.css">
@@ -15,8 +17,8 @@
 <a class="skip" href="#main" data-i="skip">Skip to content</a>
 <canvas id="bg" aria-hidden="true"></canvas><div class="vignette" aria-hidden="true"></div>
 
+<a class="brand brand-fixed" href="#hero" aria-label="Copernix"><img src="assets/copernix-wordmark.webp" alt="" width="720" height="59"></a>
 <header class="nav" id="nav">
-  <a class="brand" href="#hero" data-i="brand" data-ia="brand" aria-label="Copernix">Copernix</a>
   <nav class="rail" data-ia="rail" aria-label="Story progress"></nav>
   <div class="lang" role="group" data-ia="langLbl" aria-label="Language"><button type="button" data-lang="es" aria-pressed="false">ES</button><button type="button" data-lang="en" aria-pressed="true">EN</button></div>
   <a class="navcta" href="/viewer/" data-cta="nav" data-i="nav.cta">Explore the sky</a>
@@ -229,6 +231,7 @@
 <aside id="hud" hidden aria-label="Engagement metrics (debug)"></aside>
 <div id="toast" role="status" aria-live="polite"></div>
 
+<script type="importmap">{"imports":{"three":"./lib/three.module.min.js","three/addons/":"./lib/addons/"}}</script>
 <script type="module" src="js/app.js"></script>
 </body>
 </html>

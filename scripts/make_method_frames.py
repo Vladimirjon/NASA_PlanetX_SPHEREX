@@ -16,6 +16,10 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from prepare_landing_images import _burn_mark  # noqa: E402  (the same visible AI mark as the object illustrations)
+
 OUT = Path(__file__).resolve().parent.parent / "landing" / "assets"
 SPRITE_AT, SPRITE_R = (957, 309), 34       # the brighter star used as the moving object (source px)
 EARLIER, LATER = (370, 640), (850, 560)    # empty middle-left / middle-right areas (source px)
@@ -66,6 +70,7 @@ def main() -> None:
     names = {"earlier": earlier, "later": later, "diff": diff}
     for name, arr in names.items():
         im = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).resize((a.size, a.size), Image.LANCZOS)
+        _burn_mark(im)  # rubric: images generated with AI carry a visible mark
         out = OUT / f"method-{name}.webp"
         im.save(out, "WEBP", quality=a.quality, method=6)
         print(out.name, out.stat().st_size // 1024, "KB")

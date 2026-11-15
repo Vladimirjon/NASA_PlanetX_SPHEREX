@@ -1,7 +1,6 @@
 /* Textos ES / EN. Misma clave en ambos idiomas; si falta en ES se usa la de EN. */
 export const D={
 en:{
-"ai.badge":"AI illustration",
 "col.a0":"0.75 µm","col.a1":"5 µm","col.axis":"wavelength · illustrative shape, not a measured spectrum",
 "meth.h":"How we find a change",
 "meth.p":"We never compare by eye alone. Every comparison follows the same four steps, with real SPHEREx images from NASA’s IRSA archive.",
@@ -44,7 +43,7 @@ skip:"Skip to content","nav.cta":"Explore the sky","rail":"Story progress","lang
 "go.h":"Pick a spot.<br>Watch it change.","go.cta":"Explore the sky","go.p":"Real NASA data. Every view has a link you can share.",
 "src.h":"Sources & credits","src.mission":"Mission and data","src.challenge":"Challenge and inspiration","src.tools":"Tools","src.science":"Science of seeing change","src.credits":"Credits",
 "src.ack.lead":"Acknowledgement requested by NASA/IPAC for SPHEREx data:",
-"src.ai":"AI use: Claude (Anthropic) helped write this page’s code and copy. The artist’s-concept illustrations of the five objects and the hero backdrop were generated with ChatGPT Images and are marked “AI illustration”; they are not NASA data. No NASA logos are used.",
+"src.ai":"AI use: Claude (Anthropic) helped write this page’s code and copy, and Cursor agents helped build the viewer. The artist’s-concept illustrations of the five objects and the star field behind the “How we find a change” diagram were generated with ChatGPT Images and carry a visible “AI-generated” mark; they are not NASA data. The Copernix wordmark and icon were also generated with AI (ChatGPT Images). The satellite model is NASA’s Eyes (NASA/JPL-Caltech). No NASA logos are used.",
 "src.unofficial":"Copernix is a NASA Space Apps 2026 team project (team NA ZA). It is not an official NASA product and NASA does not endorse it.",
 "foot":"A NA ZA team project · NASA Space Apps Challenge 2026 · Sangolquí · Planet X and SPHEREx",
 "about":"About",
@@ -82,7 +81,6 @@ skip:"Skip to content","nav.cta":"Explore the sky","rail":"Story progress","lang
  ["SPHEREx 3D model","NASA’s Eyes · NASA/JPL-Caltech","https://eyes.nasa.gov/apps/solar-system/","Spacecraft model from NASA’s Eyes. Shown with NASA credit; not an endorsement."]]
 },
 es:{
-"ai.badge":"Ilustración IA",
 "col.a0":"0,75 µm","col.a1":"5 µm","col.axis":"longitud de onda · forma ilustrativa, no es un espectro medido",
 "meth.h":"Cómo encontramos un cambio",
 "meth.p":"Nunca comparamos solo a ojo. Cada comparación sigue los mismos cuatro pasos, con imágenes reales de SPHEREx del archivo IRSA de la NASA.",
@@ -125,7 +123,7 @@ skip:"Saltar al contenido","nav.cta":"Explorar el cielo","rail":"Progreso de la 
 "go.h":"Elige un punto.<br>Míralo cambiar.","go.cta":"Explorar el cielo","go.p":"Datos reales de la NASA. Cada vista tiene un enlace para compartir.",
 "src.h":"Fuentes y créditos","src.mission":"Misión y datos","src.challenge":"Reto e inspiración","src.tools":"Herramientas","src.science":"Ciencia de percibir cambios","src.credits":"Créditos",
 "src.ack.lead":"Agradecimiento que NASA/IPAC pide para los datos de SPHEREx (texto oficial, en inglés):",
-"src.ai":"Uso de IA: Claude (Anthropic) ayudó a escribir el código y los textos de esta página. Las ilustraciones conceptuales de los cinco objetos y el fondo del inicio se generaron con ChatGPT Images y llevan la marca “Ilustración IA”; no son datos de la NASA. No se usa ningún logo de la NASA.",
+"src.ai":"Uso de IA: Claude (Anthropic) ayudó a escribir el código y los textos de esta página, y agentes de Cursor ayudaron a construir el visor. Las ilustraciones conceptuales de los cinco objetos y el campo de estrellas detrás del esquema «Cómo encontramos un cambio» se generaron con ChatGPT Images y llevan una marca visible «AI-generated · Generada con IA»; no son datos de la NASA. El logotipo y el icono de Copernix también se generaron con IA (ChatGPT Images). El modelo del satélite es de NASA’s Eyes (NASA/JPL-Caltech). No se usa ningún logo de la NASA.",
 "src.unofficial":"Copernix es un proyecto del equipo NA ZA para NASA Space Apps 2026. No es un producto oficial de la NASA y la NASA no lo respalda.",
 "foot":"Un proyecto del equipo NA ZA · NASA Space Apps Challenge 2026 · Sangolquí · Planet X and SPHEREx",
 "about":"Sobre",

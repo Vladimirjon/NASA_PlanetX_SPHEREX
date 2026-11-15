@@ -6,11 +6,11 @@ const DEG_PER_PX=.45,PX_YAW=DEG_PER_PX/(360/N),PX_PITCH=DEG_PER_PX/(VIEWS.pitchD
 const IDLE_FRAMES_S=.3*N/(2*Math.PI);   // lazy turn, 0.3 rad/s
 const EASE_S=1.1,PITCH_DECAY=3,MAX_FLICK=700;   // seconds to settle back to the lazy turn; frames/s cap on a flick
 
-export const SAT3D={ready:false,failed:false,started:false,onready:null,onfail:null,onchange:null,onframe:null,update:null};
+export const SAT3D={ready:false,failed:false,started:false,mode:null,canvas:null,onready:null,onfail:null,onchange:null,onframe:null,onGLLost:null,update:null};
 
-SAT3D.init=function(canvas){
-  if(SAT3D.started)return;
-  SAT3D.started=true;
+/* Prerendered views, played back in a 2D canvas: the fallback when real-time 3D cannot start safely. */
+function init2D(canvas){
+  SAT3D.mode='2d';SAT3D.canvas=canvas;
   const context=canvas.getContext('2d',{willReadFrequently:true});
   const rows=Array.from({length:ROWS},()=>new Map()),bad=new Set(),queued=new Set();
   let queue=[],active=0,loaded=0;
@@ -134,5 +134,21 @@ SAT3D.init=function(canvas){
     for(const [img,wt] of taps){sum+=wt;context.globalAlpha=wt/sum;context.drawImage(img,layout.cx-size/2,layout.cy-size/2,size,size);}
     context.globalAlpha=1;
   };
-  wantNear();prefetch();
+  wantNear();prefetch();}
+
+/* Real-time 3D first (sat-gl.js, lazy); anything unexpected falls back to the prerendered views.
+   Without a DOM (tests) or with ?gl=0 the views are used directly. */
+SAT3D.init=function(canvas){
+  if(SAT3D.started)return;
+  SAT3D.started=true;SAT3D.canvas=canvas;
+  const wantGL=typeof location!=='undefined'&&typeof document!=='undefined'&&!/[?&]gl=0\b/.test(location.search);
+  if(!wantGL){init2D(canvas);return;}
+  SAT3D.onGLLost=()=>{   // a lost context cannot become a 2D canvas: swap in a fresh one
+    const lost=SAT3D.canvas,fresh=lost.cloneNode(false);
+    lost.replaceWith(fresh);SAT3D.update=null;SAT3D.ready=false;init2D(fresh);
+  };
+  import('./sat-gl.js').then(m=>m.initGL(canvas,SAT3D)).then(ok=>{
+    if(ok){SAT3D.ready=true;SAT3D.onready?.();SAT3D.onframe?.();}
+    else init2D(canvas);
+  }).catch(()=>init2D(canvas));
 };
