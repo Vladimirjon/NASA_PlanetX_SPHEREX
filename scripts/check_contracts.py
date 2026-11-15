@@ -31,6 +31,7 @@ CONTRACTS = ROOT / "contracts"
 SPEC = ROOT / "docs" / "specs" / "0001-arquitectura-observation.md"
 OBS_ID = "urn:skyshift:contract:observation:0.1-draft"
 MANIFEST_ID = "urn:skyshift:contract:package-manifest:0.1-draft"
+ANALYSIS_ID = "urn:skyshift:contract:analysis-result:0.1-draft"  # Mateo, spec 0010
 
 # Official SPHEREx Level 2 file name (spec 0001 section 3.1). The process segment
 # is l2b or l2b_retry in real data; the greedy obs_id backtracks to the last D<n>.
@@ -360,12 +361,20 @@ def main() -> int:
 
     cases: list[tuple[str, str, dict]] = [(OBS_ID, name, doc) for name, doc in spec_examples()]
     for path in sorted((CONTRACTS / "examples").glob("*.json")):
-        sid = MANIFEST_ID if path.name.startswith("package-manifest") else OBS_ID
+        if path.name.startswith("package-manifest"):
+            sid = MANIFEST_ID
+        elif path.name.startswith("analysis-result"):
+            sid = ANALYSIS_ID
+        else:
+            sid = OBS_ID
         cases.append((sid, f"examples/{path.name}", json.loads(path.read_text(encoding="utf-8"))))
     for sid, name, doc in cases:
         errs = [f"{'/'.join(map(str, e.absolute_path)) or '/'}: {e.message}" for e in validators[sid].iter_errors(doc)]
         if not errs:
-            errs = semantic_observation(doc) if sid == OBS_ID else semantic_manifest(doc)
+            if sid == OBS_ID:
+                errs = semantic_observation(doc)
+            elif sid == MANIFEST_ID:
+                errs = semantic_manifest(doc)
         failures += bool(errs)
         print(f"{'ok  ' if not errs else 'FAIL'} {name}")
         for e in errs:

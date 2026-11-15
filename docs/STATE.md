@@ -3,6 +3,7 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- Ciencia: revisión de PR #11 en `docs/specs/0036`; se reproduce Q del par, pero alineación, calidad completa, incertidumbre y sesgo de color siguen pendientes de evidencia y revisión humana. Mateo/Johann: FLAGS en centroide medido, residuos A/B, correlaciones e inyección.
 - **14-nov noche · Dax/Cursor · encargo 06 catálogo+controles:** catálogo abierto (`catalog/`), buscador columna + `?name=`, modos/timeline/luz legibles, guía intro. Capturas `revision4-*`. Lint/test/build:copernix + check-landing + `copernix-qa-catalog.mjs` OK. Humano: revisar búsqueda y guía.
 - **14-nov noche · Dax/Cursor · encargo 05 rediseño visor:** layout editorial (scrim, sin barra azul), `selection.ts` (marcador anclado; candidato; custom), dock delgado, sheet móvil. Capturas `revision3-*`. Lint/test/build:copernix + check-landing + `copernix-qa.mjs` OK. Humano: revisar visual y flujo candidato.
 - **14-nov noche · Dax/Cursor · encargo 04 pulir visor:** panel lateral opaco, barra única, dock/legibilidad, bottom sheet móvil, `explain-i18n.ts` ES/EN. Capturas `docs/landing/copernix-qa/revision2-*`. Lint/test/build:copernix + `check-landing` OK. Humano: revisar visual.
@@ -20,9 +21,32 @@ Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o 
 
 - Pitch (14-nov tarde): presentación ES de 7 diapositivas hecha como Artifact (fuera del repo), con fotos reales de NASA y el guion en las notas. Faltan animaciones por afinar, la versión en inglés, los dos PDF, el nombre y las capturas de la app. Detalle y enlace: `docs/HANDOFF_PITCH.md`.
 - Contrastado con un producto DR1 real: el tiempo de la cabecera es UTC; `obs_id` no distingue detector ni versión; `em_min/em_max` cubren el detector entero; λ científica = `CWAVE`/`CBAND`, no `WCS-WAVE`. Esto contradice `context/03` §3 y `context/06` §5.2, que aún no se corrigen.
-- Mateo: ficha `0010` (`AnalysisResult`) en `main`, **borrador** (falta aprobación de Sebastián y Johann). Preparados sin código: plan TDD `0011` y ADR `0010` (stack Python/uv, versiones fijadas). Criterios provisionales de Sebastián (14-nov) incorporados: R6 Δλ/min(CBAND) ≤ 0,02 (solo ε Indi B), SNR ≥ 5, ≥ 5σ con covarianza; ε Indi B = candidato (falta C1–C7). Pendiente: carpeta con Johann y la ficha de Sebastián. Rango de Mateo: 0010–0019.
+- Mateo (rol: movimiento y brillo; PR #8): **primera entrega = movimiento de ε Indi B como candidato**, nunca "evaluado"; brillo a la 2.ª entrega; números del anexo B pendientes de recalcular (0010 §0, condiciones de Sebastián). ADR 0010 aceptado (Dax, Johann). Resultado como JSON estático en `frontend/public/demo/` (Dax, Daniel, Johann). Falta la **aprobación humana de la ficha 0010** para programar; la prueba χ² se reutiliza de `science/validation.py`.
+- Mateo (rama `feat/measurement-motion`, PR #11): movimiento de ε Indi B implementado con los controles de Sebastián (0034): registro con 15 estrellas Gaia (dispersión 0,16″/0,21″ por eje, se sostiene el 0,3″), sin vecinas a < 3 px, pendiente con λ compatible con 0 (Ba/Bb), sensibilidad por pasada ≤ 0,16″/año. μ = (3,907; −2,476) ± 0,062″/año frente a Gaia (3,982; −2,467). Sigue como **candidato** (`threshold_exceeded_unverified`, techo OBSERVADO). Evidencia para su checklist: `docs/reviews/measurement/`. Falta: que Sebastián audite los `unknown`, que Daniel lo muestre en la UI y la recuperación inyectada (0034 §2).
 - Rama `docs/observation-schema`: borrador verificable del contrato en `contracts/` (schema de `Observation`, schema del manifiesto offline, ejemplo real DR1 y sintéticos). `mise run check-contracts` lo valida sin red. Agrega la regla de IDs (probada con 906 filas reales) y los códigos cerrados. Responde a 0010 anexo E: la λ de una medición la lee `AnalysisResult` en el píxel medido, y `spectral.local` queda para un punto de referencia. Sigue en **borrador** hasta que lo revisen Mateo, Daniel y Sebastián.
 - **Copernix** (nombre de la plataforma; NA ZA = equipo): landing en `landing/` + visor propio en `frontend/copernix/` (UI de la landing sobre la plataforma; ADR 0009) + API, en un solo origen: `mise run copernix-build` y `mise run copernix` → http://localhost:4410 (`/` landing, `/viewer/`, `/api`). Solo landing: `mise run landing`. Pendiente: revisión visual humana y probar el mapa WebGL2 en la GPU Intel real (hubo un GPU HANG; ver ADR 0007/0009).
+
+### Producto en `main` (PR #6, Dax + agentes)
+- Backend `backend/` (FastAPI, hexagonal, ADR 0040/0041): `/resolve`, `/search` (148 objetos reales, tolerante a errores, ADR 0044), `/observations`, `/series`, `/series/{id}/frames/{i}`, `/hips`. Caché local→IRSA por capas, un cortacircuitos por servicio. 141 tests en verde (comprobado 14-nov noche).
+- Frontend `frontend/`: app única (`index.html`): mapa WebGL2 tipo Aladin (ADR 0042) + rail de los 5 objetos del reto + panel temporal con Loop/Diferencia/Color, semáforo y procedencia (ADR 0043). 99 tests en verde (comprobado 14-nov noche; uno es intermitente).
+- Ciencia de datos: `docs/context/12` (mapa de datos). Los 5 objetos dan series reales de 2–4 pasadas; demo offline en `frontend/public/demo/`.
+- Correr: `mise run api-dev` + `mise run web-dev` (o `uv run --directory backend uvicorn --factory skyshift.api.app:create_app` y `pnpm --dir frontend dev`). Smoke en vivo: `mise run smoke`.
+- Pendiente: el buscador del frontend no usa `/search`; la app usa un tween propio en vez de `engine.flyTo`; test de arrastre intermitente; revisión de paridad visual (R1) sobre el motor nuevo; la UI necesita otra ronda (Dax: "pésima").
+- La demo vieja de WISE 0855 (`~/Desktop/skyshift-demo`) NO contiene a WISE 0855 (posición de 2010): no usarla.
+
+### Contrato `Observation` vigente (propuesta de Johann, falta el OK de Dax)
+- **Manda `contracts/openapi.yaml` v0.3** (`Observation`, `Visit`, `Frame`, `Comparability`, `Series`): es lo que el backend sirve y el frontend consume. Se programa contra esto.
+- `contracts/observation.schema.json` (`0.1-draft`) y la ficha `0001` son la **evolución futura**, no implementada. No programar contra ellos ni presentarlos como funciones disponibles.
+- El paso de uno a otro es aditivo y opcional (campos candidatos y correspondencia en `docs/reviews/2026-11-14-triage-specs-main.md`); cada campo nuevo necesita OK de Dax y, si es científico, de Sebastián. Cuando se ratifique, queda en un ADR.
+
+### Fichas y ramas del Ciclo 1 (todas en borrador)
+- Johann: ficha `0001` + schemas en `contracts/` (`mise run check-contracts`, 0 fallos). Falta la revisión de Mateo, Daniel, Sebastián y Dax (frontera `Region`).
+- Mateo: ficha `0010` (`AnalysisResult`), plan TDD `0011` y ADR `0010`, sin código. Criterios provisionales de Sebastián incorporados: R6 Δλ/min(CBAND) ≤ 0,02 (solo ε Indi B), SNR ≥ 5, ≥ 5σ con covarianza; ε Indi B = candidato (falta C1–C7). Falta la aprobación de Sebastián y Johann, y acordar la carpeta. Última revisión documental integrada en PR #8.
+- Sebastián: trabajo de `scientific-rules` ya integrado en `main` (PR #9): fichas 0030–0033, ADR 0030, `science/validation.py`, `science_preview/` y tests. Sigue pendiente decidir con Dax y Johann dónde vive `science/` de forma definitiva.
+- Datos (Johann): contrastado con un producto DR1 real, el tiempo de la cabecera es UTC; `obs_id` no distingue detector ni versión; `em_min/em_max` cubren el detector entero; λ científica = `CWAVE`/`CBAND` y `WCS-WAVE` es aproximación para selección (D12 §2.2). Contradice `context/03` §3 y `context/06` §5.2, **aún sin corregir**.
+
+### Pitch (Johann)
+- Presentación ES de 7 diapositivas como Artifact (fuera del repo), con fotos reales de NASA y el guion en las notas. Faltan: animaciones, versión en inglés, los dos PDF, el nombre y las capturas de la app, y la línea en `docs/AI_USAGE.md`. Detalle y enlace: `docs/HANDOFF_PITCH.md`.
 
 ## Hitos (Ecuador, UTC−5)
 | Hora | Hito |
@@ -33,27 +57,28 @@ Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o 
 | Dom 11:00 | Pitch en español + Q&A |
 | Dom 23:59 | Cierre global |
 
-## Dueños (pendiente de asignar)
-| Persona | Rol | Carpetas |
-| --- | --- | --- |
-| Dax | — | — |
-| — | — | — |
-| — | — | — |
-| — | — | — |
-| — | — | — |
+## Dueños
+Roles confirmados por el equipo (registrado en la rama `scientific-rules`, 14-nov). Carpetas: lo que cada uno ya trabaja según Git; falta que el equipo lo ratifique.
+
+| Persona | Rol | Carpetas (de hecho, por ratificar) | Fichas / ADR |
+| --- | --- | --- | --- |
+| Dax | Región, motor del cielo, backend y app integrada | `backend/`, `frontend/` | 0040–0049 |
+| Johann | Datos, contratos e integración; pitch | `contracts/` (schemas en borrador), `scripts/check_contracts.py`, `docs/HANDOFF_PITCH.md` | 0001 |
+| Mateo | Mediciones (`AnalysisResult`) | por acordar con Johann | 0010–0019 |
+| Sebastián | Validación e interpretación científica | `science/`, `science_preview/` (rama sin integrar) | 0030–0039 |
+| Daniel | UX/UI | por acordar con Dax (la UI vive en `frontend/`) | por asignar |
 
 ## Decisiones pendientes (del equipo, no de la IA)
-1. Visión de producto y "momento wow" (ver `docs/context/04-vision-ux.md`).
-2. Stack: el de ADR 0003 es solo recomendación; cada dueño de módulo decide con su agente y deja ADR. Elegir el hosting del backend (Cloud Run pide tarjeta; HF Spaces no).
-3. Reparto de roles.
+1. Ratificar el contrato vigente (sección «Contrato `Observation` vigente»): Dax + Johann.
+2. Dónde se integra `science/` de Sebastián: Sebastián + Dax + Johann, antes de Dom 02:00.
+3. Hosting de la demo pública (Cloud Run pide tarjeta; HF Spaces no). Es requisito de la entrega de Dom 09:00.
 4. Nombre de la app (provisional: SkyShift).
+5. Stack: de hecho es el de ADR 0040–0044; ADR 0003 queda como recomendación. Falta dejarlo ratificado.
 
 ## Bloqueos y riesgos
-- Resuelto 14-nov tarde: QR3 vacío solo en WISE 0855; los otros 4 objetos suman una pasada QR3 (ver Ahora).
-- [medido 14-nov, Mateo] Épocas DR1+QR3: WISE 0855 3 (QR3 vacío), Barnard 3, ε Indi B 4, RW Aur 3, R Dra 4 grupos exploratorios (D12 §5.2 agrupa 3 pasadas con >45 días). Detalle: `docs/specs/0010-analysis-result.md` anexo B. ε Indi B resuelto con 2MASS (IRSA Gator) sin SIMBAD.
-- [medido] Barnard, RW Aur y R Dra **saturan** SPHEREx; WISE 0855 es demasiado débil en una exposición (SNR ≤ 4,7). Solo ε Indi B es medible (movimiento ~1 px en 1,4 años, medido). Falta una variable no saturada → Sebastián.
-- IRSA TAP muy lento hoy (315 s / 502): usar SIA2.
-- 14-nov tarde, comprobado (ficha 0001 §7.4): QR3 está vacío en WISE 0855, pero añade fechas posteriores a DR1 en Barnard, RW Aur y R Dra. WISE 0855 tiene 3 grupos de fechas en DR1 y un par D3 may-2025/may-2026 con la misma λ en el punto (candidato, sin evaluar). IRSA da 502 intermitentes, con o sin `TIME`. ~~Pendiente: resolver Epsilon Indi B cuando SIMBAD vuelva.~~ Resuelto (ficha 0010). Ojo: WISE 0855 no se detecta en una exposición (ficha 0010 B.4), así que ese par D3 no es medible.
+- [medido 14-nov, Mateo] Épocas DR1+QR3: WISE 0855 3 (QR3 vacío), Barnard 3, ε Indi B 4, RW Aur 3, R Dra 4 grupos exploratorios; D12 §5.2 agrupa R Dra en 3 pasadas con >45 días. QR3 añade fechas posteriores a DR1 en Barnard, RW Aur y R Dra. Detalle: ficha `0010` anexo B. ε Indi B resuelto con 2MASS (IRSA Gator) sin SIMBAD.
+- [medido] Barnard, RW Aur y R Dra **saturan** SPHEREx; WISE 0855 es demasiado débil en una exposición (SNR ≤ 4,7), así que su par D3 may-2025/may-2026 no es medible. Solo ε Indi B es medible (movimiento ~1 px en 1,4 años). Falta una variable no saturada → Sebastián.
+- IRSA TAP muy lento (315 s / 502) y SIA2 con 502 intermitentes, con o sin `TIME`: usar SIA2 y la demo offline como respaldo.
 
 ## Preguntas para mentores (Bloque 4)
 - Duración exacta del pitch y del Q&A.

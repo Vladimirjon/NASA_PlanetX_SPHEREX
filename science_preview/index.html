@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>SkyShift | Compare observations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <a class="brand" href="#main" aria-label="SkyShift, skip to comparison">Sky<span>Shift</span><span class="brand-mark"> / </span><small>SCIENCE</small></a>
+    <div class="header-meta"><span>SPHEREx · NASA/IPAC IRSA</span><button id="theme" class="button quiet" type="button">Light mode</button></div>
+  </header>
+  <main id="main" class="shell">
+    <div class="intro">
+      <div><h1>Compare the same sky</h1><p>See two real observations and what must be checked before we can interpret a difference.</p></div>
+      <div class="status-stamp"><span class="status-dot"></span><span><strong>Not evaluated</strong><small>Evidence is still incomplete</small></span></div>
+    </div>
+
+    <div class="case-nav" role="group" aria-label="Choose a region">
+      <span class="nav-label">Region</span>
+      <button type="button" class="case-button selected" data-case="epsilon" aria-pressed="true">Epsilon Indi B</button>
+      <button type="button" class="case-button" data-case="wise" aria-pressed="false">WISE 0855</button>
+      <span class="nav-end">REAL OBSERVATIONS · EXPLORATORY</span>
+    </div>
+
+    <div id="loading" class="message" role="status">Loading observation data…</div>
+    <div id="error" class="message error" role="alert" hidden>Observation data could not be loaded. Run the local server and refresh this page.</div>
+    <div id="content" hidden>
+      <div class="workspace">
+        <section class="observations" aria-labelledby="case-title">
+          <div class="section-head"><div><p class="section-label">TWO OBSERVATIONS</p><h2 id="case-title"></h2></div><span id="focus" class="focus-label"></span></div>
+          <p id="summary" class="case-summary"></p>
+          <div class="image-pair" id="image-pair"></div>
+          <div class="image-note"><strong>Before you compare</strong><p>These are original cutouts, not aligned images; orientation is not matched. Both use the same display scale. Brightness on screen is not a measurement, and black can include missing pixels.</p><p id="stretch"></p><p>Measurement uncertainty is not shown in this preview. See the original files for the variance data.</p></div>
+        </section>
+
+        <aside class="review" aria-labelledby="review-title">
+          <div class="review-header"><p class="section-label">VALIDATION</p><h2 id="review-title">Can we compare them?</h2><p>The observations are real. The source and measurement still need checks.</p></div>
+          <div class="review-result"><span class="result-mark">!</span><div><strong>Not ready to evaluate</strong><p id="result-text">Missing evidence prevents a scientific conclusion.</p></div></div>
+          <div class="check-list" id="checks" aria-live="polite"></div>
+          <div class="wavelength" id="spectral"></div>
+          <div class="review-footer"><a href="https://irsa.ipac.caltech.edu/Missions/spherex.html" target="_blank" rel="noopener noreferrer">About SPHEREx data <span aria-hidden="true">↗</span></a><a href="https://irsa.ipac.caltech.edu/onlinehelp/spherex/spherex/sp.html" target="_blank" rel="noopener noreferrer">How IRSA measures sources <span aria-hidden="true">↗</span></a></div>
+        </aside>
+      </div>
+      <section class="next" aria-labelledby="next-title">
+        <div><p class="section-label">HOW THIS BECOMES A RESULT</p><h2 id="next-title">From images to evidence</h2></div>
+        <ol><li><strong>Find the source</strong><span>Identify the same object in each observation.</span></li><li><strong>Match the observations</strong><span>Check position, wavelength and image quality.</span></li><li><strong>Measure the difference</strong><span>Include uncertainty before interpreting a change.</span></li></ol>
+      </section>
+    </div>
+  </main>
+  <footer class="footer"><span>SkyShift · Scientific validation preview</span><span>Images: NASA/IPAC IRSA · SPHEREx</span></footer>
+</body>
+</html>

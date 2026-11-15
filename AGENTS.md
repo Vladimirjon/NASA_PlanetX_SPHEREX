@@ -21,6 +21,7 @@ Nunca separar una imagen de sus metadatos de procedencia (archivo, fecha, banda/
 | --- | --- |
 | `docs/Onboarding_Planet_X_SPHEREx_v0.1.md` | **Guía del equipo** (autoridad humana): problema, fundamentos, flujo, decisiones acordadas |
 | `docs/STATE.md` | Qué está pasando ahora, quién tiene qué, bloqueos. **Léelo siempre primero.** |
+| `docs/ciclos-entrega-skyshift.md` | Ciclos y dependencias del equipo; guía propuesta, consultar el estado actual en `STATE` |
 | `docs/context/01-reto-y-jurado.md` | Reto oficial, rúbrica de Sangolquí, entregables y plazos |
 | `docs/context/02-ciencia-para-cs.md` | Física explicada para personas de CS (sin asumir nada) |
 | `docs/context/03-datos-y-apis.md` | APIs de NASA/IRSA medidas: endpoints, latencias, trampas |

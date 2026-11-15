@@ -9,7 +9,7 @@ import pytest
 PKG = Path(__file__).resolve().parents[1] / "src" / "skyshift"
 
 # Pure computation libraries the science core may use (no network, no web framework).
-SCIENCE = {"numpy", "astropy", "reproject"}
+SCIENCE = {"numpy", "astropy", "reproject", "scipy"}  # scipy: centroid fit (ADR 0010)
 ANY = {"*"}
 
 # For each layer: which skyshift layers it may import, and which third-party roots.
