@@ -64,6 +64,16 @@ if (fs.existsSync(viewerSource)) {
   viewerNote = 'viewer/ and demo/ included (static hosting works without the API, offline demo of the five objects)';
 }
 
+// Cloudflare reads these two files from the site root: caching/security headers, and a real 404 page
+// (without it unknown paths would answer 200 with the landing, and the viewer's /api fallback to the demo would break)
+for (const name of ['_headers', '404.html']) {
+  const from = path.join(root, 'deploy', 'cloudflare', name);
+  if (fs.existsSync(from)) {
+    fs.copyFileSync(from, path.join(out, name));
+    bytes += fs.statSync(from).size;
+  }
+}
+
 console.log(
   `Built ${files.length} static files (${(bytes / 1024).toFixed(0)} KiB); ${viewerNote}; satellite views load individually on demand.`,
 );

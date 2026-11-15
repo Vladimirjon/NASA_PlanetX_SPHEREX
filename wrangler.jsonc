@@ -1,0 +1,11 @@
+{
+  // Static Copernix package on Cloudflare (ADR 0011). `node scripts/build-landing.mjs` writes dist/landing first.
+  "name": "demo",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./dist/landing",
+    "not_found_handling": "404-page"
+  }
+}
