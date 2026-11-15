@@ -1,0 +1,18 @@
+{
+  "case_ref": "eps-indi-b-d3-pair",
+  "observation_ids": [
+    "ivo://irsa.ipac/spherex_dr1?2025W24_1A_0245_4/D3",
+    "ivo://irsa.ipac/spherex_qr3?2026W40_1A_0070_2/D3"
+  ],
+  "separation_arcsec": 6.048660411668297,
+  "delta_arcsec": [
+    5.193305561577468,
+    -3.1009466489721866
+  ],
+  "sigma_delta_arcsec": [
+    0.4320610023064387,
+    0.4342877958925774
+  ],
+  "interpretation_ceiling": "OBSERVED",
+  "source_revision": "cf5881ef5654d9e6c203d9267ba86a66b1b711a8"
+}
