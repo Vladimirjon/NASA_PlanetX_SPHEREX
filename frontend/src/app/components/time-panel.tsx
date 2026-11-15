@@ -187,7 +187,6 @@ export function TimePanel(props: Props) {
 
       {status === 'ready' && series && loaded ? (
         <div className="time-panel-body">
-          {guidedPair ? <GuidedPairSummary measurement={guidedPair} /> : null}
           <Timeline
             frames={series.frames}
             rejected={series.rejected.map(r => ({
@@ -202,6 +201,7 @@ export function TimePanel(props: Props) {
             }}
           />
           <div className="time-panel-main">
+            {guidedPair ? <GuidedPairSummary measurement={guidedPair} /> : null}
             <div className="cutout-stage">
               <canvas ref={canvasRef} tabIndex={0} role="img" aria-label={guidedPair ? `SPHEREx detector D3, ${visitLabel}, ${mode} view` : 'SPHEREx cutout on a common grid'} />
               {guidedPair && mode === 'colour' ? <p className="guided-pair-view-label">Magenta: image A · Green: image B</p> : null}

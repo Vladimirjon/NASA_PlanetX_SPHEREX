@@ -361,7 +361,13 @@ a:focus-visible {
   padding: var(--space-2) var(--space-4);
   border-bottom: 1px solid var(--line);
 }
-.guided-pair-summary { max-width: 72ch; }
+.guided-pair-panel .time-panel-main {
+  grid-template-areas: 'image summary' 'image evidence';
+  grid-template-rows: auto 1fr;
+}
+.guided-pair-panel .cutout-stage { grid-area: image; }
+.guided-pair-panel .explain { grid-area: evidence; }
+.guided-pair-summary { grid-area: summary; max-width: 62ch; }
 .guided-pair-summary p { margin: var(--space-2) 0 0; }
 .guided-pair-observations a { color: var(--accent); }
 .guided-pair-view-label { margin: 0; }
@@ -488,9 +494,15 @@ a:focus-visible {
   .target-list { flex-direction: row; overflow-x: auto; }
   .target-card { min-width: 220px; }
   .time-panel-main { grid-template-columns: 1fr; }
+  .guided-pair-panel .time-panel-main {
+    grid-template-areas: 'image' 'summary' 'evidence';
+    grid-template-rows: auto auto auto;
+    gap: var(--space-3);
+  }
 }
 
 @media (max-width: 520px) {
+  .guided-pair-panel .cutout-stage canvas { width: min(100%, 200px); }
   .guided-pair-panel .time-panel-bar { flex-wrap: wrap; }
   .guided-pair-panel .visit-label { order: 1; flex-basis: 100%; }
 }
