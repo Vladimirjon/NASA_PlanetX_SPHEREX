@@ -1,6 +1,6 @@
 # Ficha del proyecto / Project card (ES + EN)
 
-> Copiar y pegar en la plataforma. Completar `[URL DEMO]` y `[URL VIDEO]` antes de las 09:00. / Copy and paste into the platform; fill in `[URL DEMO]` and `[URL VIDEO]` before 09:00.
+> Copiar y pegar en la plataforma. Completar `[URL VIDEO]` (la demo ya está publicada) antes de las 09:00. / Copy and paste into the platform; fill in `[URL VIDEO]` (the demo is already live) before 09:00.
 
 ## Español
 
@@ -23,7 +23,7 @@
 **Uso de IA (declaración):** Claude (Anthropic) y agentes de Cursor ayudaron a escribir código y textos; las ilustraciones conceptuales de los cinco objetos y el campo de estrellas del esquema del método se generaron con ChatGPT Images y llevan marca de agua visible; no son datos de la NASA. El logotipo y el icono de Copernix también se generaron con IA (ChatGPT Images). Detalle y revisión humana: https://github.com/Vladimirjon/NASA_PlanetX_SPHEREX/blob/main/docs/AI_USAGE.md
 **Logos:** no se usa ningún logo de la NASA. Copernix no es un producto oficial de la NASA.
 
-**Enlaces:** Demo en vivo: [URL DEMO] · Repositorio (MIT): https://github.com/Vladimirjon/NASA_PlanetX_SPHEREX · Video: [URL VIDEO]
+**Enlaces:** Demo en vivo: https://demo.copernix.workers.dev · Repositorio (MIT): https://github.com/Vladimirjon/NASA_PlanetX_SPHEREX · Video: [URL VIDEO]
 
 ## English
 
@@ -46,4 +46,4 @@
 **AI use (declaration):** Claude (Anthropic) and Cursor agents helped write code and copy; the concept illustrations of the five objects and the star field in the method diagram were generated with ChatGPT Images and carry a visible watermark; they are not NASA data. The Copernix wordmark and icon were also generated with AI (ChatGPT Images). Details and human review: https://github.com/Vladimirjon/NASA_PlanetX_SPHEREX/blob/main/docs/AI_USAGE.md
 **Logos:** no NASA logos are used. Copernix is not an official NASA product.
 
-**Links:** Live demo: [URL DEMO] · Repository (MIT): https://github.com/Vladimirjon/NASA_PlanetX_SPHEREX · Video: [URL VIDEO]
+**Links:** Live demo: https://demo.copernix.workers.dev · Repository (MIT): https://github.com/Vladimirjon/NASA_PlanetX_SPHEREX · Video: [URL VIDEO]
