@@ -56,7 +56,7 @@ body {
   --layout-cutout-w: 260px;
   --layout-cutout-inset: 1.25rem;
   --layout-gap: 1.5rem;
-  --layout-cutout-block: 18.5rem;
+  --layout-cutout-block: 19rem;
 }
 
 .viewer.map-off .sky-layer {
@@ -142,20 +142,55 @@ body {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
-.candidate {
+.feat-marker {
   position: absolute;
+  width: 18px;
+  height: 18px;
   translate: -50% -50%;
+  z-index: 2;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.feat-marker.dim {
+  opacity: 0.35;
+}
+
+.feat-marker:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.skip-intro-fly {
+  position: absolute;
+  z-index: 26;
+  left: 50%;
+  bottom: 6.5rem;
+  translate: -50% 0;
+  font-size: 0.72rem;
+  pointer-events: auto;
+}
+
+.candidate {
+  /* zero-size anchor: the cross is centred exactly on the clicked point; text hangs off to the side */
+  position: absolute;
+  width: 0;
+  height: 0;
   z-index: 3;
-  display: grid;
-  justify-items: start;
-  gap: 0.25rem;
   pointer-events: none;
 }
 
 .candidate-cross {
+  position: absolute;
+  left: -7px;
+  top: -7px;
   width: 14px;
   height: 14px;
-  position: relative;
 }
 
 .candidate-cross::before,
@@ -179,7 +214,9 @@ body {
 }
 
 .candidate-meta {
-  margin-left: 18px;
+  position: absolute;
+  left: 14px;
+  top: -9px;
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.92);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
@@ -187,7 +224,10 @@ body {
 }
 
 .candidate-analyze {
-  margin-left: 18px;
+  position: absolute;
+  left: 14px;
+  top: 10px;
+  white-space: nowrap;
   pointer-events: auto;
   min-height: 44px;
 }
@@ -362,7 +402,7 @@ body {
 
 .tipbox {
   position: fixed;
-  z-index: 90;
+  z-index: 55;
   max-width: min(280px, calc(100vw - 20px));
   padding: 0.8rem 0.95rem;
   pointer-events: none;
@@ -391,6 +431,7 @@ body {
 .left-col {
   position: absolute;
   z-index: 30;
+  transition: opacity 0.45s ease;
   top: 4.5rem;
   left: 1.5rem;
   bottom: 7.5rem;
@@ -398,11 +439,20 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  pointer-events: none;
+  pointer-events: auto;
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: thin;
   padding-right: 0.35rem;
+}
+
+.left-col.entry-pending {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.left-col.entry-visible {
+  opacity: 1;
 }
 
 .left-col > * {
@@ -625,7 +675,7 @@ body {
   width: 44px;
   height: 44px;
   border-radius: var(--r);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   background: rgba(3, 14, 34, 0.84);
   color: var(--text);
   font: 600 1.1rem var(--f-mono);
@@ -655,12 +705,86 @@ body {
 }
 
 /* —— cutout card —— */
+.viewer:not(.is-mobile) .cutout-card {
+  bottom: 6.25rem;
+}
+
+@media (max-width: 1100px) and (min-width: 821px) {
+  .viewer:not(.is-mobile) .left-col {
+    bottom: 10.5rem;
+    max-height: calc(100dvh - 5.5rem - 10.5rem);
+  }
+}
+
+@media (max-width: 1060px) and (min-width: 821px) {
+  .viewer:not(.is-mobile) .cutout-card {
+    bottom: 6.5rem;
+    width: 252px;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 821px) {
+  .viewer:not(.is-mobile) .cutout-card {
+    bottom: 7.85rem;
+    transform: scale(0.86);
+    transform-origin: bottom right;
+  }
+
+  .viewer:not(.is-mobile) .cutout-card .carousel-dots,
+  .viewer:not(.is-mobile) .cutout-card .cutout-cap {
+    display: none;
+  }
+
+  .viewer:not(.is-mobile) .dock {
+    max-width: min(520px, calc(100vw - 22rem));
+  }
+
+  .menu-panel {
+    left: 50%;
+    right: auto;
+    translate: -50% 0;
+    width: min(260px, calc(100vw - 32px));
+  }
+}
+
+@media (max-width: 1024px) and (max-height: 800px) and (min-width: 821px) {
+  .viewer:not(.is-mobile) .left-col {
+    bottom: 12.5rem;
+    max-height: calc(100dvh - 5rem - 12.5rem);
+  }
+
+  .viewer:not(.is-mobile) .dock {
+    max-width: min(440px, calc(100vw - 24rem));
+  }
+
+  .viewer:not(.is-mobile) .cutout-card {
+    top: auto;
+    bottom: 6.85rem;
+    right: 5.35rem;
+    width: 188px;
+    transform: scale(0.82);
+  }
+
+  .viewer:not(.is-mobile) .cutout-card .cutout-carousel-row {
+    grid-template-columns: 1fr;
+  }
+
+  .viewer:not(.is-mobile) .cutout-card .cutout-carousel-row .photo-arrow {
+    display: none;
+  }
+
+  .viewer:not(.is-mobile) .cutout-card .carousel-caption {
+    font-size: 0.58rem;
+    margin-top: 0.1rem;
+  }
+}
+
 .cutout-card {
   position: absolute;
   z-index: 32;
   right: 1.25rem;
   bottom: 5.5rem;
-  width: 260px;
+  width: min(280px, calc(100vw - var(--layout-col-width) - 4rem));
   padding: 0.55rem;
   background: rgba(3, 14, 34, 0.84);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -669,6 +793,115 @@ body {
   cursor: pointer;
   color: inherit;
   text-align: left;
+}
+
+.cutout-carousel-row {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.cutout-stage {
+  overflow: hidden;
+  border-radius: var(--r);
+}
+
+.cutout-stage.slide-in-right .cutout-wrap {
+  animation: carousel-in-right 0.28s ease forwards;
+}
+
+.cutout-stage.slide-in-left .cutout-wrap {
+  animation: carousel-in-left 0.28s ease forwards;
+}
+
+@keyframes carousel-in-right {
+  from {
+    opacity: 0.4;
+    transform: translateX(12%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes carousel-in-left {
+  from {
+    opacity: 0.4;
+    transform: translateX(-12%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.photo-arrow {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: var(--r);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(3, 14, 34, 0.88);
+  color: var(--text);
+  font: 600 1.35rem/1 var(--f-display);
+  cursor: pointer;
+}
+
+.photo-arrow:hover,
+.photo-arrow:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.photo-arrow:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: transparent;
+  cursor: pointer;
+}
+
+.carousel-dot.on {
+  background: var(--text);
+}
+
+.carousel-caption {
+  font-size: 0.68rem;
+  color: var(--dim);
+  text-align: center;
+  margin-top: 0.25rem;
+}
+
+.photo-key-hint {
+  font-size: 0.62rem;
+  color: var(--dim);
+  flex: none;
+  animation: hint-fade 6s ease forwards;
+}
+
+@keyframes hint-fade {
+  0%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .cutout-wrap {
@@ -765,6 +998,83 @@ body {
 .pp-text {
   font: 600 0.78rem var(--f-display);
   white-space: nowrap;
+  background: var(--text);
+  color: #0b1322;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.pp-text:disabled {
+  background: transparent;
+  color: var(--dim);
+}
+
+.seg-control {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--r);
+  overflow: hidden;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.seg-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0.35rem 0.45rem;
+  border: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: var(--dim);
+  font: 500 0.74rem var(--f-display);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.seg-btn:last-child {
+  border-right: 0;
+}
+
+.seg-btn[aria-pressed="true"] {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--accent);
+}
+
+.seg-btn:hover,
+.seg-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+
+.dock-outline {
+  min-height: 44px;
+  padding: 0.35rem 0.55rem;
+  border-radius: var(--r);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: transparent;
+  color: var(--text);
+  font: 500 0.74rem var(--f-display);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex: none;
+}
+
+.dock-outline[aria-pressed="true"] {
+  background: rgba(255, 255, 255, 0.1);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--accent);
+}
+
+.wave-icon {
+  font-size: 0.85rem;
+  opacity: 0.85;
 }
 
 .photo-index {
@@ -1042,6 +1352,7 @@ body {
   margin-left: 0.15rem;
   font-size: 0.78rem;
   flex: none;
+  z-index: 12;
 }
 
 .map-menu summary {
@@ -1068,10 +1379,12 @@ body {
 }
 
 .menu-panel {
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + 6px);
-  z-index: 5;
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: calc(12.5rem + env(safe-area-inset-bottom, 0px));
+  z-index: 50;
+  max-height: min(38vh, 220px);
+  overflow: auto;
   min-width: 220px;
   padding: 0.7rem 0.8rem;
   display: flex;
@@ -1292,17 +1605,20 @@ body {
     gap: 0.35rem;
   }
 
-  .mode-chips {
+  .seg-control {
     flex: 1 1 auto;
     min-width: 0;
     max-width: none;
-    justify-content: flex-end;
   }
 
-  .mode-chips .chip-text {
-    font-size: 0.74rem;
+  .seg-btn {
+    font-size: 0.7rem;
     min-height: 40px;
-    padding: 0.2rem 0.05rem;
+    padding: 0.2rem 0.25rem;
+  }
+
+  .dock-outline {
+    display: none;
   }
 
   .colours-toggle {
@@ -1499,7 +1815,10 @@ body {
     overflow-y: auto;
   }
 
-  /* the guide button joins the top-right corner, next to ES | EN */
+}
+
+/* the guide button joins the top-right corner, next to ES | EN */
+@media (min-width: 821px) {
   .viewer:not(.is-mobile) .what-seeing {
     top: 1.45rem;
     right: 7rem;
@@ -1521,7 +1840,116 @@ body {
   .lang button,
   .sheet,
   .intro-ring,
-  .intro-card {
+  .intro-card,
+  .cutout-stage.slide-in-right .cutout-wrap,
+  .cutout-stage.slide-in-left .cutout-wrap,
+  .left-col,
+  .photo-key-hint,
+  .feat-marker {
     transition: none;
+    animation: none;
   }
+}
+
+/* primary play/pause: white button, dark text (the generic .pp:not(:disabled) rule must not turn the text white) */
+.pp.pp-text:not(:disabled) {
+  background: var(--text);
+  color: #0b1322;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.pp.pp-text:hover:not(:disabled) {
+  background: var(--accent);
+  color: #030e22;
+}
+
+
+/* —— fixes after round 8 —— */
+/* play button: the generic pressed style turned its label white on white */
+.pp.pp-text,
+.pp.pp-text[aria-pressed] {
+  background: var(--text);
+  color: #0b1322;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.pp.pp-text:disabled {
+  background: transparent;
+  color: var(--dim);
+}
+
+.photo-arrow svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* 821–1100 px: the card goes to the right column under ES | EN, the zoom stack sits above the dock,
+   and the light panel floats above the dock instead of growing it into the left column */
+@media (max-width: 1100px) and (min-width: 821px) {
+  .viewer:not(.is-mobile) .cutout-card {
+    top: 4.5rem;
+    bottom: auto;
+    right: 1.25rem;
+    width: 230px;
+    transform: none;
+  }
+
+  .viewer:not(.is-mobile) .cutout-card .carousel-dots,
+  .viewer:not(.is-mobile) .cutout-card .cutout-cap {
+    display: block;
+  }
+
+  .viewer:not(.is-mobile) .cutout-card .cutout-carousel-row {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .viewer:not(.is-mobile) .cutout-card .cutout-carousel-row .photo-arrow {
+    display: grid;
+  }
+
+  .viewer:not(.is-mobile) .map-controls {
+    top: auto;
+    bottom: 11.5rem;
+    right: 1.25rem;
+  }
+
+  .viewer:not(.is-mobile) .dock {
+    max-width: none;
+    overflow: visible;
+  }
+
+  .viewer:not(.is-mobile) .dock-bands {
+    position: absolute;
+    right: 0.75rem;
+    bottom: calc(100% + 0.5rem);
+    width: min(520px, calc(100% - 1.5rem));
+    padding: 0.6rem 0.75rem;
+    background: rgba(3, 14, 34, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: var(--r-glass);
+  }
+}
+
+/* 821–1100 px: tighter rows so "What changed?" fits above the dock */
+@media (max-width: 1100px) and (min-width: 821px) {
+  .viewer:not(.is-mobile) .object-link {
+    min-height: 32px;
+    padding-top: 0.15rem;
+    padding-bottom: 0.15rem;
+  }
+
+  .viewer:not(.is-mobile) .left-col {
+    gap: 0.6rem;
+  }
+
+  .viewer:not(.is-mobile) .hero-title {
+    font-size: 1.9rem;
+  }
+}
+
+/* enlarged cutout: opaque, so nothing behind it competes with the photo */
+.cutout-modal.glass-panel {
+  background: rgba(3, 14, 34, 0.98);
+  border-color: rgba(255, 255, 255, 0.24);
 }

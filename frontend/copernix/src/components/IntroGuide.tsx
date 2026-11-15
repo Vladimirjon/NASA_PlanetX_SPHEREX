@@ -6,6 +6,8 @@ type Props = {
   readonly lang: Lang;
   readonly open: boolean;
   readonly onClose: () => void;
+  /** When false, intro stays hidden until entry flight ends. */
+  readonly allowShow?: boolean;
 };
 
 type Step = {
@@ -25,7 +27,7 @@ function ringRect(sel: string): DOMRect | null {
   return el.getBoundingClientRect();
 }
 
-export function IntroGuide({ lang, open, onClose }: Props) {
+export function IntroGuide({ lang, open, onClose, allowShow = true }: Props) {
   const titleId = useId();
   const [step, setStep] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
@@ -62,25 +64,39 @@ export function IntroGuide({ lang, open, onClose }: Props) {
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || !allowShow) return null;
 
   const last = step >= STEPS.length - 1;
   const body = t(lang, STEPS[step]?.bodyKey ?? 'introStep1');
 
   const cardStyle: CSSProperties = (() => {
-    const pad = 12;
+    const pad = 16;
     const narrow = window.innerWidth <= 820;
-    const cardW = narrow ? Math.min(248, window.innerWidth - 156) : Math.min(280, window.innerWidth - 24);
-    if (!rect) return { left: pad, top: 120, width: cardW };
+    const cardW = narrow ? Math.min(window.innerWidth - 32, 480) : Math.min(280, window.innerWidth - 24);
+    if (!rect) return { left: pad, top: narrow ? 72 : 120, width: cardW };
+    if (narrow) {
+      const dockEl = document.querySelector('.dock');
+      const dockTop = dockEl?.getBoundingClientRect().top ?? window.innerHeight;
+      const topUnderTitle = 96;
+      const narrowW =
+        step === 0
+          ? Math.min(window.innerWidth <= 400 ? 172 : 220, window.innerWidth - (window.innerWidth <= 400 ? 148 : 132))
+          : Math.min(window.innerWidth - 32, cardW);
+      if (step === 2) {
+        const cutoutTop = rect.top;
+        const maxTop = Math.min(cutoutTop, dockTop - 180);
+        return { left: pad, top: Math.max(topUnderTitle, maxTop), width: narrowW };
+      }
+      return {
+        left: pad,
+        top: topUnderTitle,
+        width: narrowW,
+        maxHeight: step === 0 ? 124 : undefined,
+        overflow: step === 0 ? 'auto' : undefined,
+      };
+    }
     switch (step) {
       case 0:
-        if (narrow) {
-          return {
-            left: pad,
-            top: Math.max(80, rect.top + Math.min(rect.height * 0.32, 200)),
-            width: cardW,
-          };
-        }
         return {
           left: Math.min(window.innerWidth - cardW - pad, Math.max(pad, rect.left + rect.width / 2 - cardW / 2)),
           top: Math.max(80, rect.top + 20),
@@ -90,11 +106,13 @@ export function IntroGuide({ lang, open, onClose }: Props) {
         return {
           left: Math.min(window.innerWidth - cardW - pad, rect.right + 14),
           top: Math.max(pad, Math.min(rect.top, window.innerHeight - 200)),
+          width: cardW,
         };
       default:
         return {
           left: Math.max(pad, rect.left - cardW - 14),
           top: Math.max(pad, Math.min(rect.top, window.innerHeight - 200)),
+          width: cardW,
         };
     }
   })();

@@ -4,7 +4,7 @@ import { parseSearchQuery } from '../../src/app/core/search';
 import { buildTimeline } from '../../src/app/core/timeline';
 import { canonicalNameForSlug, CHALLENGE_TARGETS, targetBySlug } from '../../src/app/core/targets';
 import { parseAppSearch, toAppSearch, type AppUrlState, type Projection, type ViewMode } from '../../src/app/core/url-state';
-import { createSkyEngine, type SkyEngine } from '../../src/engine/engine';
+import { createSkyEngine, maxFov, type SkyEngine } from '../../src/engine/engine';
 import { ApiSeriesSource, FallbackSeriesSource } from '../../src/series/adapters/api-source';
 import { DemoSeriesSource } from '../../src/series/adapters/demo-source';
 import { BLINK_HZ_DEFAULT, blinkIntervalMs, nextBlinkIndex, prevBlinkIndex } from '../../src/series/core/blink';
@@ -14,15 +14,14 @@ import { createCompositeCatalog, featuredEntries } from './catalog/composite-sou
 import { isSearchAbort } from './catalog/api-source';
 import type { CatalogEntry } from './catalog/port';
 import { BandBars } from './components/BandBars';
+import { CutoutCarousel } from './components/CutoutCarousel';
 import { IntroGuide } from './components/IntroGuide';
-import { SeriesCutout } from './components/SeriesCutout';
 import { Tip } from './components/Tip';
 import {
   describeChangeLineI18n,
   describeExpectedMotionI18n,
   describeTimeSpanI18n,
   describeWavelengthI18n,
-  formatVisitLabelI18n,
   localizeEngineStatus,
   motionProvenanceI18n,
 } from './explain-i18n';
@@ -36,6 +35,8 @@ import {
   targetDescription,
   type Lang,
 } from './i18n';
+import { featuredLabelVisibility } from './featured-marker-layout';
+import { delay, INTRO_DELAY_MS, INTRO_FLY_MS, INTRO_GLOBE } from './intro-flight';
 import { shouldShowIntro } from './intro';
 import { timelineDateVisibility } from './timeline-labels';
 import { formatLightLabel, formatVisitDate } from './light-label';
@@ -52,6 +53,24 @@ import {
 const ANALYZE_FOV_DEG = 0.5;
 const FOV_ARCMIN = 5;
 const DEFAULT_TARGET = 'wise-0855';
+const PHOTO_HINT_KEY = 'copernix_photo_arrows';
+const GLOBE_FOV_THRESHOLD = 45;
+
+function readPhotoHint(): boolean {
+  try {
+    return localStorage.getItem(PHOTO_HINT_KEY) !== '1';
+  } catch {
+    return true;
+  }
+}
+
+function markPhotoHint(): void {
+  try {
+    localStorage.setItem(PHOTO_HINT_KEY, '1');
+  } catch {
+    /* ignore */
+  }
+}
 
 function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -140,6 +159,7 @@ export function App() {
   const searchAbortRef = useRef<AbortController | null>(null);
   const catalogRef = useRef(createCompositeCatalog({ lang: detectLang(window.location.search) }));
   const selectionRef = useRef<SelectionState | null>(null);
+  const featuredRef = useRef<CatalogEntry[]>([]);
 
   const initialParse = parseAppSearch(window.location.search);
   const nameParse = parseNameParam(window.location.search);
@@ -167,6 +187,7 @@ export function App() {
   selectionRef.current = selection;
 
   const [featured, setFeatured] = useState<CatalogEntry[]>(() => featuredEntries(lang));
+  featuredRef.current = featured;
   const [markerScreen, setMarkerScreen] = useState<{ x: number; y: number } | null>(null);
   const [candidateScreen, setCandidateScreen] = useState<{ x: number; y: number } | null>(null);
   const [offerReturn, setOfferReturn] = useState(false);
@@ -188,6 +209,13 @@ export function App() {
   // Colour mode opens the light picker once; keep it optional afterwards.
   const [mapHintVisible, setMapHintVisible] = useState(true);
   const [introOpen, setIntroOpen] = useState(() => shouldShowIntro());
+  const [introFlying, setIntroFlying] = useState(() => !mapOff && !prefersReducedMotion());
+  const [viewFov, setViewFov] = useState(bootState.fov);
+  const [featuredScreens, setFeaturedScreens] = useState<
+    Record<string, { x: number; y: number } | null>
+  >({});
+  const [photoArrowHint, setPhotoArrowHint] = useState(() => readPhotoHint());
+  const introFlyAbort = useRef<AbortController | null>(null);
   const isMobile = useIsMobile(820);
 
   const [seriesStatus, setSeriesStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
@@ -226,18 +254,37 @@ export function App() {
   }, [lang]);
 
   useEffect(() => {
+    const sky = engineRef.current;
+    if (!sky) return;
+    const next: Record<string, { x: number; y: number } | null> = {};
+    for (const entry of featured) {
+      next[entry.id] = sky.screenPosition({ ra: entry.ra, dec: entry.dec });
+    }
+    setFeaturedScreens(next);
+  }, [featured]);
+
+  useEffect(() => {
     if (mapOff || !canvasRef.current) return;
     let sky: SkyEngine;
     try {
       const target = bootState.target ? targetBySlug(bootState.target) : undefined;
+      const globeBoot = !prefersReducedMotion();
       sky = createSkyEngine(canvasRef.current, {
-        initialView: {
-          ra: bootState.ra ?? target?.ra ?? 133.7952573,
-          dec: bootState.dec ?? target?.dec ?? -7.245091,
-          fov: bootState.fov,
-          plane: bootState.plane,
-          proj: bootState.proj,
-        },
+        initialView: globeBoot
+          ? {
+              ra: INTRO_GLOBE.ra,
+              dec: INTRO_GLOBE.dec,
+              fov: INTRO_GLOBE.fov,
+              plane: bootState.plane,
+              proj: INTRO_GLOBE.proj,
+            }
+          : {
+              ra: bootState.ra ?? target?.ra ?? 133.7952573,
+              dec: bootState.dec ?? target?.dec ?? -7.245091,
+              fov: bootState.fov,
+              plane: bootState.plane,
+              proj: bootState.proj,
+            },
       });
     } catch (err) {
       setEngineOk(false);
@@ -256,8 +303,14 @@ export function App() {
     sky.on('viewchange', v => {
       setPlane(v.plane);
       setProj(v.proj);
+      setViewFov(v.fov);
       setMapHintVisible(false);
       const sel = selectionRef.current;
+      const nextFeatured: Record<string, { x: number; y: number } | null> = {};
+      for (const entry of featuredRef.current) {
+        nextFeatured[entry.id] = sky.screenPosition({ ra: entry.ra, dec: entry.dec });
+      }
+      setFeaturedScreens(nextFeatured);
       if (!sel) return;
       const scr = sky.screenPosition({ ra: sel.coords.ra, dec: sel.coords.dec });
       setMarkerScreen(scr);
@@ -447,13 +500,18 @@ export function App() {
       });
   };
 
-  const analyzeCoords = async (coords: SkyCoords) => {
+  const analyzeCoords = async (coords: SkyCoords, options: { skipFly?: boolean } = {}) => {
     dispatchSelection({ type: 'set_custom', coords });
     setAnnounce(formatPointTitle(lang, coords.ra, coords.dec));
-    await mapRef.current?.flyTo(
-      { ra: coords.ra, dec: coords.dec, fov: ANALYZE_FOV_DEG },
-      { reducedMotion: prefersReducedMotion() },
-    );
+    if (!options.skipFly) {
+      await mapRef.current?.flyTo(
+        { ra: coords.ra, dec: coords.dec, fov: ANALYZE_FOV_DEG },
+        { reducedMotion: prefersReducedMotion() },
+      );
+    } else if (engineRef.current) {
+      const v = engineRef.current.getView();
+      engineRef.current.setView({ ra: coords.ra, dec: coords.dec, fov: ANALYZE_FOV_DEG, plane: v.plane, proj: v.proj });
+    }
     loadSeries({ kind: 'coords', ra: coords.ra, dec: coords.dec, fov: FOV_ARCMIN }, null);
   };
 
@@ -469,10 +527,11 @@ export function App() {
     loadSeries({ kind: 'coords', ra: cand.ra, dec: cand.dec, fov: FOV_ARCMIN }, null);
   };
 
-  const selectEntry = async (entry: CatalogEntry) => {
+  const selectEntry = async (entry: CatalogEntry, options: { skipFly?: boolean } = {}) => {
     setQuery('');
     setSearchResults([]);
     setSearchStatus('idle');
+    const fly = !options.skipFly;
     if (entry.featured && entry.slug) {
       dispatchSelection({
         type: 'select_target',
@@ -480,10 +539,20 @@ export function App() {
         coords: { ra: entry.ra, dec: entry.dec },
       });
       setAnnounce(entry.name);
-      await mapRef.current?.flyTo(
-        { ra: entry.ra, dec: entry.dec, fov: ANALYZE_FOV_DEG },
-        { reducedMotion: prefersReducedMotion() },
-      );
+      if (fly) {
+        await mapRef.current?.flyTo(
+          { ra: entry.ra, dec: entry.dec, fov: ANALYZE_FOV_DEG },
+          { reducedMotion: prefersReducedMotion() },
+        );
+      } else {
+        engineRef.current?.setView({
+          ra: entry.ra,
+          dec: entry.dec,
+          fov: ANALYZE_FOV_DEG,
+          plane: engineRef.current.getView().plane,
+          proj: engineRef.current.getView().proj,
+        });
+      }
       const lookup = catalogRef.current.resolve(entry);
       loadSeries(lookup, entry.slug);
       return;
@@ -496,17 +565,28 @@ export function App() {
       description: entry.description,
     });
     setAnnounce(entry.name);
-    await mapRef.current?.flyTo(
-      { ra: entry.ra, dec: entry.dec, fov: ANALYZE_FOV_DEG },
-      { reducedMotion: prefersReducedMotion() },
-    );
+    if (fly) {
+      await mapRef.current?.flyTo(
+        { ra: entry.ra, dec: entry.dec, fov: ANALYZE_FOV_DEG },
+        { reducedMotion: prefersReducedMotion() },
+      );
+    } else if (engineRef.current) {
+      const v = engineRef.current.getView();
+      engineRef.current.setView({
+        ra: entry.ra,
+        dec: entry.dec,
+        fov: ANALYZE_FOV_DEG,
+        plane: v.plane,
+        proj: v.proj,
+      });
+    }
     loadSeries(catalogRef.current.resolve(entry), null);
   };
 
-  const selectTarget = async (slug: string) => {
+  const selectTarget = async (slug: string, options: { skipFly?: boolean } = {}) => {
     const entry = featured.find(f => f.slug === slug) ?? featuredEntries(lang).find(f => f.slug === slug);
     if (entry) {
-      await selectEntry(entry);
+      await selectEntry(entry, options);
       return;
     }
     const target = targetBySlug(slug);
@@ -537,6 +617,83 @@ export function App() {
       { ra: c.ra, dec: c.dec, fov: ANALYZE_FOV_DEG },
       { reducedMotion: prefersReducedMotion() },
     );
+  };
+
+  const skipIntroFlight = () => {
+    introFlyAbort.current?.abort();
+    introFlyAbort.current = null;
+    const sky = engineRef.current;
+    const sel = selectionRef.current;
+    if (sky && sel) {
+      sky.setView({
+        ra: sel.coords.ra,
+        dec: sel.coords.dec,
+        fov: ANALYZE_FOV_DEG,
+        plane: sky.getView().plane,
+        proj: sky.getView().proj,
+      });
+    }
+    setIntroFlying(false);
+  };
+
+  const runEntryFlight = async (
+    target: { ra: number; dec: number },
+    after: () => void | Promise<void>,
+  ): Promise<void> => {
+    const sky = engineRef.current;
+    const map = mapRef.current;
+    if (!sky || !map || mapOff) {
+      setIntroFlying(false);
+      await after();
+      return;
+    }
+    if (prefersReducedMotion()) {
+      sky.setView({
+        ra: target.ra,
+        dec: target.dec,
+        fov: ANALYZE_FOV_DEG,
+        plane: sky.getView().plane,
+        proj: sky.getView().proj,
+      });
+      setIntroFlying(false);
+      await after();
+      return;
+    }
+    introFlyAbort.current?.abort();
+    const ac = new AbortController();
+    introFlyAbort.current = ac;
+    setIntroFlying(true);
+    sky.setView({
+      ra: INTRO_GLOBE.ra,
+      dec: INTRO_GLOBE.dec,
+      fov: maxFov('SIN'),
+      plane: sky.getView().plane,
+      proj: 'SIN',
+    });
+    try {
+      await delay(INTRO_DELAY_MS, ac.signal);
+      await map.flyTo({ ra: target.ra, dec: target.dec, fov: ANALYZE_FOV_DEG }, { durationMs: INTRO_FLY_MS });
+    } catch {
+      if (!ac.signal.aborted) {
+        sky.setView({
+          ra: target.ra,
+          dec: target.dec,
+          fov: ANALYZE_FOV_DEG,
+          plane: sky.getView().plane,
+          proj: sky.getView().proj,
+        });
+      }
+    }
+    introFlyAbort.current = null;
+    setIntroFlying(false);
+    await after();
+  };
+
+  const bumpFrame = (next: number) => {
+    setPlaying(false);
+    setFrameIndex(next);
+    markPhotoHint();
+    setPhotoArrowHint(false);
   };
 
   useEffect(() => {
@@ -576,19 +733,20 @@ export function App() {
         setMode('loop');
       } else if (e.code === 'ArrowRight' && loaded) {
         e.preventDefault();
-        setPlaying(false);
-        setFrameIndex(i => nextBlinkIndex(i, loaded.frames.length));
+        bumpFrame(nextBlinkIndex(frameIndex, loaded.frames.length));
       } else if (e.code === 'ArrowLeft' && loaded) {
         e.preventDefault();
-        setPlaying(false);
-        setFrameIndex(i => prevBlinkIndex(i, loaded.frames.length));
+        bumpFrame(prevBlinkIndex(frameIndex, loaded.frames.length));
+      } else if (introFlying && (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape')) {
+        e.preventDefault();
+        skipIntroFlight();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('keydown', onKey);
     };
-  }, [seriesStatus, loaded, cutoutOpen, detailsOpen, lang]);
+  }, [seriesStatus, loaded, cutoutOpen, detailsOpen, lang, frameIndex, introFlying]);
 
   const bootstrapped = useRef(false);
   useEffect(() => {
@@ -603,12 +761,13 @@ export function App() {
           const exact = hits.find(h => h.name.toLowerCase() === nameFromUrl.toLowerCase());
           const hit = exact ?? (hits.length > 0 ? hits[0] : undefined);
           if (hit !== undefined) {
-            await selectEntry(hit);
+            await runEntryFlight({ ra: hit.ra, dec: hit.dec }, () => selectEntry(hit, { skipFly: true }));
             return;
           }
         } catch {
           /* fall through to name-only load */
         }
+        setIntroFlying(false);
         dispatchSelection({
           type: 'select_named',
           name: nameFromUrl,
@@ -618,9 +777,17 @@ export function App() {
       })();
       return;
     }
-    if (bootState.target) void selectTarget(bootState.target);
-    else if (bootState.ra !== null && bootState.dec !== null) {
-      void analyzeCoords({ ra: bootState.ra, dec: bootState.dec });
+    const bootSlug = bootState.target;
+    if (bootSlug) {
+      const tg = targetBySlug(bootSlug);
+      if (tg) {
+        void runEntryFlight({ ra: tg.ra, dec: tg.dec }, () => selectTarget(bootSlug, { skipFly: true }));
+      }
+      return;
+    }
+    if (bootState.ra !== null && bootState.dec !== null) {
+      const coords = { ra: bootState.ra, dec: bootState.dec };
+      void runEntryFlight(coords, () => analyzeCoords(coords, { skipFly: true }));
     }
   });
 
@@ -901,28 +1068,38 @@ export function App() {
 
   const cutoutCard =
     seriesStatus === 'ready' && series && loaded && frame ? (
-      <button
-        type="button"
-        className="cutout-card"
-        data-testid="cutout-card"
-        data-intro="cutout"
-        aria-label={t(lang, 'expandCutout')}
-        onClick={e => {
-          stopUiBubble(e);
+      <CutoutCarousel
+        lang={lang}
+        loaded={loaded}
+        frameIndex={frameIndex}
+        mode={mode}
+        playing={playing}
+        captionExtra={cutoutCap}
+        onFrameChange={setFrameIndex}
+        onPause={() => {
+          setPlaying(false);
+        }}
+        asButton
+        expandLabel={t(lang, 'expandCutout')}
+        onExpand={() => {
           setCutoutOpen(true);
         }}
-      >
-        <SeriesCutout
-          loaded={loaded}
-          frameIndex={frameIndex}
-          mode={mode}
-          label={formatVisitLabelI18n(lang, frameIndex, series.frames.length, frame.t_mid)}
-        />
-        <p className="cutout-cap mono">{cutoutCap}</p>
-      </button>
+      />
     ) : (
       <div className="cutout-anchor" data-intro="cutout" aria-hidden="true" />
     );
+
+  const featuredLayout = featured
+    .map(entry => {
+      const scr = featuredScreens[entry.id];
+      if (!scr) return null;
+      return { id: entry.id, x: scr.x, y: scr.y, entry };
+    })
+    .filter((row): row is NonNullable<typeof row> => row !== null);
+  const hideFeatLabels = featuredLabelVisibility(
+    featuredLayout.map(m => ({ id: m.id, x: m.x, y: m.y })),
+  );
+  const globeMarkers = viewFov >= GLOBE_FOV_THRESHOLD;
 
   const semaforoInline = (
     <div className="semaforo-inline" aria-label="Interpretation levels">
@@ -987,8 +1164,14 @@ export function App() {
   return (
     <div className={`viewer${mapOff || !engineOk ? ' map-off' : ''}${isMobile ? ' is-mobile' : ''}`}>
       <header className="chrome" role="banner" onPointerDown={stopUiBubble} onClick={stopUiBubble}>
-        <a className="brand" href="/">
-          {t(lang, 'brand')}
+        <a className="brand" href="/" aria-label={t(lang, 'brand')}>
+          <img
+            src={`${import.meta.env.BASE_URL}brand/copernix-wordmark.webp`}
+            alt=""
+            width={720}
+            height={59}
+            style={{ display: 'block', height: '12px', width: 'auto' }}
+          />
         </a>
         <div className="chrome-right">
           <div className="lang" role="group" aria-label="Language">
@@ -1033,6 +1216,44 @@ export function App() {
               <span className="marker-label mono">{titleName}</span>
             ) : null}
           </div>
+        ) : null}
+        {featuredLayout.map(({ entry, x, y }) => {
+          const active =
+            (selection.mode === 'target' && selection.slug === entry.slug) ||
+            (selection.mode === 'named' && selection.catalogName === entry.name);
+          const dim = !globeMarkers && !active;
+          const showLabel = !hideFeatLabels.has(entry.id);
+          return (
+            <button
+              key={entry.id}
+              type="button"
+              className={`feat-marker${active ? ' active' : ''}${dim ? ' dim' : ''}`}
+              style={{ left: x, top: y }}
+              aria-label={entry.name}
+              onPointerDown={stopUiBubble}
+              onClick={e => {
+                stopUiBubble(e);
+                void selectEntry(entry);
+              }}
+            >
+              <span className="marker-dot" aria-hidden="true" />
+              <span className="marker-ring" aria-hidden="true" />
+              {showLabel ? <span className="marker-label mono">{entry.name}</span> : null}
+            </button>
+          );
+        })}
+        {introFlying ? (
+          <button
+            type="button"
+            className="text-link skip-intro-fly"
+            onPointerDown={stopUiBubble}
+            onClick={e => {
+              stopUiBubble(e);
+              skipIntroFlight();
+            }}
+          >
+            {t(lang, 'skipIntroFly')}
+          </button>
         ) : null}
         {candidateScreen && selection.candidate ? (
           <div
@@ -1118,7 +1339,12 @@ export function App() {
       ) : null}
 
       {!isMobile ? (
-        <aside className="left-col" aria-label={t(lang, 'targetsLabel')} onPointerDown={stopUiBubble} onClick={stopUiBubble}>
+        <aside
+          className={`left-col${introFlying ? ' entry-pending' : ' entry-visible'}`}
+          aria-label={t(lang, 'targetsLabel')}
+          onPointerDown={stopUiBubble}
+          onClick={stopUiBubble}
+        >
           {columnBody}
         </aside>
       ) : null}
@@ -1266,13 +1492,19 @@ export function App() {
                 {t(lang, 'closeCutout')}
               </button>
             </header>
-            <SeriesCutout
+            <CutoutCarousel
+              className=" cutout-carousel-modal"
+              lang={lang}
               loaded={loaded}
               frameIndex={frameIndex}
               mode={mode}
-              label={formatVisitLabelI18n(lang, frameIndex, series.frames.length, frame.t_mid)}
+              playing={playing}
+              captionExtra={cutoutCap}
+              onFrameChange={setFrameIndex}
+              onPause={() => {
+                setPlaying(false);
+              }}
             />
-            <p className="cutout-cap mono">{cutoutCap}</p>
           </div>
         </div>
       ) : null}
@@ -1307,6 +1539,35 @@ export function App() {
           >
             {playing ? t(lang, 'pause') : t(lang, 'play')}
           </button>
+          <button
+            type="button"
+            className="photo-arrow dock-photo-arrow"
+            aria-label={t(lang, 'photoPrev')}
+            disabled={!loaded || frameCount < 2 || (!playing && frameIndex <= 0)}
+            onClick={() => {
+              if (!loaded) return;
+              bumpFrame(prevBlinkIndex(frameIndex, loaded.frames.length));
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+          </button>
+          <button
+            type="button"
+            className="photo-arrow dock-photo-arrow"
+            aria-label={t(lang, 'photoNext')}
+            disabled={!loaded || frameCount < 2 || (!playing && frameIndex >= frameCount - 1)}
+            onClick={() => {
+              if (!loaded) return;
+              bumpFrame(nextBlinkIndex(frameIndex, loaded.frames.length));
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+          </button>
+          {photoArrowHint && frameCount >= 2 ? (
+            <span className="photo-key-hint mono" aria-hidden="true">
+              {t(lang, 'photoArrowHint')}
+            </span>
+          ) : null}
           {photoLabel ? <span className="photo-index mono">{photoLabel}</span> : null}
           <div className="timeline" role="list" ref={timelineRef}>
             <div className="timeline-track" />
@@ -1349,7 +1610,7 @@ export function App() {
             ) : null}
           </div>
           <div className="dock-break" aria-hidden="true" />
-          <div className="mode-chips" role="group" aria-label="View mode">
+          <div className="seg-control" role="group" aria-label="View mode">
             {(
               [
                 ['loop', 'modeLoop'],
@@ -1360,7 +1621,7 @@ export function App() {
               <button
                 key={value}
                 type="button"
-                className="chip-text"
+                className="seg-btn"
                 aria-pressed={mode === value}
                 onClick={() => {
                   setMode(value);
@@ -1371,17 +1632,20 @@ export function App() {
                 {t(lang, key)}
               </button>
             ))}
-            <button
-              type="button"
-              className="chip-text colours-toggle"
-              aria-pressed={lightOpen}
-              onClick={() => {
-                setLightOpen(o => !o);
-              }}
-            >
-              {t(lang, 'lightType')}
-            </button>
           </div>
+          <button
+            type="button"
+            className="dock-outline colours-toggle"
+            aria-pressed={lightOpen}
+            onClick={() => {
+              setLightOpen(o => !o);
+            }}
+          >
+            <span className="wave-icon" aria-hidden="true">
+              ∿
+            </span>
+            {t(lang, 'lightType')}
+          </button>
           <details className="map-menu">
             <summary aria-label={t(lang, 'mapMenuLabel')}>{t(lang, 'advanced')}</summary>
             <div className="menu-panel" role="group">
@@ -1418,6 +1682,7 @@ export function App() {
       <IntroGuide
         lang={lang}
         open={introOpen}
+        allowShow={!introFlying}
         onClose={() => {
           setIntroOpen(false);
         }}

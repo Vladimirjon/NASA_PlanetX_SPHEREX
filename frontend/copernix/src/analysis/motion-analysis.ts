@@ -95,8 +95,11 @@ export function parseMotionAnalysis(raw: unknown): MotionAnalysis | null {
   };
 }
 
-/** Only featured demo targets have a precomputed result for now (slug → /demo/<slug>/…). */
+/** Slugs with a precomputed result under /demo/<slug>/analysis-result.json (add a slug when its file lands in main). */
+const PRECOMPUTED = new Set(['epsilon-indi-b']);
+
 export async function loadMotionAnalysis(slug: string, signal?: AbortSignal): Promise<MotionAnalysis | null> {
+  if (!PRECOMPUTED.has(slug)) return null;
   try {
     const res = await fetch(`/demo/${encodeURIComponent(slug)}/analysis-result.json`, { signal });
     if (!res.ok) return null;
