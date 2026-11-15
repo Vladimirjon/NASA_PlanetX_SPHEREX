@@ -48,10 +48,11 @@ jobs:
         run: pnpm --dir frontend exec vitest run --retry=2
       - name: Build the viewer
         run: pnpm --dir frontend build:copernix
-      - name: Check the landing
-        run: node scripts/check-landing.mjs
       - name: Package the static site
         run: node scripts/build-landing.mjs
+      - name: Check the landing and the package
+        # after packaging: it also fails when a file the landing imports is missing from dist/landing
+        run: node scripts/check-landing.mjs
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         with:
