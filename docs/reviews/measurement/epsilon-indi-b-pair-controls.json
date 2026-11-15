@@ -1,0 +1,675 @@
+{
+ "label": "Controls for spec 0036 (Sebastián). Candidate only; ceiling OBSERVED.",
+ "result_ref": "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
+ "code_ref": "cf5881ef5654d9e6c203d9267ba86a66b1b711a8",
+ "pair": {
+  "A": {
+   "observation_id": "ivo://irsa.ipac/spherex_dr1?2025W24_1A_0245_4/D3",
+   "acquisition_id": "2025W24_1A_0245_4",
+   "mjd_avg": 60836.190477821,
+   "flags": {
+    "expected_position_pix": [
+     793.2872819320427,
+     1146.1255720033519
+    ],
+    "measured_position_pix": [
+     793.306319297672,
+     1146.0381246068468
+    ],
+    "offset_measured_minus_expected_pix": [
+     0.019037365629287706,
+     -0.08744739650501288
+    ],
+    "radius_px": 2.5,
+    "flagged_pixels_near_expected": [],
+    "flagged_pixels_near_measured": [],
+    "flagged_pixels_in_fit_window": [],
+    "fit_window_px": [
+     789,
+     797,
+     1142,
+     1150
+    ],
+    "note": "SOURCE (bit 21) is never a problem and is not listed; other bits are."
+   },
+   "registration": {
+    "n_used": 9,
+    "n_attempted": 15,
+    "mean_offset_arcsec": [
+     -0.050225129337771963,
+     0.17980798802782771
+    ],
+    "std_arcsec": [
+     0.2644261130125717,
+     0.4669247702415892
+    ],
+    "sem_arcsec": [
+     0.08814203767085722,
+     0.15564159008052972
+    ],
+    "max_leave_one_star_out_shift_arcsec": 0.14119933598389248,
+    "stars": [
+     {
+      "source_id": "6412596458823395328",
+      "g_mag": 12.953572,
+      "x_pix": 777.284274835096,
+      "y_pix": 1155.828200441366,
+      "snr": 139.64495100231238,
+      "dxi_arcsec": -0.3148386942564557,
+      "deta_arcsec": 0.27543234375821046,
+      "status": "used"
+     },
+     {
+      "source_id": "6412594259800093568",
+      "g_mag": 12.961529,
+      "x_pix": 820.0987039465471,
+      "y_pix": 1117.8615396029377,
+      "snr": 120.87895667491904,
+      "dxi_arcsec": -0.12986288902711268,
+      "deta_arcsec": 0.33226154739562475,
+      "status": "used"
+     },
+     {
+      "source_id": "6412593435166417536",
+      "g_mag": 13.931794,
+      "x_pix": 769.3451171226696,
+      "y_pix": 1140.6363898238403,
+      "snr": 71.37162437189716,
+      "dxi_arcsec": -0.12462616654436409,
+      "deta_arcsec": 0.5036932118664746,
+      "status": "used"
+     },
+     {
+      "source_id": "6412596390103981824",
+      "g_mag": 15.341988,
+      "x_pix": 800.2487906028384,
+      "y_pix": 1174.7602219119217,
+      "status": "flagged"
+     },
+     {
+      "source_id": "6412594672117008128",
+      "g_mag": 15.728762,
+      "x_pix": 818.4036945745064,
+      "y_pix": 1147.7071046415135,
+      "status": "flagged"
+     },
+     {
+      "source_id": "6412596183945494144",
+      "g_mag": 15.765998,
+      "x_pix": 808.3819261099773,
+      "y_pix": 1152.8843066704321,
+      "snr": 38.801105717548154,
+      "dxi_arcsec": -0.07923411003958866,
+      "deta_arcsec": 0.13662274350606216,
+      "status": "used"
+     },
+     {
+      "source_id": "6412595973491218944",
+      "g_mag": 15.813786,
+      "x_pix": 803.1561464392317,
+      "y_pix": 1150.3517115854631,
+      "snr": 31.631261420617253,
+      "dxi_arcsec": 0.336233882984381,
+      "deta_arcsec": -0.17635639056807006,
+      "status": "used"
+     },
+     {
+      "source_id": "6412594740836485888",
+      "g_mag": 15.99561,
+      "x_pix": 822.5117920289077,
+      "y_pix": 1150.4128626865179,
+      "status": "flagged"
+     },
+     {
+      "source_id": "6412594775196223488",
+      "g_mag": 16.164654,
+      "x_pix": 817.7909260165202,
+      "y_pix": 1154.7167232552777,
+      "status": "flagged"
+     },
+     {
+      "source_id": "6412594397239098752",
+      "g_mag": 16.195631,
+      "x_pix": 813.119332511789,
+      "y_pix": 1129.2604632753741,
+      "snr": 19.67309167724145,
+      "dxi_arcsec": 0.4029796654614987,
+      "deta_arcsec": -0.8548849967931036,
+      "status": "used"
+     },
+     {
+      "source_id": "6412592713611866496",
+      "g_mag": 16.249035,
+      "x_pix": 783.3668589064278,
+      "y_pix": 1112.6271485874533,
+      "snr": 19.036435114965585,
+      "dxi_arcsec": -0.14080016167574436,
+      "deta_arcsec": 0.1758589456263359,
+      "status": "used"
+     },
+     {
+      "source_id": "6412594637757272192",
+      "g_mag": 16.301495,
+      "x_pix": 828.3216104885994,
+      "y_pix": 1155.0659544090618,
+      "status": "outside_box"
+     },
+     {
+      "source_id": "6412596493183196544",
+      "g_mag": 16.372126,
+      "x_pix": 767.8122577034885,
+      "y_pix": 1165.4797431139657,
+      "status": "flagged"
+     },
+     {
+      "source_id": "6412594362879363328",
+      "g_mag": 16.414278,
+      "x_pix": 824.6966749253272,
+      "y_pix": 1134.5569336100175,
+      "snr": 8.629330686166737,
+      "dxi_arcsec": -0.01620719149884942,
+      "deta_arcsec": 0.4852755931515249,
+      "status": "used"
+     },
+     {
+      "source_id": "6412593155992667136",
+      "g_mag": 16.767908,
+      "x_pix": 765.4994901619341,
+      "y_pix": 1128.2493459944262,
+      "snr": 10.826129961568176,
+      "dxi_arcsec": -0.38567049944371246,
+      "deta_arcsec": 0.7403688943073904,
+      "status": "used"
+     }
+    ]
+   },
+   "spectral": {
+    "cwave_um": 1.934120774269104,
+    "cband_um": 0.04693116992712021,
+    "pixel": [
+     793,
+     1146
+    ],
+    "calibration_url": "https://nasa-irsa-spherex.s3.us-east-1.amazonaws.com/dr1/spectral_wcs/cal-swcs-v5-2026-191/3/spectral_wcs_D3_spx_cal-swcs-v5-2026-191.fits",
+    "version": "cal-swcs-v5-2026-191",
+    "link_check": "single version + WCS-WAVE table data byte-identical"
+   }
+  },
+  "B": {
+   "observation_id": "ivo://irsa.ipac/spherex_qr3?2026W40_1A_0070_2/D3",
+   "acquisition_id": "2026W40_1A_0070_2",
+   "mjd_avg": 61311.33729024,
+   "flags": {
+    "expected_position_pix": [
+     194.69219657267885,
+     1184.127212752708
+    ],
+    "measured_position_pix": [
+     194.6762669744776,
+     1184.1980478049056
+    ],
+    "offset_measured_minus_expected_pix": [
+     -0.015929598201239514,
+     0.07083505219770814
+    ],
+    "radius_px": 2.5,
+    "flagged_pixels_near_expected": [],
+    "flagged_pixels_near_measured": [],
+    "flagged_pixels_in_fit_window": [],
+    "fit_window_px": [
+     191,
+     199,
+     1180,
+     1188
+    ],
+    "note": "SOURCE (bit 21) is never a problem and is not listed; other bits are."
+   },
+   "registration": {
+    "n_used": 12,
+    "n_attempted": 15,
+    "mean_offset_arcsec": [
+     0.0023479479132084056,
+     -0.1511322042614598
+    ],
+    "std_arcsec": [
+     0.23211492858046356,
+     0.2946887600803756
+    ],
+    "sem_arcsec": [
+     0.0670058082494307,
+     0.08506931747978096
+    ],
+    "max_leave_one_star_out_shift_arcsec": 0.05757917900231453,
+    "stars": [
+     {
+      "source_id": "6412596458823395328",
+      "g_mag": 12.953572,
+      "x_pix": 211.06365812121032,
+      "y_pix": 1175.1924898963484,
+      "snr": 149.54349995754626,
+      "dxi_arcsec": -0.21746789323093477,
+      "deta_arcsec": 0.07282920106474917,
+      "status": "used"
+     },
+     {
+      "source_id": "6412594259800093568",
+      "g_mag": 12.961529,
+      "x_pix": 165.0849106144449,
+      "y_pix": 1208.7894360728842,
+      "snr": 121.49526826298982,
+      "dxi_arcsec": -0.024904235327598105,
+      "deta_arcsec": -0.4243702597231151,
+      "status": "used"
+     },
+     {
+      "source_id": "6412593435166417536",
+      "g_mag": 13.931794,
+      "x_pix": 217.5857771154221,
+      "y_pix": 1191.1565259042143,
+      "snr": 69.62521544931455,
+      "dxi_arcsec": 0.09803268808420507,
+      "deta_arcsec": 0.16650453461671857,
+      "status": "used"
+     },
+     {
+      "source_id": "6412596390103981824",
+      "g_mag": 15.341988,
+      "x_pix": 189.95263470677975,
+      "y_pix": 1153.975900837096,
+      "snr": 43.9396935602738,
+      "dxi_arcsec": 0.19357598920545813,
+      "deta_arcsec": -0.3701414741796824,
+      "status": "used"
+     },
+     {
+      "source_id": "6412594672117008128",
+      "g_mag": 15.728762,
+      "x_pix": 169.4571415703363,
+      "y_pix": 1179.161133202022,
+      "snr": 42.030485202008165,
+      "dxi_arcsec": 0.11460024477647658,
+      "deta_arcsec": -0.10743029416608235,
+      "status": "used"
+     },
+     {
+      "source_id": "6412596183945494144",
+      "g_mag": 15.765998,
+      "x_pix": 179.88871557177103,
+      "y_pix": 1175.0021406233495,
+      "snr": 41.276001783945595,
+      "dxi_arcsec": -0.07643194716297111,
+      "deta_arcsec": -0.22605787732007246,
+      "status": "used"
+     },
+     {
+      "source_id": "6412595973491218944",
+      "g_mag": 15.813786,
+      "x_pix": 184.8574485637295,
+      "y_pix": 1178.058317038084,
+      "snr": 33.45312765144898,
+      "dxi_arcsec": -0.34608097103035523,
+      "deta_arcsec": -0.20664132797284507,
+      "status": "used"
+     },
+     {
+      "source_id": "6412594740836485888",
+      "g_mag": 15.99561,
+      "x_pix": 165.6223727061736,
+      "y_pix": 1176.0407833237698,
+      "snr": 42.46873185782988,
+      "dxi_arcsec": 31.087624719123937,
+      "deta_arcsec": -6.803471156345061,
+      "status": "rejected_identification"
+     },
+     {
+      "source_id": "6412594775196223488",
+      "g_mag": 16.164654,
+      "x_pix": 170.70226521497975,
+      "y_pix": 1172.2187262038544,
+      "snr": 21.87030166624884,
+      "dxi_arcsec": -0.2097674978702264,
+      "deta_arcsec": 0.006160516598346771,
+      "status": "used"
+     },
+     {
+      "source_id": "6412594397239098752",
+      "g_mag": 16.195631,
+      "x_pix": 173.04240655422797,
+      "y_pix": 1198.1169728475925,
+      "snr": 14.961189958215426,
+      "dxi_arcsec": 0.19877164506339762,
+      "deta_arcsec": 0.4510110640743251,
+      "status": "used"
+     },
+     {
+      "source_id": "6412592713611866496",
+      "g_mag": 16.249035,
+      "x_pix": 201.114152132913,
+      "y_pix": 1217.720393979418,
+      "snr": 20.576116744009514,
+      "dxi_arcsec": 0.1270259551607771,
+      "deta_arcsec": -0.23791529893052316,
+      "status": "used"
+     },
+     {
+      "source_id": "6412594637757272192",
+      "g_mag": 16.301495,
+      "x_pix": 160.2639912125462,
+      "y_pix": 1170.8028750183016,
+      "snr": 5.966558609142543,
+      "dxi_arcsec": 14.911552977571294,
+      "deta_arcsec": -22.521475637737538,
+      "status": "rejected_identification"
+     },
+     {
+      "source_id": "6412596493183196544",
+      "g_mag": 16.372126,
+      "x_pix": 221.36070326003926,
+      "y_pix": 1166.5033301894255,
+      "snr": 13.675754726559994,
+      "dxi_arcsec": 0.4352228501312084,
+      "deta_arcsec": -0.2759699188894669,
+      "status": "used"
+     },
+     {
+      "source_id": "6412594362879363328",
+      "g_mag": 16.414278,
+      "x_pix": 162.01878114015412,
+      "y_pix": 1191.6538177679004,
+      "snr": 14.120953678961115,
+      "dxi_arcsec": -0.2644014528409365,
+      "deta_arcsec": -0.6615653163098698,
+      "status": "used"
+     },
+     {
+      "source_id": "6412593155992667136",
+      "g_mag": 16.767908,
+      "x_pix": 220.28490561683708,
+      "y_pix": 1203.9128427446212,
+      "status": "flagged"
+     }
+    ]
+   },
+   "spectral": {
+    "cwave_um": 1.9333099126815796,
+    "cband_um": 0.04764776676893234,
+    "pixel": [
+     195,
+     1184
+    ],
+    "calibration_url": "https://nasa-irsa-spherex.s3.us-east-1.amazonaws.com/qr3/spectral_wcs/cal-swcs-v5-2026-191/3/spectral_wcs_D3_spx_cal-swcs-v5-2026-191.fits",
+    "version": "cal-swcs-v5-2026-191",
+    "link_check": "single version + WCS-WAVE table data byte-identical"
+   }
+  }
+ },
+ "pair_displacement": {
+  "delta_arcsec": [
+   5.193305561577468,
+   -3.1009466489721866
+  ],
+  "Q_as_delivered_independent": 194.69734331386147,
+  "applied_sigma_wcs_arcsec": [
+   0.3,
+   0.3
+  ],
+  "rho_sweep": [
+   {
+    "rho_wcs_between_dates": -1.0,
+    "Q": 99.44150266024329,
+    "sigma_delta_arcsec": [
+     0.6055383635361549,
+     0.6071292199039946
+    ]
+   },
+   {
+    "rho_wcs_between_dates": -0.5,
+    "Q": 131.64497439952177,
+    "sigma_delta_arcsec": [
+     0.5260006746326895,
+     0.5278313079585494
+    ]
+   },
+   {
+    "rho_wcs_between_dates": 0.0,
+    "Q": 194.69734331386147,
+    "sigma_delta_arcsec": [
+     0.4320610023064387,
+     0.4342877958925774
+    ]
+   },
+   {
+    "rho_wcs_between_dates": 0.5,
+    "Q": 373.68794953220316,
+    "sigma_delta_arcsec": [
+     0.31092878559896064,
+     0.3140157474733281
+    ]
+   },
+   {
+    "rho_wcs_between_dates": 0.9,
+    "Q": 1414.746979398408,
+    "sigma_delta_arcsec": [
+     0.15708822270954764,
+     0.163113119218636
+    ]
+   }
+  ],
+  "differential_registration": {
+   "description": "target displacement corrected by (mean reference offset B - A); WCS term replaced by the SEM of each image's reference offsets",
+   "delta_arcsec": [
+    5.140732484326487,
+    -2.770006456682899
+   ],
+   "sigma_delta_arcsec": [
+    0.13760634744798197,
+    0.20016738745486085
+   ],
+   "Q": 1557.10673680492
+  },
+  "q_threshold_2dof": 28.743702426857556
+ },
+ "visit_correlation_all_exposures": {
+  "n_exposures": 76,
+  "within_visit_correlation": [
+   0.0035045730804854356,
+   0.05728507184675941
+  ],
+  "within_visit_pairs": 747,
+  "between_visit_correlation": [
+   -0.019076517399487694,
+   -0.03817971881575334
+  ],
+  "between_visit_pairs": 2103,
+  "note": "rho = <d_i d_j> / var over exposure pairs; d = per-exposure mean offset minus overall mean"
+ },
+ "injection_recovery": {
+  "label": "SYNTHETIC injected sources on REAL SPHEREx backgrounds; not detections",
+  "seed": 20261114,
+  "exposures": 76,
+  "positions_per_exposure": 6,
+  "profile": "pixel-integrated Gaussian, FWHM (x,y) px in [(1.0, 1.0), (1.15, 1.15), (1.3, 1.3), (1.2, 1.0)]",
+  "initial_guess_error_px": "uniform +/-0.5",
+  "placement": "random positions in the 81x81 px box: no COMPARE_MASK bit in the 9x9 fit window, no Gaia star within 3 px, no > 3 sigma peak in the 5x5 core. SOURCE covers ~95% of this field and is NOT avoided: faint background sources remain.",
+  "pixel_frame": "detector pixels (statistical centroid error only; WCS term not included)",
+  "by_snr": {
+   "snr_10": {
+    "n_injected": 454,
+    "n_recovered": 449,
+    "bias_px": [
+     -0.08212761998955606,
+     0.013351472759237273
+    ],
+    "bias_arcsec_approx": [
+     -0.5050848629357698,
+     0.08211155746930923
+    ],
+    "std_px": [
+     1.9133892027921295,
+     1.9257656625063821
+    ],
+    "std_arcsec_approx": [
+     11.767343597171598,
+     11.84345882441425
+    ],
+    "pull_std": [
+     37.47293473147417,
+     32.73057971896961
+    ],
+    "coverage_1sigma": 0.6358574610244989,
+    "coverage_2sigma": 0.7683741648106904,
+    "robust_sigma_px": [
+     0.10943971812850987,
+     0.11544583281067118
+    ],
+    "robust_sigma_arcsec_approx": [
+     0.6730542664903357,
+     0.7099918717856278
+    ],
+    "robust_pull": [
+     0.9641253108991749,
+     0.9308088064284268
+    ],
+    "catastrophic_fraction": 0.30957683741648107,
+    "core_coverage_2sigma_both_axes": 0.9483870967741935
+   },
+   "snr_30": {
+    "n_injected": 454,
+    "n_recovered": 452,
+    "bias_px": [
+     -0.07743329733196239,
+     -0.031983622332784595
+    ],
+    "bias_arcsec_approx": [
+     -0.4762147785915687,
+     -0.19669927734662526
+    ],
+    "std_px": [
+     1.2487338937248542,
+     1.3320905886149135
+    ],
+    "std_arcsec_approx": [
+     7.679713446407854,
+     8.192357119981718
+    ],
+    "pull_std": [
+     15.785393363260113,
+     18.850080846488513
+    ],
+    "coverage_1sigma": 0.6946902654867256,
+    "coverage_2sigma": 0.8805309734513275,
+    "robust_sigma_px": [
+     0.03042689640521108,
+     0.02801039393938593
+    ],
+    "robust_sigma_arcsec_approx": [
+     0.18712541289204815,
+     0.1722639227272235
+    ],
+    "robust_pull": [
+     0.9186963437846009,
+     0.8658812397431012
+    ],
+    "catastrophic_fraction": 0.13495575221238937,
+    "core_coverage_2sigma_both_axes": 0.9335038363171355
+   },
+   "snr_100": {
+    "n_injected": 454,
+    "n_recovered": 454,
+    "bias_px": [
+     -0.009552609903247073,
+     -0.02873194168991454
+    ],
+    "bias_arcsec_approx": [
+     -0.0587485509049695,
+     -0.17670144139297442
+    ],
+    "std_px": [
+     0.7766201508747893,
+     0.9148622254518906
+    ],
+    "std_arcsec_approx": [
+     4.7762139278799545,
+     5.6264026865291275
+    ],
+    "pull_std": [
+     4.187098736213719,
+     3.5680051375449726
+    ],
+    "coverage_1sigma": 0.5814977973568282,
+    "coverage_2sigma": 0.8303964757709251,
+    "robust_sigma_px": [
+     0.012684242098225686,
+     0.010242352816988463
+    ],
+    "robust_sigma_arcsec_approx": [
+     0.07800808890408797,
+     0.06299046982447905
+    ],
+    "robust_pull": [
+     1.3703932558758847,
+     1.0724738135964471
+    ],
+    "catastrophic_fraction": 0.05726872246696035,
+    "core_coverage_2sigma_both_axes": 0.764018691588785
+   }
+  },
+  "false_positives": {
+   "empty_positions_tested": 454,
+   "fits_with_snr_ge_threshold": 264,
+   "rate": 0.5814977973568282
+  },
+  "ideal": {
+   "pull_std": 1.0,
+   "coverage_1sigma": 0.683,
+   "coverage_2sigma": 0.954
+  }
+ },
+ "ba_bb_bias": {
+  "delta_cwave_um": 0.0008108615875244141,
+  "slope_used": "multi-epoch residual slope vs WCS-WAVE (AnalysisResult.astrometry.wavelength_dependence)",
+  "bias_bound_arcsec_2sigma": [
+   0.0003286219587836114,
+   0.0002603150744008891
+  ],
+  "pair_sigma_arcsec": [
+   0.4320610023064387,
+   0.43428779589257743
+  ],
+  "bound_over_sigma": [
+   0.0007605915762574117,
+   0.0005994068377304319
+  ],
+  "series_range_bound_arcsec_2sigma": [
+   0.307121344634837,
+   0.2432835467679823
+  ],
+  "limits": "linear model in wavelength; a non-linear photocenter shift is not excluded"
+ },
+ "flag_names": {
+  "0": "TRANSIENT",
+  "1": "OVERFLOW",
+  "2": "SUR_ERROR",
+  "6": "NONFUNC",
+  "7": "DICHROIC",
+  "9": "MISSING_DATA",
+  "10": "HOT",
+  "11": "COLD",
+  "12": "FULLSAMPLE",
+  "14": "PHANMISS",
+  "15": "NONLINEAR",
+  "17": "PERSIST",
+  "19": "OUTLIER",
+  "20": "CROSSTALK",
+  "21": "SOURCE",
+  "22": "GHOST",
+  "23": "GHOST_FPA",
+  "24": "GHOST_EXT",
+  "25": "STREAK",
+  "26": "BLOOM",
+  "27": "SNOWBALL",
+  "28": "HALO",
+  "29": "SATELLITE_HALO"
+ },
+ "outlier_bit": 19
+}

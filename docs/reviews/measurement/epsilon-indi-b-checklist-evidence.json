@@ -11,7 +11,7 @@
    "reason": "A source was centroided in both exposures at the catalog-propagated position (proper motion + parallax, Gaia DR3); SNR 101 and 102.",
    "evidence_refs": [
     "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
-    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+    "git:cf5881ef5654d9e6c203d9267ba86a66b1b711a8"
    ]
   },
   "coverage": {
@@ -19,7 +19,7 @@
    "reason": "Target at least 15 px inside the detector and no COMPARE_MASK bit within 2.5 px in both exposures.",
    "evidence_refs": [
     "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
-    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+    "git:cf5881ef5654d9e6c203d9267ba86a66b1b711a8"
    ]
   },
   "alignment": {
@@ -27,7 +27,7 @@
    "reason": "15 Gaia stars measured with the same method in 76 exposures; per-exposure offset scatter 0.159 / 0.210 arcsec (RA*cosDec / Dec), bias -0.061 / +0.029 arcsec, correlation -0.56. Exposure A used 9 stars, B 12. Acceptability is a science decision; Gaia is not independent of the SPHEREx WCS.",
    "evidence_refs": [
     "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
-    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+    "git:cf5881ef5654d9e6c203d9267ba86a66b1b711a8"
    ]
   },
   "quality": {
@@ -35,7 +35,7 @@
    "reason": "FLAGS clear near the target in both exposures: True. Catalog sources within 18.5 arcsec of the target at the used epochs: none. Their effect on the centroid is not quantified yet.",
    "evidence_refs": [
     "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
-    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+    "git:cf5881ef5654d9e6c203d9267ba86a66b1b711a8"
    ]
   },
   "uncertainty": {
@@ -43,7 +43,7 @@
    "reason": "Per-exposure covariance = centroid (weighted fit, scaled by reduced chi2 >= 1) + WCS term 0.300 / 0.300 arcsec per axis (max of the provisional 0.3 and the field-star scatter). Epochs treated as independent.",
    "evidence_refs": [
     "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
-    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+    "git:cf5881ef5654d9e6c203d9267ba86a66b1b711a8"
    ]
   },
   "centroid_color_bias": {
@@ -51,7 +51,7 @@
    "reason": "Residual slope vs local wavelength over 76 exposures (1.638-2.396 um): RA*cosDec -0.087 +/- 0.159, Dec -0.004 +/- 0.159 arcsec/um. Pair wavelengths 1.9344956825285478 / 1.9338200004372583 um (WCS-WAVE).",
    "evidence_refs": [
     "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
-    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+    "git:cf5881ef5654d9e6c203d9267ba86a66b1b711a8"
    ]
   },
   "method": {
@@ -59,7 +59,7 @@
    "reason": "Reproducible: mise run measure-epsindb (backend/src/skyshift, native-frame Gaussian centroid, GLS proper motion, field registration); inputs and every exclusion listed in the referenced result.",
    "evidence_refs": [
     "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
-    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+    "git:cf5881ef5654d9e6c203d9267ba86a66b1b711a8"
    ]
   }
  },

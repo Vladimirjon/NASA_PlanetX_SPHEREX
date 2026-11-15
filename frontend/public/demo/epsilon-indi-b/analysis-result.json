@@ -1,7 +1,7 @@
 {
  "schema_version": "0.1-draft",
  "analysis_id": "AR-epsilon-indi-b-motion-D3",
- "created_utc": "2026-11-15T01:15:29Z",
+ "created_utc": "2026-11-15T02:06:21Z",
  "kind": "astrometric_shift",
  "is_synthetic": false,
  "target": {
@@ -3779,8 +3779,8 @@
   ]
  },
  "provenance": {
-  "code_ref": "a1231c01e718903fef6c5c30ada0773f9782184a",
+  "code_ref": "cf5881ef5654d9e6c203d9267ba86a66b1b711a8",
   "computed_by": "offline_precompute",
-  "executed_at": "2026-11-15T01:15:29Z"
+  "executed_at": "2026-11-15T02:06:21Z"
  }
 }

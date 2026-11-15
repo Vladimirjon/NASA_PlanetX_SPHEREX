@@ -20,8 +20,10 @@ from skyshift.adapters.fs_blob_store import FilesystemBlobStore
 from skyshift.adapters.irsa_gaia import IrsaGaiaDr3
 from skyshift.adapters.irsa_sia import IrsaSia2Catalog
 from skyshift.adapters.s3_archive import S3ImageArchive
+from skyshift.adapters.s3_spectral_wcs import S3SpectralWcs
 from skyshift.api.analysis_json import analysis_result_json
 from skyshift.api.checklist_evidence import checklist_evidence
+from skyshift.api.pair_controls import pair_controls
 from skyshift.application.frame_reader import FrameReader
 from skyshift.application.list_observations import ListObservations
 from skyshift.application.measure_target import (
@@ -93,7 +95,9 @@ def _git_commit() -> str | None:
         return None
 
 
-async def run(detector: int) -> MotionMeasurement:
+async def run(
+    detector: int, pair_controls_ref: tuple[str, str | None] | None = None
+) -> tuple[MotionMeasurement, dict[str, Any] | None]:
     cfg = Settings()
     async with httpx.AsyncClient(
         timeout=httpx.Timeout(max(cfg.upstream_timeout_s, 60.0), connect=10.0),
@@ -109,7 +113,19 @@ async def run(detector: int) -> MotionMeasurement:
             FrameReader(s3, S3ImageArchive(client)),
             ReferenceStars(gaia, IrsaGaiaDr3(client)),
         )
-        return await measure(eps_ind_b_request(detector))
+        frames = measure.frames
+        result = await measure(eps_ind_b_request(detector))
+        controls = None
+        if pair_controls_ref is not None:
+            controls = await pair_controls(
+                result,
+                frames,
+                S3SpectralWcs(client),
+                SEBASTIAN_PAIR,
+                result_ref=pair_controls_ref[0],
+                code_ref=pair_controls_ref[1],
+            )
+        return result, controls
 
 
 def _write(path: Path, doc: dict[str, Any]) -> None:
@@ -121,10 +137,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--checklist-out", type=Path, default=None)
+    parser.add_argument("--pair-controls-out", type=Path, default=None)
     parser.add_argument("--detector", type=int, default=3, choices=range(1, 7))
     args = parser.parse_args()
-    result = asyncio.run(run(args.detector))
     commit = _git_commit()
+    controls_out: Path | None = args.pair_controls_out
+    want = (str(args.out), commit) if controls_out is not None else None
+    result, controls = asyncio.run(run(args.detector, want))
+    if controls is not None and controls_out is not None:
+        _write(controls_out, controls)
     doc = analysis_result_json(
         result, analysis_id=f"AR-epsilon-indi-b-motion-D{args.detector}", code_ref=commit
     )
