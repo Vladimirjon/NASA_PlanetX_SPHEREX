@@ -3,7 +3,7 @@
   "package_id": "eps-indi-b-d3-pair",
   "package_version": 1,
   "content_origin": "irsa_snapshot",
-  "prepared_at": "2026-11-15T01:28:54Z",
+  "prepared_at": "2026-11-15T02:01:21Z",
   "prepared_with": {
     "software": [
       {
@@ -20,78 +20,82 @@
       },
       {
         "name": "scripts/build-validation-package.py:sha256",
-        "version": "76338c2f0439a9d1e9e0ec9450be1609bc441e4c23d0ae1005ae1742edadcac1"
+        "version": "45aa056fdd73525d29f9dd5bfe2334581715952a8ea7a805adaecf2a4cc74516"
       },
       {
         "name": "git:base_commit",
-        "version": "39609f298699ed6240ec4d59a9632d8bf164a2b7"
+        "version": "bba0db0ffd9f0bb9ea38ed1d2638cb01d8097a0f"
       },
       {
         "name": "git:dirty",
+        "version": "false"
+      },
+      {
+        "name": "git:script_tracked",
         "version": "true"
       }
     ],
-    "repository_commit": null
+    "repository_commit": "bba0db0ffd9f0bb9ea38ed1d2638cb01d8097a0f"
   },
   "sources": [
     {
       "service": "spherex_s3",
       "request": "https://nasa-irsa-spherex.s3.us-east-1.amazonaws.com/?list-type=2&prefix=dr1/spectral_wcs/&delimiter=/",
-      "retrieved_at": "2026-11-15T01:28:36Z",
+      "retrieved_at": "2026-11-15T02:00:59Z",
       "status": "HTTP 200; versions: dr1/spectral_wcs/cal-swcs-v5-2026-191/"
     },
     {
       "service": "spherex_s3",
       "request": "https://nasa-irsa-spherex.s3.us-east-1.amazonaws.com/dr1/spectral_wcs/cal-swcs-v5-2026-191/3/spectral_wcs_D3_spx_cal-swcs-v5-2026-191.fits",
-      "retrieved_at": "2026-11-15T01:28:36Z",
+      "retrieved_at": "2026-11-15T02:00:59Z",
       "status": "local reuse; sha256 verified; 33312960 bytes"
     },
     {
       "service": "spherex_s3",
       "request": "https://nasa-irsa-spherex.s3.us-east-1.amazonaws.com/?list-type=2&prefix=qr3/spectral_wcs/&delimiter=/",
-      "retrieved_at": "2026-11-15T01:28:36Z",
+      "retrieved_at": "2026-11-15T02:00:59Z",
       "status": "HTTP 200; versions: qr3/spectral_wcs/cal-swcs-v5-2026-191/"
     },
     {
       "service": "spherex_s3",
       "request": "https://nasa-irsa-spherex.s3.us-east-1.amazonaws.com/qr3/spectral_wcs/cal-swcs-v5-2026-191/3/spectral_wcs_D3_spx_cal-swcs-v5-2026-191.fits",
-      "retrieved_at": "2026-11-15T01:28:36Z",
+      "retrieved_at": "2026-11-15T02:00:59Z",
       "status": "local reuse; sha256 verified; 33312960 bytes"
     },
     {
       "service": "irsa_sia2",
       "request": "https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1&POS=circle+331.095+-56.801+0.01&MAXREC=2000",
-      "retrieved_at": "2026-11-15T01:28:39Z",
+      "retrieved_at": "2026-11-15T02:01:01Z",
       "status": "OK"
     },
     {
       "service": "irsa_browse",
       "request": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W24_1A/l2b-v27-2026-201/3/level2_2025W24_1A_0245_4D3_spx_l2b-v27-2026-201.fits",
-      "retrieved_at": "2026-11-15T01:28:39Z",
+      "retrieved_at": "2026-11-15T02:01:01Z",
       "status": "local reuse; sha256 verified; 66559680 bytes"
     },
     {
       "service": "irsa_cutout",
       "request": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W24_1A/l2b-v27-2026-201/3/level2_2025W24_1A_0245_4D3_spx_l2b-v27-2026-201.fits?center=331.095,-56.801&size=0.12",
-      "retrieved_at": "2026-11-15T01:28:47Z",
+      "retrieved_at": "2026-11-15T02:01:08Z",
       "status": "HTTP 200; 4106880 bytes"
     },
     {
       "service": "irsa_sia2",
       "request": "https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_qr3&POS=circle+331.095+-56.801+0.01&MAXREC=2000",
-      "retrieved_at": "2026-11-15T01:28:48Z",
+      "retrieved_at": "2026-11-15T02:01:09Z",
       "status": "OK"
     },
     {
       "service": "irsa_browse",
       "request": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W40_1A/l2b-v27-2026-276/3/level2_2026W40_1A_0070_2D3_spx_l2b-v27-2026-276.fits",
-      "retrieved_at": "2026-11-15T01:28:48Z",
+      "retrieved_at": "2026-11-15T02:01:09Z",
       "status": "local reuse; sha256 verified; 65891520 bytes"
     },
     {
       "service": "irsa_cutout",
       "request": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W40_1A/l2b-v27-2026-276/3/level2_2026W40_1A_0070_2D3_spx_l2b-v27-2026-276.fits?center=331.095,-56.801&size=0.12",
-      "retrieved_at": "2026-11-15T01:28:54Z",
+      "retrieved_at": "2026-11-15T02:01:20Z",
       "status": "HTTP 200; 4106880 bytes"
     }
   ],
@@ -346,7 +350,7 @@
                     "ZODI": true
                   }
                 },
-                "executed_at": "2026-11-15T01:28:47Z",
+                "executed_at": "2026-11-15T02:01:08Z",
                 "evidence_ref": "native_cutouts/level2_2025W24_1A_0245_4D3_spx_l2b-v27-2026-201_cutout_0.12deg.fits; verified by scripts/build-validation-package.py (array_equal against the original)"
               }
             ],
@@ -378,7 +382,7 @@
       "issues": [],
       "provenance": {
         "query_uri": "https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1&POS=circle+331.095+-56.801+0.01&MAXREC=2000",
-        "retrieved_at": "2026-11-15T01:28:47Z",
+        "retrieved_at": "2026-11-15T02:01:08Z",
         "raw_metadata_ref": "spherex-file:dr1/level2/2025W24_1A/l2b-v27-2026-201/3/level2_2025W24_1A_0245_4D3_spx_l2b-v27-2026-201.fits#bytes=2880-25919",
         "calibration_history": [
           {
@@ -737,7 +741,7 @@
                     "ZODI": true
                   }
                 },
-                "executed_at": "2026-11-15T01:28:54Z",
+                "executed_at": "2026-11-15T02:01:20Z",
                 "evidence_ref": "native_cutouts/level2_2026W40_1A_0070_2D3_spx_l2b-v27-2026-276_cutout_0.12deg.fits; verified by scripts/build-validation-package.py (array_equal against the original)"
               }
             ],
@@ -769,7 +773,7 @@
       "issues": [],
       "provenance": {
         "query_uri": "https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_qr3&POS=circle+331.095+-56.801+0.01&MAXREC=2000",
-        "retrieved_at": "2026-11-15T01:28:54Z",
+        "retrieved_at": "2026-11-15T02:01:20Z",
         "raw_metadata_ref": "spherex-file:qr3/level2/2026W40_1A/l2b-v27-2026-276/3/level2_2026W40_1A_0070_2D3_spx_l2b-v27-2026-276.fits#bytes=2880-25919",
         "calibration_history": [
           {

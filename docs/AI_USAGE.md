@@ -46,3 +46,4 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-14 | Codex | Incorporación de ciclos aportados por el usuario, sincronización con main y revisión del estado del prototipo científico | Revisión humana y de Johann/Mateo pendiente |
 | 2026-11-14 | Codex | Listas de control por método, pruebas sintéticas, estado de pares e investigación de límites | Revisión científica humana y de Johann/Mateo pendiente |
 | 2026-11-14 | Codex | Revisión estática de textos científicos, controles y procedencia de la demo | Daniel y responsable del backend revisan; prueba visual y revisión humana pendientes |
+| 2026-11-14 | Codex (gpt-6.1-sol, medium) | Added the `--lambda-at` helper, crash recovery, provenance fixes and offline tests to `scripts/build-validation-package.py` (worktree); Claude Code reviewed the diff, committed, regenerated the package and reran verify, tests and contract checks | Pending: Sebastián and Mateo review PR 12 |
