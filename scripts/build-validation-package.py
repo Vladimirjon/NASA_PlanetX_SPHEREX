@@ -16,7 +16,8 @@ What it does (needs network; real NASA/IRSA data only, nothing invented):
   6. Write package-manifest.json (contracts/package-manifest.schema.json) and verify it.
 
 Usage:  uv run --locked --script scripts/build-validation-package.py [--out data/packages/eps-indi-b-d3]
-Use --verify [--package DIR] for read-only, offline integrity and contract checks.
+Use --verify [--package DIR] for offline integrity/contract checks and crash recovery.
+Use --lambda-at --package DIR --epoch A --x X --y Y for a read-only wavelength query.
 Exit code 1 on any failed check; existing raw files must match the pinned snapshot hashes.
 """
 
@@ -27,6 +28,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import math
 import os
 import shutil
 import tempfile
@@ -314,6 +316,75 @@ def sha_file(p: Path) -> str:
     return h.hexdigest()
 
 
+def lambda_at_native_pixel(window_path: Path | str, x: float, y: float) -> dict[str, Any]:
+    """Read CWAVE/CBAND without interpolation at floor(v + 0.5), ties upward.
+
+    Native coordinates are 0-based: x is column, y is row. The rounded pixel
+    indexes each window as [y - NATIVEY0, x - NATIVEX0]. Its manifest is required.
+    This function performs no network access, recovery, or writes.
+    """
+    if not math.isfinite(x) or not math.isfinite(y):
+        raise ValueError("native pixel coordinates must be finite")
+    path = Path(window_path).resolve()
+    package = next((p for p in path.parents if (p / "package-manifest.json").is_file()), None)
+    if package is None:
+        raise RuntimeError(f"no package-manifest.json found for window: {path}")
+    manifest = json.loads((package / "package-manifest.json").read_text(encoding="utf-8"))
+    assets = [a for a in manifest["assets"] if a["role"] == "calibration_extract"
+              and a["path"] == path.relative_to(package).as_posix()]
+    if len(assets) != 1:
+        raise RuntimeError(f"expected one calibration window in manifest: {path}")
+    asset = assets[0]
+    actual_sha = sha_file(path)
+    if actual_sha != asset["sha256"]:
+        raise RuntimeError(f"window checksum mismatch: {path}")
+    observations = [o for o in manifest["observations"] if any(
+        p["product_id"] == asset["product_id"] for p in o["products"]["calibrations"])]
+    if len(observations) != 1:
+        raise RuntimeError(f"expected one observation linked to window: {path}")
+    ix, iy = math.floor(x + 0.5), math.floor(y + 0.5)
+    values: dict[str, float] = {}
+    with fits.open(path, memmap=False) as hdus:
+        for ext in ("CWAVE", "CBAND"):
+            hdu = image_hdu(hdus, ext)
+            data = image_data(hdus, ext)
+            col = ix - int(header_number(hdu.header, "NATIVEX0"))
+            row = iy - int(header_number(hdu.header, "NATIVEY0"))
+            if data.ndim != 2 or not (0 <= row < data.shape[0] and 0 <= col < data.shape[1]):
+                raise ValueError(f"native pixel ({ix}, {iy}) outside {ext} window: {path}")
+            if hdu.header.get("BUNIT") not in ("um", "micron", "microns", "µm"):
+                raise RuntimeError(f"{ext} window unit must be micrometres")
+            value = float(data[row, col])
+            if not math.isfinite(value):
+                raise ValueError(f"{ext} at native pixel ({ix}, {iy}) must be finite")
+            values[ext] = value
+    return {
+        "requested_pixel": {"x": x, "y": y},
+        "native_pixel": {"x": ix, "y": iy},
+        "rounding_method": "floor(v + 0.5); nearest integer, ties upward; no interpolation",
+        "cwave_um": values["CWAVE"], "cband_um": values["CBAND"],
+        "observation_id": observations[0]["observation_id"],
+        "product_id": asset["product_id"],
+        "window_path": str(path), "window_sha256": actual_sha,
+    }
+
+
+def package_lambda(package: Path, observation_id: str, x: float, y: float) -> dict[str, Any]:
+    """Select a calibration by observation identity, never by asset ordering."""
+    manifest = json.loads((package / "package-manifest.json").read_text(encoding="utf-8"))
+    observations = [o for o in manifest["observations"] if o["observation_id"] == observation_id]
+    if len(observations) != 1:
+        raise ValueError(f"expected one observation for {observation_id}")
+    pids = {p["product_id"] for p in observations[0]["products"]["calibrations"]}
+    windows = [a for a in manifest["assets"] if a["role"] == "calibration_extract" and a["product_id"] in pids]
+    if len(windows) != 1:
+        raise RuntimeError(f"expected one calibration window for {observation_id}")
+    path = (package / windows[0]["path"]).resolve()
+    if not path.is_relative_to(package.resolve()):
+        raise ValueError("calibration window escapes package")
+    return lambda_at_native_pixel(path, x, y)
+
+
 # Snapshot checksums from the supplied package-manifest.json (2026-11-15 UTC).
 # Keep independent of --out so a new recipient can regenerate without a local manifest.
 RAW_SHA256 = {
@@ -335,7 +406,12 @@ Otra ubicación: añadir `--out DIR` al generar o `--package DIR` al verificar.
 Originales y calibración: `data/raw/spherex-originals/`; reutilizar con `--raw DIR`.
 El par sigue siendo CANDIDATO: este paquete no demuestra comparabilidad científica.
 Falta el contenido del caso (Sebastián); completeness=unverified y offline=incomplete.
-`case_ref` y `region_id` son identificadores locales provisionales.
+IDs aceptados por Sebastián: case_ref=eps-indi-b-d3-pair; region_id=eps-indi-b-d3-cutout-box, revisión 1.
+λ del centro (`spectral.local`) es solo referencia de la región.
+Medición: leer CWAVE/CBAND en el píxel nativo entero más cercano al centroide de cada época.
+Sin interpolar; registrar píxel y método: floor(v + 0.5), empates hacia arriba.
+Consultar sin red: `uv run --locked --script scripts/build-validation-package.py --lambda-at --package DIR --epoch A --x 793 --y 1146`
+Para B: `--epoch B --x 195 --y 1184`; también acepta `--observation-id ID` en vez de `--epoch`.
 Fuente y procedencia por imagen: package-manifest.json; evidencia de vínculos: link-report.json.
 
 ## English
@@ -349,7 +425,12 @@ Custom location: add `--out DIR` to build or `--package DIR` to verify.
 Originals and calibration: `data/raw/spherex-originals/`; reuse with `--raw DIR`.
 The pair remains a CANDIDATE: this package does not establish scientific comparability.
 Case content (Sebastián) is missing; completeness=unverified and offline=incomplete.
-`case_ref` and `region_id` are provisional local identifiers.
+IDs accepted by Sebastián: case_ref=eps-indi-b-d3-pair; region_id=eps-indi-b-d3-cutout-box, revision 1.
+Centre λ (`spectral.local`) is only a region reference.
+Measurement: read CWAVE/CBAND at the nearest integer native pixel to each epoch's measured centroid.
+No interpolation; record pixel and method: floor(v + 0.5), ties upward.
+Query offline: `uv run --locked --script scripts/build-validation-package.py --lambda-at --package DIR --epoch A --x 793 --y 1146`
+For B: `--epoch B --x 195 --y 1184`; `--observation-id ID` can replace `--epoch`.
 Per-image sources: package-manifest.json; link evidence: link-report.json.
 """
 
@@ -371,7 +452,8 @@ def validate_manifest(manifest: dict[str, Any]) -> list[str]:
 
 
 def verify_package(package: Path) -> int:
-    """Read-only: validate contracts, then hash every listed asset on this device."""
+    """Recover interrupted publication, then check contracts/assets without editing the manifest."""
+    recover_package(package)
     manifest = json.loads((package / "package-manifest.json").read_text(encoding="utf-8"))
     failures = validate_manifest(manifest)
     if not failures:
@@ -398,7 +480,7 @@ def code_provenance() -> tuple[str | None, list[dict[str, str]]]:
     base = base_result.stdout.strip()
     if base_result.returncode or re.fullmatch(r"[0-9a-f]{7,40}", base) is None:
         base = "unknown"
-    status = git("status", "--porcelain", "--untracked-files=all")
+    status = git("status", "--porcelain", "--untracked-files=no")
     dirty = "unknown" if status.returncode else str(bool(status.stdout)).lower()
     script = Path(__file__).resolve()
     relative = script.relative_to(ROOT).as_posix()
@@ -408,6 +490,7 @@ def code_provenance() -> tuple[str | None, list[dict[str, str]]]:
         {"name": relative + ":sha256", "version": sha_file(script)},
         {"name": "git:base_commit", "version": base},
         {"name": "git:dirty", "version": dirty},
+        {"name": "git:script_tracked", "version": str(tracked).lower()},
     ]
     return base if unchanged and base != "unknown" else None, software
 
@@ -419,6 +502,27 @@ def calibration_link(original: Path, calibration: Path) -> dict[str, Any]:
     if not identical:
         raise RuntimeError(f"WCS-WAVE mismatch: {original.name} / {calibration.name}")
     return {"extension": "WCS-WAVE", "byte_identical": True, "calibration_sha256": sha_file(calibration)}
+
+
+def recover_package(target: Path) -> None:
+    """Recover a stopped single-writer build; ambiguous backups require human selection."""
+    target = target.resolve()
+    previous = sorted(target.parent.glob(f".{target.name}-previous-*"))
+    if not target.exists() and len(previous) > 1:
+        raise RuntimeError(
+            f"multiple previous packages for {target}; manually restore one to {target} "
+            f"and move the other backups aside before retrying: {previous}"
+        )
+    if not target.exists() and previous:
+        backup = previous[0]
+        if backup.is_symlink() or not backup.is_dir():
+            raise RuntimeError(f"cannot restore non-directory or symlink backup: {backup}")
+        os.replace(backup, target)
+        print(f"Recovered previous package: {target}")
+    for orphan in sorted(target.parent.glob(f".{target.name}-build-*")):
+        if orphan.is_symlink() or orphan.resolve().parent != target.parent or not orphan.is_dir():
+            raise RuntimeError(f"refusing to remove unsafe build path: {orphan}")
+        shutil.rmtree(orphan)
 
 
 def publish_package(staged: Path, target: Path) -> None:
@@ -800,16 +904,34 @@ def main() -> int:
     default = ROOT / "data" / "packages" / "eps-indi-b-d3"
     ap.add_argument("--out", type=Path, default=default)
     ap.add_argument("--raw", type=Path, default=ROOT / "data" / "raw" / "spherex-originals")
-    ap.add_argument("--verify", action="store_true", help="check assets and contracts offline without writing")
-    ap.add_argument("--package", type=Path, help="package to verify (requires --verify)")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--verify", action="store_true", help="recover publication, then check assets and contracts offline")
+    mode.add_argument("--lambda-at", action="store_true", help="read CWAVE/CBAND at a native pixel offline")
+    ap.add_argument("--package", type=Path, help="package for --verify or --lambda-at")
+    selector = ap.add_mutually_exclusive_group()
+    selector.add_argument("--epoch", choices=("A", "B"))
+    selector.add_argument("--observation-id")
+    ap.add_argument("--x", type=float)
+    ap.add_argument("--y", type=float)
     args = ap.parse_args()
-    if args.package is not None and not args.verify:
-        ap.error("--package requires --verify")
+    if args.package is not None and not (args.verify or args.lambda_at):
+        ap.error("--package requires --verify or --lambda-at")
+    if args.lambda_at and (args.x is None or args.y is None or not (args.epoch or args.observation_id)):
+        ap.error("--lambda-at requires --x, --y and --epoch or --observation-id")
+    if not args.lambda_at and any(v is not None for v in (args.x, args.y, args.epoch, args.observation_id)):
+        ap.error("--x, --y, --epoch and --observation-id require --lambda-at")
     try:
+        if args.lambda_at:
+            observation_id = args.observation_id
+            if args.epoch:
+                observation_id = next(e.observation_id for e in EXPOSURES if e.label == args.epoch)
+            print(json.dumps(package_lambda(args.package or args.out, observation_id, args.x, args.y), indent=2))
+            return 0
         if args.verify:
             return verify_package(args.package or args.out)
         target = args.out.resolve()
         target.parent.mkdir(parents=True, exist_ok=True)
+        recover_package(target)
         with tempfile.TemporaryDirectory(prefix=f".{target.name}-build-", dir=target.parent) as name:
             staged = Path(name) / "package"
             staged.mkdir()
