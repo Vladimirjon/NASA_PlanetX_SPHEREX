@@ -1,0 +1,50 @@
+{
+  "epsilon": {
+    "status": "pending",
+    "identity": {
+      "status": "pass",
+      "value": 41052684.593,
+      "reason": "Distinct acquisitions and UTC times are documented."
+    },
+    "spectral_filter": {
+      "status": "pass",
+      "value": 0.017277664290064377,
+      "reason": "This filter does not establish spectral equivalence."
+    },
+    "checks": {
+      "target": "unknown",
+      "coverage": "unknown",
+      "alignment": "unknown",
+      "quality": "unknown",
+      "uncertainty": "unknown",
+      "spectral_compatibility": "unknown",
+      "method": "unknown",
+      "identity": "pass",
+      "time": "pass"
+    }
+  },
+  "wise": {
+    "status": "pending",
+    "identity": {
+      "status": "pass",
+      "value": 32002242.203,
+      "reason": "Distinct acquisitions and UTC times are documented."
+    },
+    "spectral_filter": {
+      "status": "unknown",
+      "value": null,
+      "reason": "Finite positive wavelengths and bandwidths and a non-negative threshold are required."
+    },
+    "checks": {
+      "target": "unknown",
+      "coverage": "unknown",
+      "alignment": "unknown",
+      "quality": "unknown",
+      "uncertainty": "unknown",
+      "spectral_compatibility": "unknown",
+      "method": "unknown",
+      "identity": "pass",
+      "time": "pass"
+    }
+  }
+}
