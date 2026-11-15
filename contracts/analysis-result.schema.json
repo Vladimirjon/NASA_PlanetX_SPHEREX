@@ -1,48 +1,124 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:skyshift:contract:analysis-result:0.1-draft",
-  "title": "AnalysisResult (SkyShift contract, DRAFT 0.1, first delivery)",
+  "title": "AnalysisResult (SkyShift contract, DRAFT 0.2, first delivery)",
   "description": "A measurement of apparent motion of one target across SPHEREx visits, with units, uncertainty, method and issues. DRAFT: docs/specs/0010-analysis-result.md section 0 (first delivery: motion only, brightness null). It MEASURES, it does not interpret: it never carries EVALUATED or CONFIRMED. null means unknown, never zero.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version", "analysis_id", "created_utc", "kind", "is_synthetic", "target",
-    "criteria", "inputs", "measurements", "outcome", "interpretation_ceiling",
-    "astrometry", "photometry", "issues", "method", "provenance"
+    "schema_version",
+    "analysis_id",
+    "created_utc",
+    "kind",
+    "is_synthetic",
+    "target",
+    "criteria",
+    "inputs",
+    "measurements",
+    "outcome",
+    "interpretation_ceiling",
+    "astrometry",
+    "photometry",
+    "issues",
+    "method",
+    "provenance",
+    "field_sources"
   ],
   "properties": {
-    "schema_version": { "const": "0.1-draft" },
-    "analysis_id": { "type": "string", "pattern": "^(AR|synthetic)-[A-Za-z0-9._-]{1,80}$" },
-    "created_utc": { "$ref": "#/$defs/UtcTimestamp" },
-    "kind": { "const": "astrometric_shift" },
-    "is_synthetic": { "type": "boolean", "description": "true for test fixtures; the UI must label them and never present them as real." },
+    "schema_version": {
+      "const": "0.1-draft"
+    },
+    "analysis_id": {
+      "type": "string",
+      "pattern": "^(AR|synthetic)-[A-Za-z0-9._-]{1,80}$"
+    },
+    "created_utc": {
+      "$ref": "#/$defs/UtcTimestamp"
+    },
+    "kind": {
+      "const": "astrometric_shift"
+    },
+    "is_synthetic": {
+      "type": "boolean",
+      "description": "true for test fixtures; the UI must label them and never present them as real."
+    },
     "target": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["label", "reference_position", "reference_motion"],
+      "required": [
+        "label",
+        "reference_position",
+        "reference_motion"
+      ],
       "properties": {
-        "label": { "type": ["string", "null"], "minLength": 1, "description": "Catalog name if any; never an invented classification." },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Catalog name if any; never an invented classification."
+        },
         "reference_position": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["ra_deg", "dec_deg", "frame", "epoch_jyear", "source"],
+          "required": [
+            "ra_deg",
+            "dec_deg",
+            "frame",
+            "epoch_jyear",
+            "source"
+          ],
           "properties": {
-            "ra_deg": { "type": "number", "minimum": 0, "exclusiveMaximum": 360 },
-            "dec_deg": { "type": "number", "minimum": -90, "maximum": 90 },
-            "frame": { "const": "ICRS" },
-            "epoch_jyear": { "type": "number" },
-            "source": { "type": "string", "minLength": 1 }
+            "ra_deg": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMaximum": 360
+            },
+            "dec_deg": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "frame": {
+              "const": "ICRS"
+            },
+            "epoch_jyear": {
+              "type": "number"
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         },
         "reference_motion": {
-          "type": ["object", "null"],
+          "type": [
+            "object",
+            "null"
+          ],
           "additionalProperties": false,
-          "required": ["pm_ra_cosdec_mas_per_yr", "pm_dec_mas_per_yr", "parallax_mas", "source"],
+          "required": [
+            "pm_ra_cosdec_mas_per_yr",
+            "pm_dec_mas_per_yr",
+            "parallax_mas",
+            "source"
+          ],
           "properties": {
-            "pm_ra_cosdec_mas_per_yr": { "type": "number" },
-            "pm_dec_mas_per_yr": { "type": "number" },
-            "parallax_mas": { "type": "number", "minimum": 0 },
-            "source": { "type": "string", "minLength": 1 }
+            "pm_ra_cosdec_mas_per_yr": {
+              "type": "number"
+            },
+            "pm_dec_mas_per_yr": {
+              "type": "number"
+            },
+            "parallax_mas": {
+              "type": "number",
+              "minimum": 0
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         }
       }
@@ -51,16 +127,47 @@
       "description": "Thresholds used, each with its source. Provisional until Sebastián's spec publishes them.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["reference", "min_snr_per_exposure", "min_significance_sigma_two_sided", "q_threshold_2dof", "p_threshold", "sigma_wcs_arcsec_per_axis", "flag_radius_px", "comparison_mask"],
+      "required": [
+        "reference",
+        "min_snr_per_exposure",
+        "min_significance_sigma_two_sided",
+        "q_threshold_2dof",
+        "p_threshold",
+        "sigma_wcs_arcsec_per_axis",
+        "flag_radius_px",
+        "comparison_mask"
+      ],
       "properties": {
-        "reference": { "type": "string", "minLength": 1 },
-        "min_snr_per_exposure": { "$ref": "#/$defs/Threshold" },
-        "min_significance_sigma_two_sided": { "$ref": "#/$defs/Threshold" },
-        "q_threshold_2dof": { "type": "number", "exclusiveMinimum": 0 },
-        "p_threshold": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
-        "sigma_wcs_arcsec_per_axis": { "$ref": "#/$defs/Threshold" },
-        "flag_radius_px": { "$ref": "#/$defs/Threshold" },
-        "comparison_mask": { "type": "integer", "minimum": 0, "maximum": 4294967295 }
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "min_snr_per_exposure": {
+          "$ref": "#/$defs/Threshold"
+        },
+        "min_significance_sigma_two_sided": {
+          "$ref": "#/$defs/Threshold"
+        },
+        "q_threshold_2dof": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "p_threshold": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "sigma_wcs_arcsec_per_axis": {
+          "$ref": "#/$defs/Threshold"
+        },
+        "flag_radius_px": {
+          "$ref": "#/$defs/Threshold"
+        },
+        "comparison_mask": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        }
       }
     },
     "inputs": {
@@ -69,136 +176,528 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["observation_id", "obs_id", "detector", "collection", "access_url"],
+        "required": [
+          "observation_id",
+          "obs_id",
+          "detector",
+          "collection",
+          "access_url"
+        ],
         "properties": {
-          "observation_id": { "type": "string", "minLength": 1 },
-          "obs_id": { "type": "string", "minLength": 1 },
-          "detector": { "type": "integer", "minimum": 1, "maximum": 6 },
-          "collection": { "type": "string", "minLength": 1 },
-          "access_url": { "type": "string", "minLength": 1 }
+          "observation_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "obs_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "detector": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6
+          },
+          "collection": {
+            "type": "string",
+            "minLength": 1
+          },
+          "access_url": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
     "measurements": {
       "type": "array",
       "minItems": 1,
-      "items": { "$ref": "#/$defs/Measurement" }
+      "items": {
+        "$ref": "#/$defs/Measurement"
+      }
     },
     "outcome": {
       "description": "threshold_exceeded_unverified: the test passes the computed threshold but the assumptions of spec 0010 §0 A4 are not verified, so it is NOT change_measured. change_below_criterion does not mean motionless.",
-      "enum": ["change_measured", "threshold_exceeded_unverified", "change_below_criterion", "no_usable_detection", "not_evaluable", "data_error"]
+      "enum": [
+        "change_measured",
+        "threshold_exceeded_unverified",
+        "change_below_criterion",
+        "no_usable_detection",
+        "not_evaluable",
+        "data_error"
+      ]
     },
     "interpretation_ceiling": {
       "description": "Highest traffic-light level this result may support. First delivery: always OBSERVED (spec 0010 §0, A1).",
       "const": "OBSERVED"
     },
     "astrometry": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "additionalProperties": false,
-      "required": ["model", "n_visits", "time_span_days", "proper_motion", "displacement", "test", "covariance_assumption", "fit_residual_rms_arcsec", "reference_comparison", "reference_star_check"],
+      "required": [
+        "model",
+        "n_visits",
+        "time_span_days",
+        "proper_motion",
+        "displacement",
+        "test",
+        "covariance_assumption",
+        "fit_residual_rms_arcsec",
+        "reference_comparison",
+        "reference_star_check",
+        "applied_sigma_wcs_arcsec",
+        "wavelength_dependence",
+        "sensitivity"
+      ],
       "properties": {
-        "model": { "const": "linear_fit_known_parallax" },
-        "n_visits": { "type": "integer", "minimum": 2 },
-        "time_span_days": { "type": "number", "exclusiveMinimum": 0 },
+        "model": {
+          "const": "linear_fit_known_parallax"
+        },
+        "n_visits": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "time_span_days": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
         "proper_motion": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["pm_ra_cosdec_arcsec_per_yr", "pm_dec_arcsec_per_yr", "cov_arcsec2_per_yr2"],
+          "required": [
+            "pm_ra_cosdec_arcsec_per_yr",
+            "pm_dec_arcsec_per_yr",
+            "cov_arcsec2_per_yr2"
+          ],
           "properties": {
-            "pm_ra_cosdec_arcsec_per_yr": { "type": "number" },
-            "pm_dec_arcsec_per_yr": { "type": "number" },
-            "cov_arcsec2_per_yr2": { "$ref": "#/$defs/Cov2" }
+            "pm_ra_cosdec_arcsec_per_yr": {
+              "type": "number"
+            },
+            "pm_dec_arcsec_per_yr": {
+              "type": "number"
+            },
+            "cov_arcsec2_per_yr2": {
+              "$ref": "#/$defs/Cov2"
+            }
           }
         },
         "displacement": {
           "description": "Fitted motion over the time span (proper_motion × span).",
           "type": "object",
           "additionalProperties": false,
-          "required": ["delta_ra_cosdec_arcsec", "delta_dec_arcsec", "separation_arcsec", "position_angle_deg", "cov_arcsec2"],
+          "required": [
+            "delta_ra_cosdec_arcsec",
+            "delta_dec_arcsec",
+            "separation_arcsec",
+            "position_angle_deg",
+            "cov_arcsec2"
+          ],
           "properties": {
-            "delta_ra_cosdec_arcsec": { "type": "number" },
-            "delta_dec_arcsec": { "type": "number" },
-            "separation_arcsec": { "type": "number", "minimum": 0 },
-            "position_angle_deg": { "type": "number", "minimum": 0, "exclusiveMaximum": 360 },
-            "cov_arcsec2": { "$ref": "#/$defs/Cov2" }
+            "delta_ra_cosdec_arcsec": {
+              "type": "number"
+            },
+            "delta_dec_arcsec": {
+              "type": "number"
+            },
+            "separation_arcsec": {
+              "type": "number",
+              "minimum": 0
+            },
+            "position_angle_deg": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMaximum": 360
+            },
+            "cov_arcsec2": {
+              "$ref": "#/$defs/Cov2"
+            }
           }
         },
         "test": {
-          "type": ["object", "null"],
+          "type": [
+            "object",
+            "null"
+          ],
           "additionalProperties": false,
-          "required": ["statistic", "value", "dof", "p_value", "equivalent_sigma_two_sided", "tested_quantity"],
+          "required": [
+            "statistic",
+            "value",
+            "dof",
+            "p_value",
+            "equivalent_sigma_two_sided",
+            "tested_quantity"
+          ],
           "properties": {
-            "statistic": { "const": "chi2" },
-            "value": { "type": "number", "minimum": 0 },
-            "dof": { "const": 2 },
-            "p_value": { "type": "number", "minimum": 0, "maximum": 1 },
-            "equivalent_sigma_two_sided": { "type": ["number", "null"], "minimum": 0, "description": "z = Φ⁻¹(1 − p/2); null when p underflows. Never √Q." },
-            "tested_quantity": { "const": "proper_motion" }
+            "statistic": {
+              "const": "chi2"
+            },
+            "value": {
+              "type": "number",
+              "minimum": 0
+            },
+            "dof": {
+              "const": 2
+            },
+            "p_value": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "equivalent_sigma_two_sided": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "z = Φ⁻¹(1 − p/2); null when p underflows. Never √Q."
+            },
+            "tested_quantity": {
+              "const": "proper_motion"
+            }
           }
         },
-        "covariance_assumption": { "enum": ["independent_epochs", "with_cross_covariance"] },
-        "fit_residual_rms_arcsec": { "type": ["number", "null"], "minimum": 0 },
+        "covariance_assumption": {
+          "enum": [
+            "independent_epochs",
+            "with_cross_covariance"
+          ]
+        },
+        "fit_residual_rms_arcsec": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
         "reference_comparison": {
-          "type": ["object", "null"],
+          "type": [
+            "object",
+            "null"
+          ],
           "additionalProperties": false,
-          "required": ["source", "object_relation", "delta_pm_ra_cosdec_arcsec_per_yr", "delta_pm_dec_arcsec_per_yr", "independence_note"],
+          "required": [
+            "source",
+            "object_relation",
+            "delta_pm_ra_cosdec_arcsec_per_yr",
+            "delta_pm_dec_arcsec_per_yr",
+            "independence_note"
+          ],
           "properties": {
-            "source": { "type": "string", "minLength": 1 },
-            "object_relation": { "enum": ["same_object", "photocenter_of_unresolved_pair", "common_proper_motion_companion"] },
-            "delta_pm_ra_cosdec_arcsec_per_yr": { "type": "number" },
-            "delta_pm_dec_arcsec_per_yr": { "type": "number" },
-            "independence_note": { "type": "string", "minLength": 1 }
+            "source": {
+              "type": "string",
+              "minLength": 1
+            },
+            "object_relation": {
+              "enum": [
+                "same_object",
+                "photocenter_of_unresolved_pair",
+                "common_proper_motion_companion"
+              ]
+            },
+            "delta_pm_ra_cosdec_arcsec_per_yr": {
+              "type": "number"
+            },
+            "delta_pm_dec_arcsec_per_yr": {
+              "type": "number"
+            },
+            "independence_note": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         },
         "reference_star_check": {
-          "type": ["object", "null"],
+          "type": [
+            "object",
+            "null"
+          ],
           "additionalProperties": false,
-          "required": ["n_stars", "rms_arcsec", "catalog"],
+          "required": [
+            "catalog",
+            "n_reference_stars",
+            "n_exposures",
+            "n_reference_measurements",
+            "bias_xi_arcsec",
+            "bias_eta_arcsec",
+            "rms_xi_arcsec",
+            "rms_eta_arcsec",
+            "correlation",
+            "star_rms_xi_arcsec",
+            "star_rms_eta_arcsec",
+            "provisional_sigma_arcsec_per_axis",
+            "n_rejected_matches",
+            "identification_radius_arcsec"
+          ],
           "properties": {
-            "n_stars": { "type": "integer", "minimum": 0 },
-            "rms_arcsec": { "type": ["number", "null"], "minimum": 0 },
-            "catalog": { "type": "string", "minLength": 1 }
+            "catalog": {
+              "type": "string",
+              "minLength": 1
+            },
+            "n_reference_stars": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "n_exposures": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "n_reference_measurements": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bias_xi_arcsec": {
+              "type": "number"
+            },
+            "bias_eta_arcsec": {
+              "type": "number"
+            },
+            "rms_xi_arcsec": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Scatter across exposures of the per-exposure mean reference offset (WCS error estimate)."
+            },
+            "rms_eta_arcsec": {
+              "type": "number",
+              "minimum": 0
+            },
+            "correlation": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            "star_rms_xi_arcsec": {
+              "type": "number",
+              "minimum": 0
+            },
+            "star_rms_eta_arcsec": {
+              "type": "number",
+              "minimum": 0
+            },
+            "provisional_sigma_arcsec_per_axis": {
+              "type": "number",
+              "minimum": 0
+            },
+            "n_rejected_matches": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Reference fits farther than the identification radius (another source was fitted); not used."
+            },
+            "identification_radius_arcsec": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            }
+          }
+        },
+        "applied_sigma_wcs_arcsec": {
+          "description": "Per-axis WCS term actually added to every position (RA*cosDec, Dec): max(provisional, field-star scatter).",
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "wavelength_dependence": {
+          "description": "Weighted slope of the target position residuals vs local wavelength (Ba/Bb photocenter, C6). Acceptability is a science decision.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "wavelength_method",
+            "n",
+            "wavelength_min_um",
+            "wavelength_max_um",
+            "slope_xi_arcsec_per_um",
+            "sigma_slope_xi",
+            "slope_eta_arcsec_per_um",
+            "sigma_slope_eta"
+          ],
+          "properties": {
+            "wavelength_method": {
+              "enum": [
+                "wcs_wave_approximation",
+                "cwave_cband"
+              ]
+            },
+            "n": {
+              "type": "integer",
+              "minimum": 3
+            },
+            "wavelength_min_um": {
+              "type": "number"
+            },
+            "wavelength_max_um": {
+              "type": "number"
+            },
+            "slope_xi_arcsec_per_um": {
+              "type": "number"
+            },
+            "sigma_slope_xi": {
+              "type": "number",
+              "minimum": 0
+            },
+            "slope_eta_arcsec_per_um": {
+              "type": "number"
+            },
+            "sigma_slope_eta": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "sensitivity": {
+          "description": "Same fit on subsets: without OUTLIER-flagged exposures and leaving one visit out.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "variant",
+              "n_used",
+              "pm_ra_cosdec_arcsec_per_yr",
+              "pm_dec_arcsec_per_yr",
+              "delta_pm_ra_cosdec_arcsec_per_yr",
+              "delta_pm_dec_arcsec_per_yr"
+            ],
+            "properties": {
+              "variant": {
+                "type": "string",
+                "minLength": 1
+              },
+              "n_used": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "pm_ra_cosdec_arcsec_per_yr": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "pm_dec_arcsec_per_yr": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "delta_pm_ra_cosdec_arcsec_per_yr": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "delta_pm_dec_arcsec_per_yr": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
           }
         }
       }
     },
-    "photometry": { "type": "null", "description": "First delivery: brightness is out of scope (spec 0010 §0, A2)." },
+    "photometry": {
+      "type": "null",
+      "description": "First delivery: brightness is out of scope (spec 0010 §0, A2)."
+    },
     "issues": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["code", "severity", "detail"],
+        "required": [
+          "code",
+          "severity",
+          "detail"
+        ],
         "properties": {
           "code": {
             "enum": [
-              "insufficient_epochs", "pipeline_quality_unexpected", "bad_pixels_near_target",
-              "outlier_near_target", "low_snr", "centroid_fit_failed", "target_off_footprint",
-              "registration_unverified", "wavelength_dependent_position", "parallax_not_modeled",
-              "uncertainty_inflated", "assumptions_unverified", "synthetic_data", "data_error"
+              "insufficient_epochs",
+              "pipeline_quality_unexpected",
+              "bad_pixels_near_target",
+              "outlier_near_target",
+              "low_snr",
+              "centroid_fit_failed",
+              "target_off_footprint",
+              "registration_unverified",
+              "wavelength_dependent_position",
+              "parallax_not_modeled",
+              "uncertainty_inflated",
+              "assumptions_unverified",
+              "synthetic_data",
+              "data_error",
+              "neighbor_confusion",
+              "registration_checked"
             ]
           },
-          "severity": { "enum": ["info", "warn", "block"] },
-          "detail": { "type": "string", "minLength": 1 },
-          "observation_id": { "type": ["string", "null"] }
+          "severity": {
+            "enum": [
+              "info",
+              "warn",
+              "block"
+            ]
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1
+          },
+          "observation_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       }
     },
     "method": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "version", "parameters", "software"],
+      "required": [
+        "name",
+        "version",
+        "parameters",
+        "software"
+      ],
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "version": { "type": "string", "minLength": 1 },
-        "parameters": { "type": "object" },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parameters": {
+          "type": "object"
+        },
         "software": {
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["name", "version"],
-            "properties": { "name": { "type": "string" }, "version": { "type": "string" } }
+            "required": [
+              "name",
+              "version"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              }
+            }
           }
         }
       }
@@ -206,48 +705,252 @@
     "provenance": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["code_ref", "computed_by", "executed_at"],
+      "required": [
+        "code_ref",
+        "computed_by",
+        "executed_at"
+      ],
       "properties": {
-        "code_ref": { "type": ["string", "null"], "pattern": "^[0-9a-f]{7,40}$" },
-        "computed_by": { "enum": ["offline_precompute", "test_fixture"] },
-        "executed_at": { "$ref": "#/$defs/UtcTimestamp" }
+        "code_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{7,40}$"
+        },
+        "computed_by": {
+          "enum": [
+            "offline_precompute",
+            "test_fixture"
+          ]
+        },
+        "executed_at": {
+          "$ref": "#/$defs/UtcTimestamp"
+        }
+      }
+    },
+    "field_sources": {
+      "description": "Catalog sources around the target used for field-star controls (Sebastián, spec 0034 §1). null when the field controls were not run.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "catalog",
+        "catalog_radius_arcsec",
+        "target_source_id",
+        "selection",
+        "neighbor_radius_arcsec",
+        "neighbors"
+      ],
+      "properties": {
+        "catalog": {
+          "type": "string",
+          "minLength": 1
+        },
+        "catalog_radius_arcsec": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "target_source_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "selection": {
+          "type": "object",
+          "description": "Method parameters used to pick reference stars (not science thresholds)."
+        },
+        "neighbor_radius_arcsec": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "neighbors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source_id",
+              "g_mag",
+              "min_separation_arcsec"
+            ],
+            "properties": {
+              "source_id": {
+                "type": "string"
+              },
+              "g_mag": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "min_separation_arcsec": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        }
       }
     }
   },
   "$defs": {
-    "UtcTimestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$" },
+    "UtcTimestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+    },
     "Threshold": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["value", "source"],
-      "properties": { "value": { "type": "number" }, "source": { "type": "string", "minLength": 1 } }
+      "required": [
+        "value",
+        "source"
+      ],
+      "properties": {
+        "value": {
+          "type": "number"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     },
     "Cov2": {
-      "type": "array", "minItems": 2, "maxItems": 2,
-      "items": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "number" } }
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": {
+          "type": "number"
+        }
+      }
     },
     "Measurement": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "observation_id", "visit_id", "time_mjd_utc", "x_pix", "y_pix", "ra_deg", "dec_deg",
-        "cov_pos_arcsec2", "snr", "fwhm_px", "flags_bitmask", "flag_names", "used", "excluded_reason"
+        "observation_id",
+        "visit_id",
+        "time_mjd_utc",
+        "x_pix",
+        "y_pix",
+        "ra_deg",
+        "dec_deg",
+        "cov_pos_arcsec2",
+        "snr",
+        "fwhm_px",
+        "flags_bitmask",
+        "flag_names",
+        "used",
+        "excluded_reason",
+        "wavelength_um",
+        "n_reference_stars"
       ],
       "properties": {
-        "observation_id": { "type": "string", "minLength": 1 },
-        "visit_id": { "type": "string", "minLength": 1 },
-        "time_mjd_utc": { "type": "number", "description": "MJD-AVG (midpoint), UTC" },
-        "x_pix": { "type": ["number", "null"], "description": "0-based ORIGINAL detector pixel" },
-        "y_pix": { "type": ["number", "null"] },
-        "ra_deg": { "type": ["number", "null"], "minimum": 0, "exclusiveMaximum": 360 },
-        "dec_deg": { "type": ["number", "null"], "minimum": -90, "maximum": 90 },
-        "cov_pos_arcsec2": { "oneOf": [{ "$ref": "#/$defs/Cov2" }, { "type": "null" }], "description": "Statistical + provisional WCS covariance (RA·cosDec, Dec)" },
-        "snr": { "type": ["number", "null"] },
-        "fwhm_px": { "type": ["number", "null"], "minimum": 0 },
-        "flags_bitmask": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
-        "flag_names": { "type": "array", "items": { "type": "string" } },
-        "used": { "type": "boolean" },
-        "excluded_reason": { "type": ["string", "null"] }
+        "observation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "visit_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "time_mjd_utc": {
+          "type": "number",
+          "description": "MJD-AVG (midpoint), UTC"
+        },
+        "x_pix": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "0-based ORIGINAL detector pixel"
+        },
+        "y_pix": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "ra_deg": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "exclusiveMaximum": 360
+        },
+        "dec_deg": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -90,
+          "maximum": 90
+        },
+        "cov_pos_arcsec2": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Cov2"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Statistical + provisional WCS covariance (RA·cosDec, Dec)"
+        },
+        "snr": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "fwhm_px": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "flags_bitmask": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "flag_names": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "used": {
+          "type": "boolean"
+        },
+        "excluded_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "wavelength_um": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Local wavelength at the measured target (WCS-WAVE, selection grade)"
+        },
+        "n_reference_stars": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Field reference stars measured in this exposure"
+        }
       }
     }
   }

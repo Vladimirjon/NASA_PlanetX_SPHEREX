@@ -42,6 +42,7 @@ class MotionFit:
     dof: int
     scaled: bool  # covariance multiplied by χ²/dof > 1
     residual_rms_arcsec: float | None
+    residuals: tuple[tuple[float, float], ...]  # o_i - model_i (arcsec), same order as input
 
 
 def fit_proper_motion(epochs: list[EpochOffset]) -> MotionFit:
@@ -76,10 +77,12 @@ def fit_proper_motion(epochs: list[EpochOffset]) -> MotionFit:
 
     chi2 = 0.0
     sq: list[float] = []
+    residuals: list[tuple[float, float]] = []
     for a, w, o in zip(designs, weights, obs, strict=True):
         r = o - a @ theta
         chi2 += float(r @ w @ r)
         sq.append(float(r @ r))
+        residuals.append((float(r[0]), float(r[1])))
     dof = 2 * len(epochs) - 4
     scaled = dof > 0 and chi2 / dof > 1.0
     if scaled:
@@ -95,4 +98,5 @@ def fit_proper_motion(epochs: list[EpochOffset]) -> MotionFit:
         dof=dof,
         scaled=scaled,
         residual_rms_arcsec=math.sqrt(sum(sq) / len(sq)) if dof > 0 else None,
+        residuals=tuple(residuals),
     )

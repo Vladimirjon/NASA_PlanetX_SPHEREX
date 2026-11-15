@@ -16,7 +16,7 @@
   "reference_motion": {
    "pm_ra_cosdec_mas_per_yr": 4000.0,
    "pm_dec_mas_per_yr": -2500.0,
-   "parallax_mas": 270.0,
+   "parallax_mas": 0.0,
    "source": "synthetic catalog"
   }
  },
@@ -77,6 +77,13 @@
    "detector": 3,
    "collection": "spherex_dr1",
    "access_url": "https://example.invalid/x.fits"
+  },
+  {
+   "observation_id": "synthetic/5/D3",
+   "obs_id": "synthetic_5",
+   "detector": 3,
+   "collection": "spherex_dr1",
+   "access_url": "https://example.invalid/x.fits"
   }
  ],
  "measurements": [
@@ -90,45 +97,49 @@
    "dec_deg": -56.79988901247243,
    "cov_pos_arcsec2": [
     [
-     0.09,
+     0.0904,
      0.0
     ],
     [
      0.0,
-     0.09
+     0.0904
     ]
    ],
-   "snr": 50.0,
+   "snr": 80.0,
    "fwhm_px": 1.2,
    "flags_bitmask": 0,
    "flag_names": [],
    "used": true,
-   "excluded_reason": null
+   "excluded_reason": null,
+   "wavelength_um": 1.65,
+   "n_reference_stars": 2
   },
   {
    "observation_id": "synthetic/1/D3",
    "visit_id": "va",
-   "time_mjd_utc": 60805,
+   "time_mjd_utc": 60806,
    "x_pix": 100.0,
    "y_pix": 100.0,
-   "ra_deg": 330.9997034684672,
-   "dec_deg": -56.79989851889877,
+   "ra_deg": 330.99970902409314,
+   "dec_deg": -56.799900420184045,
    "cov_pos_arcsec2": [
     [
-     0.09,
+     0.0904,
      0.0
     ],
     [
      0.0,
-     0.09
+     0.0904
     ]
    ],
-   "snr": 50.0,
+   "snr": 80.0,
    "fwhm_px": 1.2,
    "flags_bitmask": 0,
    "flag_names": [],
    "used": true,
-   "excluded_reason": null
+   "excluded_reason": null,
+   "wavelength_um": 1.75,
+   "n_reference_stars": 2
   },
   {
    "observation_id": "synthetic/2/D3",
@@ -140,45 +151,49 @@
    "dec_deg": -56.8002692695262,
    "cov_pos_arcsec2": [
     [
-     0.09,
+     0.0904,
      0.0
     ],
     [
      0.0,
-     0.09
+     0.0904
     ]
    ],
-   "snr": 50.0,
+   "snr": 80.0,
    "fwhm_px": 1.2,
    "flags_bitmask": 0,
    "flag_names": [],
    "used": true,
-   "excluded_reason": null
+   "excluded_reason": null,
+   "wavelength_um": 1.8499999999999999,
+   "n_reference_stars": 2
   },
   {
    "observation_id": "synthetic/3/D3",
    "visit_id": "vb",
-   "time_mjd_utc": 61005,
+   "time_mjd_utc": 61006,
    "x_pix": 100.0,
    "y_pix": 100.0,
-   "ra_deg": 331.0008145936486,
-   "dec_deg": -56.80027877595254,
+   "ra_deg": 331.00082014927455,
+   "dec_deg": -56.80028067723781,
    "cov_pos_arcsec2": [
     [
-     0.09,
+     0.0904,
      0.0
     ],
     [
      0.0,
-     0.09
+     0.0904
     ]
    ],
-   "snr": 50.0,
+   "snr": 80.0,
    "fwhm_px": 1.2,
    "flags_bitmask": 0,
    "flag_names": [],
    "used": true,
-   "excluded_reason": null
+   "excluded_reason": null,
+   "wavelength_um": 1.95,
+   "n_reference_stars": 2
   },
   {
    "observation_id": "synthetic/4/D3",
@@ -190,20 +205,49 @@
    "dec_deg": -56.80064952657997,
    "cov_pos_arcsec2": [
     [
-     0.09,
+     0.0904,
      0.0
     ],
     [
      0.0,
-     0.09
+     0.0904
     ]
    ],
-   "snr": 50.0,
+   "snr": 80.0,
    "fwhm_px": 1.2,
    "flags_bitmask": 0,
    "flag_names": [],
    "used": true,
-   "excluded_reason": null
+   "excluded_reason": null,
+   "wavelength_um": 2.05,
+   "n_reference_stars": 2
+  },
+  {
+   "observation_id": "synthetic/5/D3",
+   "visit_id": "vc",
+   "time_mjd_utc": 61206,
+   "x_pix": 100.0,
+   "y_pix": 100.0,
+   "ra_deg": 331.0019312744559,
+   "dec_deg": -56.80066093429158,
+   "cov_pos_arcsec2": [
+    [
+     0.0904,
+     0.0
+    ],
+    [
+     0.0,
+     0.0904
+    ]
+   ],
+   "snr": 80.0,
+   "fwhm_px": 1.2,
+   "flags_bitmask": 0,
+   "flag_names": [],
+   "used": true,
+   "excluded_reason": null,
+   "wavelength_um": 2.15,
+   "n_reference_stars": 2
   }
  ],
  "outcome": "threshold_exceeded_unverified",
@@ -211,74 +255,162 @@
  "astrometry": {
   "model": "linear_fit_known_parallax",
   "n_visits": 3,
-  "time_span_days": 400.0000000000107,
+  "time_span_days": 405.99999999995936,
   "proper_motion": {
-   "pm_ra_cosdec_arcsec_per_yr": 4.138643543768815,
-   "pm_dec_arcsec_per_yr": -2.373660731651652,
+   "pm_ra_cosdec_arcsec_per_yr": 3.9999413284692613,
+   "pm_dec_arcsec_per_yr": -2.5000469367770934,
    "cov_arcsec2_per_yr2": [
     [
-     0.10833421117927132,
+     0.07534984224075533,
      0.0
     ],
     [
      0.0,
-     0.10833421117927132
+     0.07534984224075533
     ]
    ]
   },
   "displacement": {
-   "delta_ra_cosdec_arcsec": 4.532395393586777,
-   "delta_dec_arcsec": -2.599491561014883,
-   "separation_arcsec": 5.224936782353852,
-   "position_angle_deg": 119.83581968761112,
+   "delta_ra_cosdec_arcsec": 4.446204460940062,
+   "delta_dec_arcsec": -2.7789707223310014,
+   "separation_arcsec": 5.243225379864592,
+   "position_angle_deg": 122.00624438991275,
    "cov_arcsec2": [
     [
-     0.1299287196607339,
+     0.09310091844002216,
      0.0
     ],
     [
      0.0,
-     0.1299287196607339
+     0.09310091844002216
     ]
    ]
   },
   "test": {
    "statistic": "chi2",
-   "value": 210.1149341799034,
+   "value": 295.2861566211811,
    "dof": 2,
-   "p_value": 2.366583106810562e-46,
-   "equivalent_sigma_two_sided": 14.294541790182585,
+   "p_value": 7.575752860809529e-65,
+   "equivalent_sigma_two_sided": 17.00472679715152,
    "tested_quantity": "proper_motion"
   },
   "covariance_assumption": "independent_epochs",
-  "fit_residual_rms_arcsec": 0.24282397330914934,
+  "fit_residual_rms_arcsec": 1.3428377903935608e-05,
   "reference_comparison": {
    "source": "synthetic catalog",
    "object_relation": "photocenter_of_unresolved_pair",
-   "delta_pm_ra_cosdec_arcsec_per_yr": 0.13864354376881494,
-   "delta_pm_dec_arcsec_per_yr": 0.1263392683483482,
+   "delta_pm_ra_cosdec_arcsec_per_yr": -5.867153073868536e-05,
+   "delta_pm_dec_arcsec_per_yr": -4.693677709344257e-05,
    "independence_note": "Not independent: SPHEREx WCS is calibrated against Gaia DR3; the catalog parallax is also used to correct the positions. Contrast only."
   },
-  "reference_star_check": null
+  "applied_sigma_wcs_arcsec": [
+   0.3,
+   0.3
+  ],
+  "reference_star_check": {
+   "catalog": "synthetic catalog",
+   "n_reference_stars": 2,
+   "n_exposures": 6,
+   "n_reference_measurements": 12,
+   "bias_xi_arcsec": 0.0,
+   "bias_eta_arcsec": 0.0,
+   "rms_xi_arcsec": 0.05477225575051661,
+   "rms_eta_arcsec": 0.0,
+   "correlation": 0.0,
+   "star_rms_xi_arcsec": 0.05222329678670936,
+   "star_rms_eta_arcsec": 0.0,
+   "provisional_sigma_arcsec_per_axis": 0.3,
+   "n_rejected_matches": 0,
+   "identification_radius_arcsec": 6.15
+  },
+  "wavelength_dependence": {
+   "wavelength_method": "wcs_wave_approximation",
+   "n": 6,
+   "wavelength_min_um": 1.65,
+   "wavelength_max_um": 2.15,
+   "slope_xi_arcsec_per_um": 4.3726387585880695e-11,
+   "sigma_slope_xi": 0.7187290369613771,
+   "slope_eta_arcsec_per_um": -9.160069526816595e-12,
+   "sigma_slope_eta": 0.7187290369613771
+  },
+  "sensitivity": [
+   {
+    "variant": "without_outlier_flag",
+    "n_used": 6,
+    "pm_ra_cosdec_arcsec_per_yr": 3.9999413284692613,
+    "pm_dec_arcsec_per_yr": -2.5000469367770934,
+    "delta_pm_ra_cosdec_arcsec_per_yr": 0.0,
+    "delta_pm_dec_arcsec_per_yr": 0.0
+   },
+   {
+    "variant": "without_visit_va",
+    "n_used": 4,
+    "pm_ra_cosdec_arcsec_per_yr": 3.9999007603768586,
+    "pm_dec_arcsec_per_yr": -2.5000793908677785,
+    "delta_pm_ra_cosdec_arcsec_per_yr": -4.0568092402715195e-05,
+    "delta_pm_dec_arcsec_per_yr": -3.2454090685085646e-05
+   },
+   {
+    "variant": "without_visit_vb",
+    "n_used": 4,
+    "pm_ra_cosdec_arcsec_per_yr": 3.999941328469114,
+    "pm_dec_arcsec_per_yr": -2.50004693677706,
+    "delta_pm_ra_cosdec_arcsec_per_yr": -1.474376176702208e-13,
+    "delta_pm_dec_arcsec_per_yr": 3.3306690738754696e-14
+   },
+   {
+    "variant": "without_visit_vc",
+    "n_used": 4,
+    "pm_ra_cosdec_arcsec_per_yr": 3.9999818965644756,
+    "pm_dec_arcsec_per_yr": -2.5000144826870034,
+    "delta_pm_ra_cosdec_arcsec_per_yr": 4.056809521424398e-05,
+    "delta_pm_dec_arcsec_per_yr": 3.2454090090006105e-05
+   }
+  ]
  },
  "photometry": null,
+ "field_sources": {
+  "catalog": "synthetic catalog",
+  "catalog_radius_arcsec": 240.0,
+  "target_source_id": "target",
+  "selection": {
+   "g_min": 11.0,
+   "g_max": 17.5,
+   "max_ruwe": 1.4,
+   "min_target_sep_arcsec": 30.0,
+   "isolation_arcsec": 12.3,
+   "isolation_delta_g": 3.0,
+   "max_count": 15,
+   "selected_source_ids": [
+    "s1"
+   ]
+  },
+  "neighbor_radius_arcsec": 18.45,
+  "neighbors": []
+ },
  "issues": [
   {
-   "code": "registration_unverified",
-   "severity": "warn",
-   "detail": "0.3 arcsec per axis WCS term not yet checked against field reference stars (A5)",
-   "observation_id": null
-  },
-  {
-   "code": "wavelength_dependent_position",
-   "severity": "warn",
-   "detail": "Ba/Bb photocenter vs wavelength not tested in the first delivery (C6)",
+   "code": "registration_checked",
+   "severity": "info",
+   "detail": "field stars: 2 stars, 6 exposures; per-exposure offset scatter 0.055/0.000 arcsec (RA*cosDec/Dec), bias +0.000/+0.000 arcsec; within the provisional 0.3 arcsec per axis",
    "observation_id": null
   },
   {
    "code": "assumptions_unverified",
    "severity": "warn",
    "detail": "Gaussian errors and covariance not independently verified (A4): no change_measured",
+   "observation_id": null
+  },
+  {
+   "code": "parallax_not_modeled",
+   "severity": "warn",
+   "detail": "no catalog parallax to subtract",
+   "observation_id": null
+  },
+  {
+   "code": "wavelength_dependent_position",
+   "severity": "warn",
+   "detail": "residual slope vs wavelength (1.650-2.150 um, n=6): RA*cosDec +0.000 +/- 0.719, Dec -0.000 +/- 0.719 arcsec/um; acceptability is a science decision (C6)",
    "observation_id": null
   },
   {
@@ -289,11 +421,11 @@
   }
  ],
  "method": {
-  "name": "native-frame-gaussian-centroid+gls-proper-motion",
-  "version": "0.1.0",
+  "name": "native-frame-gaussian-centroid+gls-proper-motion+field-registration",
+  "version": "0.2.0",
   "parameters": {
    "detector": 3,
-   "box_half_px": 6,
+   "box_half_px": 40,
    "centroid_half_window_px": 4,
    "psf_model": "circular Gaussian + constant",
    "parallax": "catalog parallax subtracted before the fit"
@@ -301,15 +433,15 @@
   "software": [
    {
     "name": "astropy",
-    "version": "8.0.2"
+    "version": "pinned in backend/uv.lock"
    },
    {
     "name": "numpy",
-    "version": "2.5.4"
+    "version": "pinned in backend/uv.lock"
    },
    {
     "name": "scipy",
-    "version": "1.18.1"
+    "version": "pinned in backend/uv.lock"
    }
   ]
  },
