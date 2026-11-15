@@ -72,7 +72,7 @@ const DICT = {
     observedTip: 'Observed: the photos show an apparent difference.',
     evaluatedTip: 'Evaluated: the difference persists after quality checks.',
     confirmedTip: 'Confirmed: validated with enough scientific evidence. Software never assigns this on its own.',
-    neverConfirmed: 'Software never assigns “Confirmed” on its own.',
+    neverConfirmed: '',
     provenance: 'Details & provenance',
     provenanceFile: 'File',
     provenanceDate: 'Date (UTC)',
@@ -191,7 +191,7 @@ const DICT = {
     evaluatedTip: 'Evaluado: la diferencia persiste tras los controles de calidad.',
     confirmedTip:
       'Confirmado: validado con evidencia científica suficiente. El software nunca asigna este nivel por sí solo.',
-    neverConfirmed: 'El software nunca asigna “Confirmado” por sí solo.',
+    neverConfirmed: '',
     provenance: 'Detalles y procedencia',
     provenanceFile: 'Archivo',
     provenanceDate: 'Fecha (UTC)',
