@@ -1,4 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { placeTip, type Box } from '../place-tip';
 
 const AVOID_SELECTORS = ['.left-col', '.dock', '.sheet.open', '.cutout-card', '.intro-card'];
@@ -12,6 +13,17 @@ function rectsFromSelectors(selectors: readonly string[]): Box[] {
     if (r.width > 0 && r.height > 0) out.push({ x: r.x, y: r.y, width: r.width, height: r.height });
   }
   return out;
+}
+
+/** Bubbles opened from inside the dock float above it, over the map, so they never cover dock text. */
+function placeAboveDock(anchor: DOMRect, size: { width: number; height: number }): { left: number; top: number } | null {
+  const dock = document.querySelector('.dock')?.getBoundingClientRect();
+  if (!dock || anchor.top < dock.top - 1 || anchor.bottom > dock.bottom + 1) return null;
+  const margin = 8;
+  const top = dock.top - size.height - 10;
+  if (top < margin) return null;
+  const centred = anchor.left + anchor.width / 2 - size.width / 2;
+  return { left: Math.min(window.innerWidth - size.width - margin, Math.max(margin, centred)), top };
 }
 
 type Props = {
@@ -33,6 +45,11 @@ export function Tip({ title, body, aboutLabel, preferSide = 'right' }: Props) {
     const anchor = btnRef.current.getBoundingClientRect();
     const tipEl = tipRef.current;
     const measured = { width: tipEl.offsetWidth || 280, height: tipEl.offsetHeight || 96 };
+    const above = placeAboveDock(btnRef.current.getBoundingClientRect(), measured);
+    if (above) {
+      setPos(above);
+      return;
+    }
     const avoid = rectsFromSelectors(AVOID_SELECTORS);
     const prefer =
       preferSide === 'right' && anchor.top > window.innerHeight * 0.52 ? 'top' : preferSide;
@@ -52,6 +69,11 @@ export function Tip({ title, body, aboutLabel, preferSide = 'right' }: Props) {
       if (!btnRef.current || !tipRef.current) return;
       const anchor = btnRef.current.getBoundingClientRect();
       const measured = { width: tipRef.current.offsetWidth || 280, height: tipRef.current.offsetHeight || 96 };
+      const above = placeAboveDock(anchor, measured);
+      if (above) {
+        setPos(above);
+        return;
+      }
       const avoid = rectsFromSelectors(AVOID_SELECTORS);
       setPos(
         placeTip(
@@ -101,16 +123,19 @@ export function Tip({ title, body, aboutLabel, preferSide = 'right' }: Props) {
       >
         ?
       </button>
-      <div
-        ref={tipRef}
-        id={id}
-        role="tooltip"
-        className={`tipbox glass-opaque${open ? ' on' : ''}`}
-        style={{ left: pos.left, top: pos.top }}
-      >
-        <b>{title}</b>
-        {body}
-      </div>
+      {createPortal(
+        <div
+          ref={tipRef}
+          id={id}
+          role="tooltip"
+          className={`tipbox glass-opaque${open ? ' on' : ''}`}
+          style={{ left: pos.left, top: pos.top }}
+        >
+          <b>{title}</b>
+          {body}
+        </div>,
+        document.body,
+      )}
     </>
   );
 }

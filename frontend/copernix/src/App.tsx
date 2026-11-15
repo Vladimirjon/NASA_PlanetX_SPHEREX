@@ -15,6 +15,8 @@ import { isSearchAbort } from './catalog/api-source';
 import type { CatalogEntry } from './catalog/port';
 import { BandBars } from './components/BandBars';
 import { CutoutCarousel } from './components/CutoutCarousel';
+import { HoverTip } from './components/HoverTip';
+import { classifySeriesError, demoDoesNotCoverPoint, type SeriesErrorKey } from './errors';
 import { IntroGuide } from './components/IntroGuide';
 import { Tip } from './components/Tip';
 import {
@@ -53,24 +55,7 @@ import {
 const ANALYZE_FOV_DEG = 0.5;
 const FOV_ARCMIN = 5;
 const DEFAULT_TARGET = 'wise-0855';
-const PHOTO_HINT_KEY = 'copernix_photo_arrows';
 const GLOBE_FOV_THRESHOLD = 45;
-
-function readPhotoHint(): boolean {
-  try {
-    return localStorage.getItem(PHOTO_HINT_KEY) !== '1';
-  } catch {
-    return true;
-  }
-}
-
-function markPhotoHint(): void {
-  try {
-    localStorage.setItem(PHOTO_HINT_KEY, '1');
-  } catch {
-    /* ignore */
-  }
-}
 
 function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -191,6 +176,7 @@ export function App() {
   const [markerScreen, setMarkerScreen] = useState<{ x: number; y: number } | null>(null);
   const [candidateScreen, setCandidateScreen] = useState<{ x: number; y: number } | null>(null);
   const [offerReturn, setOfferReturn] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
   const [engineStatus, setEngineStatus] = useState(
     initialParse.kind === 'invalid' || nameParse.kind === 'invalid'
       ? t(detectLang(window.location.search), 'urlInvalid')
@@ -214,13 +200,13 @@ export function App() {
   const [featuredScreens, setFeaturedScreens] = useState<
     Record<string, { x: number; y: number } | null>
   >({});
-  const [photoArrowHint, setPhotoArrowHint] = useState(() => readPhotoHint());
   const introFlyAbort = useRef<AbortController | null>(null);
   const isMobile = useIsMobile(820);
 
   const [seriesStatus, setSeriesStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [progress, setProgress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [errorKey, setErrorKey] = useState<SeriesErrorKey>('errGeneric');
   const [loaded, setLoaded] = useState<LoadedSeries | null>(null);
   const [measured, setMeasured] = useState<MotionAnalysis | null>(null);
   const [frameIndex, setFrameIndex] = useState(bootState.t);
@@ -469,6 +455,15 @@ export function App() {
       .load(lookup, ac.signal)
       .then(result => {
         if (ac.signal.aborted) return;
+        if (demoDoesNotCoverPoint(lookup, result)) {
+          // offline, the recorded photos belong to a featured object, not to the spot that was picked
+          setSeriesStatus('error');
+          setErrorKey('errDemoOnly');
+          setError(null);
+          setLoaded(null);
+          setAnnounce(t(lang, 'errDemoOnly'));
+          return;
+        }
         setLoaded({ ...result, demoSlug: result.demoSlug ?? slug ?? undefined });
         setSeriesStatus('ready');
         setPlaying(!prefersReducedMotion() && mode === 'loop');
@@ -495,6 +490,7 @@ export function App() {
               ? err.message
               : t(lang, 'noSeriesFriendly');
         setSeriesStatus('error');
+        setErrorKey(classifySeriesError(err));
         setError(message);
         setAnnounce(message);
       });
@@ -692,8 +688,6 @@ export function App() {
   const bumpFrame = (next: number) => {
     setPlaying(false);
     setFrameIndex(next);
-    markPhotoHint();
-    setPhotoArrowHint(false);
   };
 
   useEffect(() => {
@@ -820,7 +814,9 @@ export function App() {
   }, [measuredSlug]);
   // the result file caps the traffic light (interpretation_ceiling = OBSERVED)
   const rawLevel = series?.comparability.level ?? null;
-  const level = measured && rawLevel === 'EVALUATED' ? 'OBSERVED' : rawLevel;
+  // a spot the visitor picked is not a known object: no traffic-light level, no claim about what changed
+  const isCustom = selection.mode === 'custom';
+  const level = isCustom ? null : measured && rawLevel === 'EVALUATED' ? 'OBSERVED' : rawLevel;
   const motion = series ? describeExpectedMotionI18n(lang, series) : null;
   const demoNotice =
     loaded?.sourceKind === 'demo' ||
@@ -846,13 +842,15 @@ export function App() {
       return kind || desc;
     }
     if (activeTarget) return targetDescription(lang, activeTarget.slug);
-    if (selection.mode === 'custom') return t(lang, 'statusIdle');
+    if (selection.mode === 'custom') return t(lang, 'customDesc');
     return '';
   })();
 
   const measuredLine = measured ? describeMotionAnalysis(lang, measured, titleName || '—') : null;
   const changeLine =
-    seriesStatus === 'ready' && series && measuredLine
+    seriesStatus === 'ready' && series && isCustom
+      ? t(lang, 'customChange')
+      : seriesStatus === 'ready' && series && measuredLine
       ? measuredLine
       : seriesStatus === 'ready' && series
       ? describeChangeLineI18n(lang, series, titleName || '—', {
@@ -863,7 +861,7 @@ export function App() {
         : seriesStatus === 'loading'
           ? (progress ?? t(lang, 'loading'))
           : seriesStatus === 'error'
-            ? (error ?? t(lang, 'noSeriesFriendly'))
+            ? t(lang, errorKey)
             : t(lang, 'statusIdle');
 
   const localizedEngine = localizeEngineStatus(lang, engineStatus);
@@ -945,7 +943,7 @@ export function App() {
   );
 
   const featuredList = (
-    <div className="objects" role="toolbar" aria-label={t(lang, 'targetsLabel')} data-intro="catalog">
+    <div className={`objects${isCustom ? ' objects-compact' : ''}`} role="toolbar" aria-label={t(lang, 'targetsLabel')} data-intro="catalog">
       <p className="objects-label">{t(lang, 'targetsLabel')}</p>
       {featured.map(entry => (
         <button
@@ -988,7 +986,7 @@ export function App() {
       <div className="explain-text">
         <p>{describeWavelengthI18n(lang, series)}</p>
         <p>{describeTimeSpanI18n(lang, series.frames)}</p>
-        {motion ? <p>{motion}</p> : null}
+        {motion && !isCustom ? <p>{motion}</p> : null}
         {series.frames.length < 2 ? <p>{t(lang, 'noSeriesFriendly')}</p> : null}
         {measured ? (
           <>
@@ -1043,8 +1041,8 @@ export function App() {
     </div>
   ) : seriesStatus === 'error' ? (
     <div role="alert" className="explain-error">
-      <p className="explain-copy">{error}</p>
-      <p className="explain-copy mono">{t(lang, 'demoOffline')}</p>
+      <p className="explain-copy">{t(lang, errorKey)}</p>
+      {error ? <p className="explain-copy mono">{error}</p> : null}
       <button
         type="button"
         className="go"
@@ -1112,22 +1110,30 @@ export function App() {
       ).map(([code, labelKey, tipKey]) => {
         const on = code === 'CONFIRMED' ? false : level === code;
         return (
-          <span
-            key={code}
-            className={`semaforo-item${on ? ' on' : ''}`}
-            data-on={on}
-            title={t(lang, tipKey)}
-            tabIndex={0}
-          >
+          <HoverTip key={code} className={`semaforo-item${on ? ' on' : ''}`} dataOn={on} text={t(lang, tipKey)}>
             <i className="semaforo-dot" aria-hidden="true" />
             <span>{t(lang, labelKey)}</span>
-            <span className="semaforo-tip" role="tooltip">
-              {t(lang, tipKey)}
-            </span>
-          </span>
+          </HoverTip>
         );
       })}
     </div>
+  );
+
+  const changeExtras = (
+    <>
+      {isCustom && seriesStatus === 'ready' && series ? <p className="change-help">{t(lang, 'customHelp')}</p> : null}
+      {seriesStatus === 'error' ? (
+        <button
+          type="button"
+          className="text-link"
+          onClick={() => {
+            if (lastLookup) loadSeries(lastLookup, selection.slug);
+          }}
+        >
+          {t(lang, 'retry')}
+        </button>
+      ) : null}
+    </>
   );
 
   const columnBody = (
@@ -1144,9 +1150,10 @@ export function App() {
       {titleDesc ? <p className="hero-lead">{titleDesc}</p> : null}
       {featuredList}
       {catalogSearch}
-      <div className="change-block">
+      <div className="change-block" data-intro="change">
         <p className="change-title">{t(lang, 'whatChanged')}</p>
         <p className="change-line">{changeLine}</p>
+        {changeExtras}
         {semaforoInline}
         <button
           type="button"
@@ -1162,7 +1169,7 @@ export function App() {
   );
 
   return (
-    <div className={`viewer${mapOff || !engineOk ? ' map-off' : ''}${isMobile ? ' is-mobile' : ''}`}>
+    <div className={`viewer${mapOff || !engineOk ? ' map-off' : ''}${isMobile ? ' is-mobile' : ''}${introOpen && !introFlying ? ' tour-open' : ''}`}>
       <header className="chrome" role="banner" onPointerDown={stopUiBubble} onClick={stopUiBubble}>
         <a className="brand" href="/" aria-label={t(lang, 'brand')}>
           <img
@@ -1354,7 +1361,7 @@ export function App() {
       {offerReturn && returnName ? (
         <button
           type="button"
-          className="text-link return-fab"
+          className={`text-link return-fab${isMobile ? '' : ' return-pill'}`}
           data-testid="return-to-target"
           onPointerDown={stopUiBubble}
           onClick={e => {
@@ -1425,6 +1432,7 @@ export function App() {
             <div className="change-block">
               <p className="change-title">{t(lang, 'whatChanged')}</p>
               <p className="change-line">{changeLine}</p>
+              {changeExtras}
               {semaforoInline}
               <button
                 type="button"
@@ -1509,7 +1517,7 @@ export function App() {
         </div>
       ) : null}
 
-      <section className="dock glass-panel" aria-label="Timeline" onPointerDown={stopUiBubble} onClick={stopUiBubble}>
+      <section className={`dock glass-panel${optionsOpen ? ' options-open' : ''}`} data-intro="dock" aria-label="Timeline" onPointerDown={stopUiBubble} onClick={stopUiBubble}>
         {showBands ? (
           <div className="dock-bands">
             <BandBars
@@ -1563,11 +1571,6 @@ export function App() {
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
           </button>
-          {photoArrowHint && frameCount >= 2 ? (
-            <span className="photo-key-hint mono" aria-hidden="true">
-              {t(lang, 'photoArrowHint')}
-            </span>
-          ) : null}
           {photoLabel ? <span className="photo-index mono">{photoLabel}</span> : null}
           <div className="timeline" role="list" ref={timelineRef}>
             <div className="timeline-track" />
@@ -1609,7 +1612,22 @@ export function App() {
               </>
             ) : null}
           </div>
-          <div className="dock-break" aria-hidden="true" />
+          <button
+            type="button"
+            className="dock-outline options-toggle"
+            aria-expanded={optionsOpen}
+            aria-controls="dock-options"
+            onClick={() => {
+              setOptionsOpen(o => !o);
+            }}
+          >
+            {t(lang, 'viewOptions')}
+            <svg className="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M6 15l6-6 6 6" />
+            </svg>
+          </button>
+        </div>
+        <div id="dock-options" className="dock-options" hidden={!optionsOpen}>
           <div className="seg-control" role="group" aria-label="View mode">
             {(
               [
@@ -1646,37 +1664,10 @@ export function App() {
             </span>
             {t(lang, 'lightType')}
           </button>
-          <details className="map-menu">
-            <summary aria-label={t(lang, 'mapMenuLabel')}>{t(lang, 'advanced')}</summary>
-            <div className="menu-panel" role="group">
-              <p className="menu-hint">{t(lang, 'advancedHint')}</p>
-              <span className="menu-label">{t(lang, 'projection')}</span>
-              {(
-                [
-                  ['SIN', 'projSin'],
-                  ['TAN', 'projTan'],
-                  ['AIT', 'projAit'],
-                ] as const
-              ).map(([p, key]) => (
-                <button
-                  key={p}
-                  type="button"
-                  aria-pressed={proj === p}
-                  onClick={() => {
-                    setProj(p);
-                    engineRef.current?.setProjection(p);
-                    mapRef.current?.setProjection(p);
-                  }}
-                >
-                  {t(lang, key)}
-                </button>
-              ))}
-            </div>
-          </details>
+          <p className="mode-help" aria-live="polite" data-testid="mode-help">
+            {t(lang, modeHelpKey(mode))}
+          </p>
         </div>
-        <p className="mode-help" aria-live="polite" data-testid="mode-help">
-          {t(lang, modeHelpKey(mode))}
-        </p>
       </section>
 
       <IntroGuide

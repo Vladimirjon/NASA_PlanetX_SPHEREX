@@ -56,7 +56,7 @@ async function dismissIntro(page) {
 const page = await newPage({ width: 1280, height: 800 });
 await page.addInitScript(() => {
   try {
-    localStorage.removeItem('copernix_intro');
+    localStorage.removeItem('copernix_tour_off');
   } catch {
     /* ignore */
   }
@@ -129,7 +129,7 @@ await page.screenshot({ path: resolve(outDir, 'revision4-en-desktop.png') });
 const mobile = await newPage({ width: 390, height: 844 });
 await mobile.addInitScript(() => {
   try {
-    localStorage.setItem('copernix_intro', '1');
+    localStorage.setItem('copernix_tour_off', '1');
   } catch {
     /* ignore */
   }

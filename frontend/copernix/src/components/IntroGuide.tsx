@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type CSSProperties } from 'react';
 import { markIntroSeen } from '../intro';
 import { t, type Lang } from '../i18n';
 
@@ -12,13 +12,17 @@ type Props = {
 
 type Step = {
   readonly anchor: string;
-  readonly bodyKey: 'introStep1' | 'introStep2' | 'introStep3';
+  readonly bodyKey: 'introStep1' | 'introStep2' | 'introStep3' | 'introStep4' | 'introStep5';
+  /** Where the card sits next to the highlighted area on wide screens. */
+  readonly side: 'inside' | 'right' | 'left' | 'above';
 };
 
 const STEPS: readonly Step[] = [
-  { anchor: '[data-intro="map"]', bodyKey: 'introStep1' },
-  { anchor: '[data-intro="catalog"]', bodyKey: 'introStep2' },
-  { anchor: '[data-intro="cutout"]', bodyKey: 'introStep3' },
+  { anchor: '[data-intro="map"]', bodyKey: 'introStep1', side: 'inside' },
+  { anchor: '[data-intro="catalog"]', bodyKey: 'introStep2', side: 'right' },
+  { anchor: '[data-intro="change"]', bodyKey: 'introStep3', side: 'right' },
+  { anchor: '[data-intro="dock"]', bodyKey: 'introStep4', side: 'above' },
+  { anchor: '[data-intro="cutout"]', bodyKey: 'introStep5', side: 'left' },
 ];
 
 function ringRect(sel: string): DOMRect | null {
@@ -30,6 +34,13 @@ function ringRect(sel: string): DOMRect | null {
 export function IntroGuide({ lang, open, onClose, allowShow = true }: Props) {
   const titleId = useId();
   const [step, setStep] = useState(0);
+  const [never, setNever] = useState(false);
+  const neverRef = useRef(false);
+  neverRef.current = never;
+  const finish = useCallback(() => {
+    if (neverRef.current) markIntroSeen();
+    onClose();
+  }, [onClose]);
   const [rect, setRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
@@ -54,15 +65,14 @@ export function IntroGuide({ lang, open, onClose, allowShow = true }: Props) {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
-        markIntroSeen();
-        onClose();
+        finish();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('keydown', onKey);
     };
-  }, [open, onClose]);
+  }, [open, finish]);
 
   if (!open || !allowShow) return null;
 
@@ -72,48 +82,34 @@ export function IntroGuide({ lang, open, onClose, allowShow = true }: Props) {
   const cardStyle: CSSProperties = (() => {
     const pad = 16;
     const narrow = window.innerWidth <= 820;
-    const cardW = narrow ? Math.min(window.innerWidth - 32, 480) : Math.min(280, window.innerWidth - 24);
+    const cardW = narrow ? Math.min(window.innerWidth - 32 - 56, 460) : Math.min(300, window.innerWidth - 24);
+    const cardH = 190;
+    const place = STEPS[step]?.side ?? 'inside';
     if (!rect) return { left: pad, top: narrow ? 72 : 120, width: cardW };
     if (narrow) {
-      const dockEl = document.querySelector('.dock');
-      const dockTop = dockEl?.getBoundingClientRect().top ?? window.innerHeight;
+      const dockTop = document.querySelector('.dock')?.getBoundingClientRect().top ?? window.innerHeight;
       const topUnderTitle = 96;
-      const narrowW =
-        step === 0
-          ? Math.min(window.innerWidth <= 400 ? 172 : 220, window.innerWidth - (window.innerWidth <= 400 ? 148 : 132))
-          : Math.min(window.innerWidth - 32, cardW);
-      if (step === 2) {
-        const cutoutTop = rect.top;
-        const maxTop = Math.min(cutoutTop, dockTop - 180);
-        return { left: pad, top: Math.max(topUnderTitle, maxTop), width: narrowW };
+      if (place === 'above') return { left: pad, bottom: window.innerHeight - dockTop + 12, width: cardW };
+      if (place === 'left') {
+        return { left: pad, top: Math.max(topUnderTitle, Math.min(rect.top, dockTop - cardH - 12)), width: cardW };
       }
-      return {
-        left: pad,
-        top: topUnderTitle,
-        width: narrowW,
-        maxHeight: step === 0 ? 124 : undefined,
-        overflow: step === 0 ? 'auto' : undefined,
-      };
+      return { left: pad, top: topUnderTitle, width: cardW };
     }
-    switch (step) {
-      case 0:
-        return {
-          left: Math.min(window.innerWidth - cardW - pad, Math.max(pad, rect.left + rect.width / 2 - cardW / 2)),
-          top: Math.max(80, rect.top + 20),
-          width: cardW,
-        };
-      case 1:
-        return {
-          left: Math.min(window.innerWidth - cardW - pad, rect.right + 14),
-          top: Math.max(pad, Math.min(rect.top, window.innerHeight - 200)),
-          width: cardW,
-        };
+    const clampTop = (y: number) => Math.max(pad, Math.min(y, window.innerHeight - cardH - pad));
+    const clampLeft = (x: number) => Math.max(pad, Math.min(x, window.innerWidth - cardW - pad));
+    const dockTop = document.querySelector('.dock')?.getBoundingClientRect().top ?? window.innerHeight;
+    const aboveDock = (left: number): CSSProperties => ({ left: clampLeft(left), bottom: window.innerHeight - dockTop + 12, width: cardW });
+    switch (place) {
+      case 'inside':
+        return { left: clampLeft(rect.left + rect.width / 2 - cardW / 2), top: Math.max(80, rect.top + 20), width: cardW };
+      case 'right':
+        if (rect.top + cardH > dockTop - 10) return aboveDock(rect.right + 14);
+        return { left: clampLeft(rect.right + 14), top: clampTop(rect.top), width: cardW };
+      case 'above':
+        return { left: clampLeft(rect.left + rect.width / 2 - cardW / 2), bottom: window.innerHeight - rect.top + 14, width: cardW };
       default:
-        return {
-          left: Math.max(pad, rect.left - cardW - 14),
-          top: Math.max(pad, Math.min(rect.top, window.innerHeight - 200)),
-          width: cardW,
-        };
+        if (rect.top + cardH > dockTop - 10) return aboveDock(rect.left - cardW - 14);
+        return { left: clampLeft(rect.left - cardW - 14), top: clampTop(rect.top), width: cardW };
     }
   })();
 
@@ -139,10 +135,7 @@ export function IntroGuide({ lang, open, onClose, allowShow = true }: Props) {
           <button
             type="button"
             className="text-link"
-            onClick={() => {
-              markIntroSeen();
-              onClose();
-            }}
+            onClick={finish}
           >
             {t(lang, 'introSkip')}
           </button>
@@ -150,10 +143,7 @@ export function IntroGuide({ lang, open, onClose, allowShow = true }: Props) {
             <button
               type="button"
               className="go"
-              onClick={() => {
-                markIntroSeen();
-                onClose();
-              }}
+              onClick={finish}
             >
               {t(lang, 'introDone')}
             </button>
@@ -169,6 +159,16 @@ export function IntroGuide({ lang, open, onClose, allowShow = true }: Props) {
             </button>
           )}
         </div>
+        <label className="intro-never">
+          <input
+            type="checkbox"
+            checked={never}
+            onChange={e => {
+              setNever(e.target.checked);
+            }}
+          />
+          {t(lang, 'introNever')}
+        </label>
         <p className="intro-step mono" aria-hidden="true">
           {String(step + 1)} / {String(STEPS.length)}
         </p>
