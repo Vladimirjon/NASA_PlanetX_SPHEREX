@@ -32,6 +32,8 @@ Condiciones de Sebastián (revisión del PR #8, 14-nov, noche), aceptadas tal cu
 
 **Fuera de la primera entrega:** brillo, las otras cuatro regiones, la API HTTP (`AnalysisResult` no está en `contracts/openapi.yaml` v0.3) y cualquier nivel por encima de "observado".
 
+**Contrato implementado (primera entrega):** `contracts/analysis-result.schema.json` (borrador 0.1) fija `kind = astrometric_shift`, `photometry = null` e `interpretation_ceiling = OBSERVED`, y agrega el resultado `threshold_exceeded_unverified` para A4.
+
 **Cómo llega a la app:** un JSON precalculado offline, validado contra `contracts/analysis-result.schema.json`, como recurso estático de la demo en `frontend/public/demo/` (aprobado por Dax, Daniel y Johann el 14-nov). Así no cambia la API.
 
 ## 1. Objetivo funcional
@@ -103,7 +105,8 @@ AnalysisResult:
     status: comparable | comparable_with_warnings | not_comparable
     checks:                      # uno por regla de la sección 4
       - {check_id, status: pass | warn | fail | not_evaluated, observed_value, criterion, source}
-  outcome: change_measured | change_below_criterion | no_usable_detection | not_evaluable | data_error
+  outcome: change_measured | threshold_exceeded_unverified | change_below_criterion | no_usable_detection | not_evaluable | data_error
+  # threshold_exceeded_unverified: Q ≥ umbral pero sin verificar los supuestos A4 (§0): NO es change_measured
   criteria_ref: {source, version}  # p. ej. {"Sebastián, mensaje 14-nov-2026", "provisional"}; luego su ficha
   measurements:                  # una fila por entrada, usada o descartada
     - observation_id: string
@@ -237,13 +240,13 @@ AnalysisResult:
 
 | # | Condición | Cómo se cumple | Estado |
 | --- | --- | --- | --- |
-| C1 | Recalcular aplicando FLAGS (R7/R8) | Excluir las exposiciones con `SUR_ERROR`/`HALO` cerca del objetivo (anexo B.2 tiene dos) | Pendiente |
-| C2 | Documentar archivos y fechas exactos | Lista de `product_id`, URL, versión y `MJD-AVG` de cada recorte en el manifiesto (`contracts/package-manifest.schema.json`) | Pendiente |
-| C3 | Comprobar el registro con estrellas de referencia | Estrellas Gaia del recorte, no saturadas y aisladas: RMS de sus residuos por imagen | Pendiente |
-| C4 | Propagar paralaje | Gaia DR3 da paralaje 270,658 ± 0,690 mas (D12 §7). La posición esperada se propaga con movimiento propio + paralaje (`domain/motion.py`); D12 estima ~0,2″ de efecto entre pasadas | Pendiente (método disponible) |
-| C5 | Revisar sesgo del centroide | PSF sub-muestreada (FWHM ≈ 1,2 px): pruebas sintéticas con fase de píxel variable (plan 0011) o ajuste con ePSF | Pendiente |
-| C6 | **Ba/Bb no resueltas** | SPHEREx no separa las dos enanas: a distinta λ cambia el peso de cada una y el centro de luz puede moverse. Probar si los residuos de posición dependen de λ (`residuals_vs_wavelength`) y, si hace falta, usar solo λ parecidas | Pendiente |
-| C7 | Referencia externa adecuada | Gaia DR3 6412596012146801152 (época J2016,0): μα* = +3981,977 ± 0,602, μδ = −2466,832 ± 0,626 mas/año, paralaje 270,658 ± 0,690 mas (D12 §7). Es el **fotocentro** de Ba+Bb `[VERIFICAR]` y no es del todo independiente (el WCS de SPHEREx usa Gaia). Falta una solución publicada que separe Ba/Bb y su órbita | Parcial |
+| C1 | Recalcular aplicando FLAGS (R7/R8) | Excluir las exposiciones con `SUR_ERROR`/`HALO` cerca del objetivo (anexo B.2 tiene dos) | **Hecho** (14-nov): 19 de 99 exposiciones excluidas por `COMPARE_MASK`; el movimiento se recalculó |
+| C2 | Documentar archivos y fechas exactos | Lista de `product_id`, URL, versión y `MJD-AVG` de cada recorte en el manifiesto (`contracts/package-manifest.schema.json`) | **Hecho**: `inputs[]` y `measurements[]` del JSON (URL, `obs_id`, `MJD-AVG`) y `code_ref` |
+| C3 | Comprobar el registro con estrellas de referencia | Estrellas Gaia del recorte, no saturadas y aisladas: RMS de sus residuos por imagen | **Hecho**: 15 estrellas Gaia, 76 exposiciones; dispersión 0,16″/0,21″ por eje (< 0,3″). Se rechazaron 102 ajustes sobre otra fuente (radio de identificación 1 px). Aceptabilidad: Sebastián |
+| C4 | Propagar paralaje | Gaia DR3 da paralaje 270,658 ± 0,690 mas (D12 §7). La posición esperada se propaga con movimiento propio + paralaje (`domain/motion.py`); D12 estima ~0,2″ de efecto entre pasadas | **Hecho**: paralaje de Gaia restado antes del ajuste |
+| C5 | Revisar sesgo del centroide | PSF sub-muestreada (FWHM ≈ 1,2 px): pruebas sintéticas con fase de píxel variable (plan 0011) o ajuste con ePSF | Parcial: pruebas sintéticas de recuperación (T1–T3) y de error; falta la recuperación inyectada en fondos reales (0034 §2) |
+| C6 | **Ba/Bb no resueltas** | SPHEREx no separa las dos enanas: a distinta λ cambia el peso de cada una y el centro de luz puede moverse. Probar si los residuos de posición dependen de λ (`residuals_vs_wavelength`) y, si hace falta, usar solo λ parecidas | **Medido**: pendiente −0,09 ± 0,16 y −0,00 ± 0,16 ″/µm en 1,64–2,40 µm (compatible con 0). Aceptabilidad: Sebastián |
+| C7 | Referencia externa adecuada | Gaia DR3 6412596012146801152 (época J2016,0): μα* = +3981,977 ± 0,602, μδ = −2466,832 ± 0,626 mas/año, paralaje 270,658 ± 0,690 mas (D12 §7). Es el **fotocentro** de Ba+Bb `[VERIFICAR]` y no es del todo independiente (el WCS de SPHEREx usa Gaia). Falta una solución publicada que separe Ba/Bb y su órbita | Parcial: contraste con Gaia DR3 (Δμ = −0,075 / −0,009 ″/año); falta una solución publicada de Ba/Bb |
 
 ## 5. Casos de prueba
 

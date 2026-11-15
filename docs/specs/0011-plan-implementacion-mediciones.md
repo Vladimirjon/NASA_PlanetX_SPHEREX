@@ -6,6 +6,14 @@
 - Método: TDD (`AGENTS.md` §6): primero la prueba en rojo, después el código mínimo, después limpiar. Tareas de 2–15 min.
 - Revisión 2 (14-nov, noche): reorganizado sobre el backend real (`backend/src/skyshift`, PR #6) y corregido según la revisión de Johann y el 2.º mensaje de Sebastián.
 - Revisión 3 (14-nov, 19:30): **primera entrega = solo movimiento de ε Indi B como candidato** (ficha 0010 §0, condiciones A1–A6 de Sebastián). La prueba χ² y la diferencia con covarianza se **reutilizan** de `science/validation.py` (Sebastián), no se reimplementan. Dax aprobó la integración en el backend y las dependencias; Dax, Daniel y Johann aprobaron entregar el resultado como JSON estático en `frontend/public/demo/`.
+- **Implementación de la primera entrega (14-nov, 19:50, rama `feat/measurement-motion`)** y desviaciones respecto del plan:
+  - Tarea 5 (recorte → píxel original) **no hace falta**: `FrameReader` ya lee recuadros en píxeles originales del detector.
+  - Tarea 1: en vez de comparar pydantic con el esquema, el serializador (`api/analysis_json.py`) se valida **contra el esquema escrito a mano** con `jsonschema` en los tests y en `mise run check-contracts`. Mismo objetivo (el código obedece al contrato), con una dependencia menos.
+  - Tarea 0: solo se agregó `scipy` (ya venía en el lockfile vía `reproject`); `photutils` queda para la 2.ª entrega (A3, ePSF). `jsonschema` se agregó solo como dependencia de desarrollo.
+  - Tarea 9: `astrometric_p_value` y `compare_significance` de Sebastián se movieron **sin cambios** a `backend/src/skyshift/domain/significance.py`. Cuando el PR #9 entre, `science/validation.py` debe importarlas desde ahí.
+  - Tareas 9b y 9c **hechas** (14-nov, 20:40) a pedido de Sebastián (0034): registro con estrellas Gaia en el mismo recuadro de 81×81 px por exposición (puerto `ports/reference_stars.py`, adaptador `adapters/irsa_gaia.py`), vecinas a < 3 px, pendiente de los residuos contra λ y sensibilidad (sin `OUTLIER`, sin una pasada). Hallazgo: sin un radio de identificación, 2 de 15 estrellas se ajustaban sobre otra fuente; se agregó el radio de 1 px como parámetro del método.
+  - Evidencia para el checklist de Sebastián en `docs/reviews/measurement/epsilon-indi-b-checklist-evidence.json` (formato de 2 observaciones de `science/checklists.py`, par `2025W24_1A_0245_4` / `2026W40_1A_0070_2`). Su `build_checklist` la acepta y devuelve `pending`.
+  - Con p redondeada a 0 (Q > ~1490), la decisión compara Q con el umbral calculado (regla equivalente).
 
 ## 1. Arquitectura: dentro del backend hexagonal existente
 
