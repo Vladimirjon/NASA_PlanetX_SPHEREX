@@ -55,8 +55,5 @@ export function describeExpectedMotion(series: Series): string | null {
   return `Expected motion ≈ ${px.toFixed(1)} px (${arcsec.toFixed(1)}″); SPHEREx pixel = ${series.grid.pixel_scale_arcsec.toFixed(2)}″`;
 }
 
-export const BLACK_CORE_NOTE =
-  'very bright star: the detector saturated, pixels hidden on purpose';
-
 export const DIAGONAL_MASK_NOTE =
   'colour drifts beyond tolerance there, hidden on purpose';

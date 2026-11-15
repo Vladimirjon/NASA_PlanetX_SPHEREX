@@ -3,7 +3,6 @@ import { CanvasSeriesRenderer, type ViewMode } from '../../series/adapters/canva
 import { blinkIntervalMs, clampBlinkHz, nextBlinkIndex, prevBlinkIndex } from '../../series/core/blink';
 import { COLOUR_LEGEND } from '../../series/core/colour';
 import {
-  BLACK_CORE_NOTE,
   DIAGONAL_MASK_NOTE,
   describeExpectedMotion,
   describeTimeSpan,
@@ -11,6 +10,7 @@ import {
   formatVisitLabel,
   motionProvenanceLabel,
 } from '../../series/core/explain';
+import { QUIET_LEGEND } from '../../series/core/hidden';
 import { seriesStretchLimits } from '../../series/core/stretch';
 import type { LoadedSeries } from '../../series/ports/series-source';
 import { GuidedPairEvidence, GuidedPairSummary } from './guided-pair';
@@ -288,8 +288,8 @@ export function TimePanel(props: Props) {
                 {series.frames.length < 2 ? (
                   <p className="muted">Only one visit — not enough for a temporal comparison yet.</p>
                 ) : null}
-                <p className="muted">Black cores: {BLACK_CORE_NOTE}.</p>
-                <p className="muted">Blank edges: {DIAGONAL_MASK_NOTE}.</p>
+                <p className="muted">{QUIET_LEGEND}</p>
+                <p className="muted">Dark edges: {DIAGONAL_MASK_NOTE}.</p>
                 {mode === 'colour' ? <p className="muted">{COLOUR_LEGEND}</p> : null}
                 <p className="muted">Ring: {motionProvenanceLabel(targetSlug ?? loaded.demoSlug)}</p>
                 {level ? (

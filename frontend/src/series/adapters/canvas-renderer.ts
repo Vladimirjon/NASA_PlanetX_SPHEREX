@@ -1,5 +1,16 @@
 import { colourComposite } from '../core/colour';
 import { differenceFrame } from '../core/difference';
+import {
+  countHidden,
+  flipMaskRows,
+  HIDDEN_FILL_RGB,
+  hiddenEdges,
+  hiddenLayers,
+  quietFillFor,
+  SATURATED_FILL_RGB,
+  type HiddenLayers,
+  type HiddenStyle,
+} from '../core/hidden';
 import { differenceAbsLimit, stretchDifference, stretchFrame, type StretchLimits } from '../core/stretch';
 import { fitsToDisplay, worldToPixel, type TanGrid } from '../core/tan';
 
@@ -15,7 +26,33 @@ export type RenderInput = {
   readonly grid: TanGrid;
   readonly predicted?: { readonly ra: number; readonly dec: number } | null;
   readonly zoom?: number;
+  /** quiet (default): saturated centres white, other hidden pixels dark. expert: every hidden pixel hatched. */
+  readonly hiddenStyle?: HiddenStyle;
 };
+
+/** Stripe and outline over hidden pixels (see core/hidden.ts). Light enough to read on black sky and on the grey difference midpoint. */
+const HIDDEN_STRIPE = 'rgba(214, 219, 228, 0.55)';
+const HIDDEN_OUTLINE = 'rgba(214, 219, 228, 0.9)';
+const STRIPE_STEP_PX = 5;
+/** Thin dark rim that keeps a white saturated centre readable as "not measured" inside a bright halo. */
+const SATURATED_OUTLINE = 'rgba(10, 14, 22, 0.6)';
+
+function fill(rgba: Uint8ClampedArray, o: number, rgb: readonly [number, number, number]): void {
+  rgba[o] = rgb[0];
+  rgba[o + 1] = rgb[1];
+  rgba[o + 2] = rgb[2];
+  rgba[o + 3] = 255;
+}
+
+/** Hidden pixels never show data: they get a fill that says what they are. */
+function paintHidden(rgba: Uint8ClampedArray, layers: HiddenLayers, style: HiddenStyle, mode: ViewMode): void {
+  const quiet = quietFillFor(mode);
+  for (let i = 0; i < layers.hidden.length; i += 1) {
+    if (layers.hidden[i] !== 1) continue;
+    const rgb = style === 'expert' ? HIDDEN_FILL_RGB : layers.bright[i] === 1 ? SATURATED_FILL_RGB : quiet;
+    fill(rgba, i * 4, rgb);
+  }
+}
 
 function grayToRgba(norm: Float32Array): Uint8ClampedArray {
   const rgba = new Uint8ClampedArray(norm.length * 4);
@@ -23,10 +60,7 @@ function grayToRgba(norm: Float32Array): Uint8ClampedArray {
     const v = norm[i];
     const o = i * 4;
     if (!Number.isFinite(v)) {
-      rgba[o] = 0;
-      rgba[o + 1] = 0;
-      rgba[o + 2] = 0;
-      rgba[o + 3] = 255;
+      fill(rgba, o, HIDDEN_FILL_RGB);
       continue;
     }
     const g = Math.round(v * 255);
@@ -44,10 +78,7 @@ function divergingToRgba(normSigned: Float32Array): Uint8ClampedArray {
     const v = normSigned[i];
     const o = i * 4;
     if (!Number.isFinite(v)) {
-      rgba[o] = 0;
-      rgba[o + 1] = 0;
-      rgba[o + 2] = 0;
-      rgba[o + 3] = 255;
+      fill(rgba, o, HIDDEN_FILL_RGB);
       continue;
     }
     // Blue (negative) ↔ gray (0) ↔ orange (positive) — not jet
@@ -108,6 +139,10 @@ export class CanvasSeriesRenderer {
       rgba = grayToRgba(stretchFrame(frame, limits));
     }
 
+    const style: HiddenStyle = input.hiddenStyle ?? 'quiet';
+    const layers = hiddenLayers(mode, frames, frameIndex, limits, width, height);
+    paintHidden(rgba, layers, style, mode);
+
     const flipped = flipRgbaRows(rgba, height, width);
     const pixels = new Uint8ClampedArray(flipped);
     const image = new ImageData(pixels, width, height);
@@ -123,6 +158,13 @@ export class CanvasSeriesRenderer {
     this.ctx.imageSmoothingEnabled = false;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.drawImage(tmp, 0, 0, this.canvas.width, this.canvas.height);
+    if (style === 'expert') {
+      const hidden = flipMaskRows(layers.hidden, height, width);
+      this.drawHatch(hidden, width, height, zoom);
+      this.drawOutline(hidden, width, height, zoom, HIDDEN_OUTLINE);
+    } else {
+      this.drawOutline(flipMaskRows(layers.bright, height, width), width, height, zoom, SATURATED_OUTLINE);
+    }
 
     if (input.predicted) {
       const fits = worldToPixel(input.predicted.ra, input.predicted.dec, input.grid);
@@ -136,5 +178,44 @@ export class CanvasSeriesRenderer {
       this.ctx.lineWidth = 2;
       this.ctx.stroke();
     }
+  }
+
+  /** Diagonal stripes clipped to the masked cells. `mask` is in display row order. */
+  private drawHatch(mask: Uint8Array, width: number, height: number, zoom: number): void {
+    if (countHidden(mask) === 0) return;
+    const ctx = this.ctx;
+    const w = width * zoom;
+    const h = height * zoom;
+    ctx.save();
+    ctx.beginPath();
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        if (mask[y * width + x] === 1) ctx.rect(x * zoom, y * zoom, zoom, zoom);
+      }
+    }
+    ctx.clip();
+    ctx.beginPath();
+    for (let k = -h; k < w; k += STRIPE_STEP_PX) {
+      ctx.moveTo(k, h);
+      ctx.lineTo(k + h, 0);
+    }
+    ctx.strokeStyle = HIDDEN_STRIPE;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  /** Outline of the masked cells. `mask` is in display row order. */
+  private drawOutline(mask: Uint8Array, width: number, height: number, zoom: number, colour: string): void {
+    if (countHidden(mask) === 0) return;
+    const ctx = this.ctx;
+    ctx.beginPath();
+    for (const e of hiddenEdges(mask, width, height)) {
+      ctx.moveTo(e.x0 * zoom, e.y0 * zoom);
+      ctx.lineTo(e.x1 * zoom, e.y1 * zoom);
+    }
+    ctx.strokeStyle = colour;
+    ctx.lineWidth = 1;
+    ctx.stroke();
   }
 }

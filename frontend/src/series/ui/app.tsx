@@ -5,7 +5,6 @@ import { ApiSeriesSource, FallbackSeriesSource } from '../adapters/api-source';
 import { BLINK_HZ_DEFAULT, blinkIntervalMs, clampBlinkHz, nextBlinkIndex, prevBlinkIndex } from '../core/blink';
 import { COLOUR_LEGEND } from '../core/colour';
 import {
-  BLACK_CORE_NOTE,
   DIAGONAL_MASK_NOTE,
   describeExpectedMotion,
   describeTimeSpan,
@@ -13,6 +12,7 @@ import {
   formatVisitLabel,
   motionProvenanceLabel,
 } from '../core/explain';
+import { QUIET_LEGEND } from '../core/hidden';
 import { seriesStretchLimits } from '../core/stretch';
 import { parseSeriesSearch, toSeriesSearch, type SeriesQuery } from '../core/url';
 import type { LoadedSeries, SeriesLookup } from '../ports/series-source';
@@ -434,7 +434,7 @@ function SidePanel() {
         <p>{describeWavelength(series)}</p>
         <p>{describeTimeSpan(series.frames)}</p>
         {motion ? <p>{motion}</p> : null}
-        <p className="muted">Black cores: {BLACK_CORE_NOTE}.</p>
+        <p className="muted">{QUIET_LEGEND}</p>
         <p className="muted">Blank diagonal edges: {DIAGONAL_MASK_NOTE}.</p>
         {state.mode === 'colour' ? <p className="ring-legend">{COLOUR_LEGEND}</p> : null}
         <p className="ring-legend">Ring: {motionProvenanceLabel(loaded.demoSlug)}</p>

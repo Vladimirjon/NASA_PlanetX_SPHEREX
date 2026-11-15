@@ -3,6 +3,7 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- **15-nov · Mateo/Claude Code · píxeles ocultos en el recorte (rama `feat/viewer-hidden-pixels`, PR pendiente):** centro saturado en blanco con contorno y leyenda «White centre… not measured»; otros píxeles ocultos casi negros (gris oscuro en «Solo lo que cambió»); rayado completo solo con «Show hidden pixels» en Detalles. «Fechas en color» ya no inventa cambios con píxeles ocultos en una fecha. Solo visualización: no cambia datos, máscaras ni contrato. Falta el OK de Daniel/Dax (UI) y Sebastián (textos). Evidencia: `docs/reviews/hidden-pixels/`.
 - **15-nov · Codex · README y demo:** capturas de la demo pública, README bilingüe y guía de operación; pendiente revisión científica y humana de los textos y cifras.
 - **15-nov · Codex · documentación:** referencia técnica y matriz de rúbrica en `docs/documentacion-tecnica/`; pendientes revisión humana, científica y traducción completa de entregables.
 - **15-nov · Codex · despliegue estático:** corregido empaquetado de `js/prefetch.js`; Worker público pendiente de redespliegue. Validado paquete en navegador local.

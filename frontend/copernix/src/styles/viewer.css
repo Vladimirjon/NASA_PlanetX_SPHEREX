@@ -903,6 +903,66 @@ body {
   margin-top: 0.35rem;
 }
 
+.cutout-hidden-legend {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  max-width: 34rem;
+  margin: 0.35rem auto 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--dim);
+  text-align: left;
+}
+
+.hidden-swatch {
+  flex: none;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-top: 0.1rem;
+  border: 1px solid rgba(214, 219, 228, 0.9);
+  background-color: rgb(58, 64, 76);
+  background-image: repeating-linear-gradient(135deg, rgba(214, 219, 228, 0.55) 0 1px, transparent 1px 4px);
+}
+
+.hidden-swatch.saturated {
+  border-color: rgba(10, 14, 22, 0.6);
+  background-color: #ffffff;
+  background-image: none;
+}
+
+.hidden-swatch.no-data {
+  border-color: rgba(214, 219, 228, 0.35);
+  background-color: rgb(66, 70, 78);
+  background-image: none;
+}
+
+.hidden-legend-short {
+  display: none;
+}
+
+.hidden-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.6rem 0;
+  font-size: 0.8rem;
+  color: var(--dim);
+  cursor: pointer;
+}
+
+.hidden-toggle input {
+  accent-color: var(--accent);
+}
+
+.viewer:not(.is-mobile) .cutout-card .hidden-legend-long {
+  display: none;
+}
+
+.viewer:not(.is-mobile) .cutout-card .hidden-legend-short {
+  display: inline;
+}
+
 .cutout-modal .cutout-wrap {
   max-height: min(420px, 55vh);
   margin-inline: auto;

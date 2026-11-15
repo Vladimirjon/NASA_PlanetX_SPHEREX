@@ -88,3 +88,4 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-15 | Codex | Análisis del repositorio, fuentes y rúbrica; redacción de referencia técnica y matriz de trazabilidad | Revisión humana y científica pendiente |
 
 | 2026-11-15 | Codex | Capturas de demo pública, README bilingüe y guía de operación del sistema | Revisión humana y científica pendiente |
+| 2026-11-15 | Claude Code (Claude Opus 5.5) | Visualización de píxeles ocultos en el recorte (centro saturado en blanco, resto discreto, capa experta con rayado) con pruebas, regla del borde brillante medida sobre los datos de demo y capturas antes/después | Mateo revisó las capturas; pendiente OK de Daniel/Dax (UI) y Sebastián (textos) |

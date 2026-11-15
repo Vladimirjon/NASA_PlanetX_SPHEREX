@@ -199,6 +199,7 @@ export function App() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [cutoutOpen, setCutoutOpen] = useState(false);
+  const [showHidden, setShowHidden] = useState(false);
   const [lightOpen, setLightOpen] = useState(false);
   // Colour mode opens the light picker once; keep it optional afterwards.
   const [mapHintVisible, setMapHintVisible] = useState(true);
@@ -1060,6 +1061,16 @@ export function App() {
           <dd>{motionProvenanceI18n(lang, selection.slug ?? loaded.demoSlug)}</dd>
         </div>
       </dl>
+      <label className="hidden-toggle">
+        <input
+          type="checkbox"
+          checked={showHidden}
+          onChange={e => {
+            setShowHidden(e.target.checked);
+          }}
+        />
+        <span>{t(lang, 'showHiddenPixels')}</span>
+      </label>
       {frame ? (
         <a href={frame.provenance.source_url} target="_blank" rel="noreferrer">
           IRSA
@@ -1108,6 +1119,7 @@ export function App() {
           setPlaying(false);
         }}
         asButton
+        showHidden={showHidden}
         expandLabel={t(lang, 'expandCutout')}
         onExpand={() => {
           setCutoutOpen(true);
@@ -1533,6 +1545,7 @@ export function App() {
             </header>
             <CutoutCarousel
               className=" cutout-carousel-modal"
+              showHidden={showHidden}
               lang={lang}
               loaded={loaded}
               frameIndex={frameIndex}

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { nextBlinkIndex, prevBlinkIndex } from '../../../src/series/core/blink';
+import { countHidden, hiddenLayers } from '../../../src/series/core/hidden';
+import { seriesStretchLimits } from '../../../src/series/core/stretch';
 import type { LoadedSeries } from '../../../src/series/ports/series-source';
 import type { ViewMode } from '../../../src/series/adapters/canvas-renderer';
 import { carouselSlideDirection } from '../carousel-direction';
@@ -21,6 +23,8 @@ type Props = {
   readonly asButton?: boolean;
   readonly onExpand?: () => void;
   readonly expandLabel?: string;
+  /** Expert layer: hatch every hidden pixel instead of the quiet default. */
+  readonly showHidden?: boolean;
 };
 
 function prefersReducedMotion(): boolean {
@@ -40,6 +44,7 @@ export function CutoutCarousel({
   asButton = false,
   onExpand,
   expandLabel,
+  showHidden = false,
 }: Props) {
   const frameCount = loaded.series.frames.length;
   const prevIndexRef = useRef(frameIndex);
@@ -56,6 +61,17 @@ export function CutoutCarousel({
 
   const frame = loaded.series.frames[Math.min(frameIndex, frameCount - 1)];
   const label = formatVisitLabelI18n(lang, frameIndex, frameCount, frame.t_mid);
+  const [gridH, gridW] = loaded.series.grid.shape;
+  const layers = hiddenLayers(
+    mode,
+    loaded.frames,
+    frameIndex,
+    seriesStretchLimits(loaded.series.frames.map(f => f.stats)),
+    gridW,
+    gridH,
+  );
+  const legend = showHidden && countHidden(layers.hidden) > 0 ? 'hidden' : countHidden(layers.bright) > 0 ? 'saturated' : null;
+  const noDataNote = !showHidden && mode === 'difference' && countHidden(layers.hidden) > countHidden(layers.bright);
   const caption = `${t(lang, 'photoOf')} ${String(frameIndex + 1)} ${t(lang, 'photoOfOf')} ${String(frameCount)} · ${formatVisitDate(frame.t_mid, lang)}`;
 
   const goPrev = () => {
@@ -91,7 +107,7 @@ export function CutoutCarousel({
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
         </button>
         <div className={`cutout-stage${slideClass}`}>
-          <SeriesCutout loaded={loaded} frameIndex={frameIndex} mode={mode} label={label} />
+          <SeriesCutout loaded={loaded} frameIndex={frameIndex} mode={mode} label={label} hiddenStyle={showHidden ? 'expert' : 'quiet'} />
         </div>
         <button
           type="button"
@@ -125,6 +141,21 @@ export function CutoutCarousel({
       </div>
       <p className="carousel-caption mono">{caption}</p>
       {captionExtra ? <p className="cutout-cap mono">{captionExtra}</p> : null}
+      {legend ? (
+        <p className="cutout-hidden-legend" data-testid="hidden-legend" data-legend={legend}>
+          <span className={`hidden-swatch${legend === 'saturated' ? ' saturated' : ''}`} aria-hidden="true" />
+          <span className="hidden-legend-long">{t(lang, legend === 'saturated' ? 'saturatedLegend' : 'hiddenLegend')}</span>
+          <span className="hidden-legend-short">
+            {t(lang, legend === 'saturated' ? 'saturatedLegendShort' : 'hiddenLegendShort')}
+          </span>
+        </p>
+      ) : null}
+      {noDataNote ? (
+        <p className="cutout-hidden-legend" data-testid="no-data-legend">
+          <span className="hidden-swatch no-data" aria-hidden="true" />
+          <span>{t(lang, 'noDataLegend')}</span>
+        </p>
+      ) : null}
     </>
   );
 

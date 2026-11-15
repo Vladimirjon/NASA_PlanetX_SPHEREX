@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { CanvasSeriesRenderer, type ViewMode } from '../../../src/series/adapters/canvas-renderer';
+import type { HiddenStyle } from '../../../src/series/core/hidden';
 import { seriesStretchLimits } from '../../../src/series/core/stretch';
 import type { LoadedSeries } from '../../../src/series/ports/series-source';
 
@@ -8,9 +9,10 @@ type Props = {
   readonly frameIndex: number;
   readonly mode: ViewMode;
   readonly label: string;
+  readonly hiddenStyle: HiddenStyle;
 };
 
-export function SeriesCutout({ loaded, frameIndex, mode, label }: Props) {
+export function SeriesCutout({ loaded, frameIndex, mode, label, hiddenStyle }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rendererRef = useRef<CanvasSeriesRenderer | null>(null);
 
@@ -38,8 +40,9 @@ export function SeriesCutout({ loaded, frameIndex, mode, label }: Props) {
       },
       predicted: frame.predicted_position ?? null,
       zoom: 6,
+      hiddenStyle,
     });
-  }, [loaded, frameIndex, mode]);
+  }, [loaded, frameIndex, mode, hiddenStyle]);
 
   return (
     <div className="cutout-wrap">
