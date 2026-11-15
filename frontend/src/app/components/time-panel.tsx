@@ -13,6 +13,7 @@ import {
 } from '../../series/core/explain';
 import { seriesStretchLimits } from '../../series/core/stretch';
 import type { LoadedSeries } from '../../series/ports/series-source';
+import { GuidedPairEvidence, GuidedPairSummary } from './guided-pair';
 import { SegmentedControl } from './segmented-control';
 import { Slider } from './slider';
 import { Timeline } from './timeline';
@@ -26,6 +27,9 @@ type Props = {
   readonly progress: string | null;
   readonly error: string | null;
   readonly onRetry: () => void;
+  readonly guidedPairOpen: boolean;
+  readonly onOpenGuidedPair?: () => void;
+  readonly onReturnToSeries: () => void;
   readonly loaded: LoadedSeries | null;
   readonly frameIndex: number;
   readonly setFrameIndex: (i: number | ((prev: number) => number)) => void;
@@ -48,6 +52,9 @@ export function TimePanel(props: Props) {
     progress,
     error,
     onRetry,
+    guidedPairOpen,
+    onOpenGuidedPair,
+    onReturnToSeries,
     loaded,
     frameIndex,
     setFrameIndex,
@@ -66,6 +73,7 @@ export function TimePanel(props: Props) {
   useEffect(() => {
     if (!canvasRef.current) return;
     rendererRef.current = new CanvasSeriesRenderer(canvasRef.current);
+    return () => { rendererRef.current = null; };
   }, [open, status]);
 
   useEffect(() => {
@@ -88,7 +96,7 @@ export function TimePanel(props: Props) {
       predicted: frame.predicted_position ?? null,
       zoom: 6,
     });
-  }, [loaded, frameIndex, mode]);
+  }, [loaded, frameIndex, mode, open, status]);
 
   useEffect(() => {
     if (!playing || mode !== 'loop' || !loaded) return;
@@ -110,11 +118,16 @@ export function TimePanel(props: Props) {
       : null;
   const visitLabel =
     frame && series ? formatVisitLabel(frameIndex, series.frames.length, frame.t_mid) : 'No visit';
+  const guidedPair = series && loaded?.guidedPair;
   const motion = series ? describeExpectedMotion(series) : null;
   const level = series ? series.comparability.level : null;
 
   return (
-    <section className="time-panel" style={{ height }} aria-label="Time series analysis">
+    <section
+      className={guidedPairOpen ? 'time-panel guided-pair-panel' : 'time-panel'}
+      style={{ height: guidedPairOpen ? `min(${String(height)}px, 68dvh)` : height }}
+      aria-label="Time series analysis"
+    >
       <div
         className="time-panel-handle"
         role="separator"
@@ -138,7 +151,7 @@ export function TimePanel(props: Props) {
         }}
       />
       <header className="time-panel-bar">
-        <h2>Time series</h2>
+        <h2>{guidedPairOpen ? 'Epsilon Indi B · D3' : 'Time series'}</h2>
         <span className="visit-label" data-testid="visit-label">
           {status === 'ready' ? visitLabel : status === 'loading' ? 'Loading…' : '—'}
         </span>
@@ -147,6 +160,17 @@ export function TimePanel(props: Props) {
         </button>
       </header>
 
+      {onOpenGuidedPair ? (
+        <div className="guided-pair-navigation">
+          <button
+            type="button"
+            className="btn"
+            onClick={guidedPairOpen ? onReturnToSeries : onOpenGuidedPair}
+          >
+            {guidedPairOpen ? 'Back to time series' : 'Explore D3 comparison'}
+          </button>
+        </div>
+      ) : null}
       {status === 'loading' ? (
         <div className="time-panel-status" role="status" data-testid="loading-progress">
           {progress ?? 'Loading series…'}
@@ -163,6 +187,7 @@ export function TimePanel(props: Props) {
 
       {status === 'ready' && series && loaded ? (
         <div className="time-panel-body">
+          {guidedPair ? <GuidedPairSummary measurement={guidedPair} /> : null}
           <Timeline
             frames={series.frames}
             rejected={series.rejected.map(r => ({
@@ -178,7 +203,11 @@ export function TimePanel(props: Props) {
           />
           <div className="time-panel-main">
             <div className="cutout-stage">
-              <canvas ref={canvasRef} tabIndex={0} role="img" aria-label="Aligned SPHEREx cutout" />
+              <canvas ref={canvasRef} tabIndex={0} role="img" aria-label={guidedPair ? `SPHEREx detector D3, ${visitLabel}, ${mode} view` : 'SPHEREx cutout on a common grid'} />
+              {guidedPair && mode === 'colour' ? <p className="guided-pair-view-label">Magenta: image A · Green: image B</p> : null}
+              {guidedPair && mode === 'difference' ? (
+                <p className="guided-pair-view-label">Image {frameIndex === 0 ? 'A' : 'B'} minus image A · display contrast</p>
+              ) : null}
               <div className="cutout-controls">
                 <button
                   type="button"
@@ -235,88 +264,91 @@ export function TimePanel(props: Props) {
                   ]}
                   onChange={m => {
                     setMode(m);
+                    if (guidedPair && m === 'difference') setFrameIndex(1);
                     setPlaying(m === 'loop');
                   }}
                 />
               </div>
             </div>
             <aside className="explain">
-              {loaded.notice ? (
-                <div className="notice" role="status">
-                  {loaded.notice}
-                </div>
-              ) : (
-                <div className="notice live-ok" role="status">
-                  Live series from API
-                </div>
-              )}
-              <h3>What you are looking at</h3>
-              <p>{describeWavelength(series)}</p>
-              <p>{describeTimeSpan(series.frames)}</p>
-              {motion ? <p>{motion}</p> : null}
-              {series.frames.length < 2 ? (
-                <p className="muted">Only one visit — not enough for a temporal comparison yet.</p>
-              ) : null}
-              <p className="muted">Black cores: {BLACK_CORE_NOTE}.</p>
-              <p className="muted">Blank edges: {DIAGONAL_MASK_NOTE}.</p>
-              {mode === 'colour' ? <p className="muted">{COLOUR_LEGEND}</p> : null}
-              <p className="muted">Ring: {motionProvenanceLabel(targetSlug ?? loaded.demoSlug)}</p>
-              {level ? (
-                <>
-                  <span className="badge" data-level={level}>
-                    {level}
-                  </span>
-                  <p className="muted">
-                    Software never assigns CONFIRMED.{' '}
-                    {level === 'OBSERVED'
-                      ? 'Images show an apparent difference.'
-                      : 'Difference persists after quality controls.'}
-                  </p>
-                </>
-              ) : null}
-              <details>
-                <summary>Comparability checks</summary>
-                <ul className="check-list">
-                  {series.comparability.checks.map(c => (
-                    <li key={c.name}>
-                      <span className={c.passed ? 'pass' : 'fail'}>{c.passed ? 'PASS' : 'FAIL'}</span> {c.name}
-                      <div className="muted">{c.detail}</div>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-              <details>
-                <summary>Rejected images ({String(series.rejected.length)})</summary>
-                <ul className="check-list">
-                  {series.rejected.map(r => (
-                    <li key={r.obs_id}>
-                      <strong>{r.reason}</strong>
-                      <div className="muted">{r.detail}</div>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-              <details>
-                <summary>Inspect (expert)</summary>
-                {frame ? (
-                  <p className="mono">
-                    λ={frame.wavelength_um.toFixed(5)} µm · D{String(frame.detector)} · {frame.unit}
-                    <br />
-                    Grid {String(series.grid.shape[0])}×{String(series.grid.shape[1])} · {series.grid.pixel_scale_arcsec}″/px
-                  </p>
-                ) : null}
-              </details>
-              {frame ? (
-                <footer className="prov">
-                  <div className="mono">
-                    {frame.obs_id} · {frame.provenance.collection ?? 'n/a'} · {frame.t_mid.slice(0, 10)}
+              {guidedPair ? <GuidedPairEvidence series={series} measurement={guidedPair} /> : <>
+                {loaded.notice ? (
+                  <div className="notice" role="status">
+                    {loaded.notice}
                   </div>
-                  <a href={frame.provenance.source_url} target="_blank" rel="noreferrer">
-                    IRSA access_url
-                  </a>
-                  <div>Data: NASA/JPL-Caltech/IPAC SPHEREx DR1 + QR3 via IRSA</div>
-                </footer>
-              ) : null}
+                ) : (
+                  <div className="notice live-ok" role="status">
+                    Live series from API
+                  </div>
+                )}
+                <h3>What you are looking at</h3>
+                <p>{describeWavelength(series)}</p>
+                <p>{describeTimeSpan(series.frames)}</p>
+                {motion ? <p>{motion}</p> : null}
+                {series.frames.length < 2 ? (
+                  <p className="muted">Only one visit — not enough for a temporal comparison yet.</p>
+                ) : null}
+                <p className="muted">Black cores: {BLACK_CORE_NOTE}.</p>
+                <p className="muted">Blank edges: {DIAGONAL_MASK_NOTE}.</p>
+                {mode === 'colour' ? <p className="muted">{COLOUR_LEGEND}</p> : null}
+                <p className="muted">Ring: {motionProvenanceLabel(targetSlug ?? loaded.demoSlug)}</p>
+                {level ? (
+                  <>
+                    <span className="badge" data-level={level}>
+                      {level}
+                    </span>
+                    <p className="muted">
+                      Software never assigns CONFIRMED.{' '}
+                      {level === 'OBSERVED'
+                        ? 'Images show an apparent difference.'
+                        : 'Difference persists after quality controls.'}
+                    </p>
+                  </>
+                ) : null}
+                <details>
+                  <summary>Comparability checks</summary>
+                  <ul className="check-list">
+                    {series.comparability.checks.map(c => (
+                      <li key={c.name}>
+                        <span className={c.passed ? 'pass' : 'fail'}>{c.passed ? 'PASS' : 'FAIL'}</span> {c.name}
+                        <div className="muted">{c.detail}</div>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+                <details>
+                  <summary>Rejected images ({String(series.rejected.length)})</summary>
+                  <ul className="check-list">
+                    {series.rejected.map(r => (
+                      <li key={r.obs_id}>
+                        <strong>{r.reason}</strong>
+                        <div className="muted">{r.detail}</div>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+                <details>
+                  <summary>Inspect (expert)</summary>
+                  {frame ? (
+                    <p className="mono">
+                      λ={frame.wavelength_um.toFixed(5)} µm · D{String(frame.detector)} · {frame.unit}
+                      <br />
+                      Grid {String(series.grid.shape[0])}×{String(series.grid.shape[1])} · {series.grid.pixel_scale_arcsec}″/px
+                    </p>
+                  ) : null}
+                </details>
+                {frame ? (
+                  <footer className="prov">
+                    <div className="mono">
+                      {frame.obs_id} · {frame.provenance.collection ?? 'n/a'} · {frame.t_mid.slice(0, 10)}
+                    </div>
+                    <a href={frame.provenance.source_url} target="_blank" rel="noreferrer">
+                      IRSA access_url
+                    </a>
+                    <div>Data: NASA/JPL-Caltech/IPAC SPHEREx DR1 + QR3 via IRSA</div>
+                  </footer>
+                ) : null}
+              </>}
             </aside>
           </div>
         </div>

@@ -357,6 +357,14 @@ a:focus-visible {
   font-variant-numeric: tabular-nums;
   font-size: 1rem;
 }
+.guided-pair-navigation {
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+.guided-pair-summary { max-width: 72ch; }
+.guided-pair-summary p { margin: var(--space-2) 0 0; }
+.guided-pair-observations a { color: var(--accent); }
+.guided-pair-view-label { margin: 0; }
 .time-panel-status {
   padding: var(--space-4);
 }
@@ -480,6 +488,11 @@ a:focus-visible {
   .target-list { flex-direction: row; overflow-x: auto; }
   .target-card { min-width: 220px; }
   .time-panel-main { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .guided-pair-panel .time-panel-bar { flex-wrap: wrap; }
+  .guided-pair-panel .visit-label { order: 1; flex-basis: 100%; }
 }
 
 @media (max-width: 375px) {

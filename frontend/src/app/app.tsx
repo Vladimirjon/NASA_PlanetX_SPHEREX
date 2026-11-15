@@ -20,6 +20,8 @@ import { parseAppSearch, toAppSearch, type AppUrlState } from './core/url-state'
 
 const ANALYZE_FOV_DEG = 0.5;
 const FOV_ARCMIN = 5;
+const EPSILON = 'epsilon-indi-b';
+type SeriesView = 'regular' | 'recorded' | 'guided';
 
 function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -41,6 +43,8 @@ export function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<SkyEngine | null>(null);
   const mapRef = useRef<EngineMapController | null>(null);
+  const demoSourceRef = useRef(new DemoSeriesSource());
+  const navigationRef = useRef(0);
   const sourceRef = useRef(new FallbackSeriesSource(new ApiSeriesSource(), new DemoSeriesSource(), 60_000));
   const abortRef = useRef<AbortController | null>(null);
   const pickRef = useRef<{ ra: number; dec: number } | null>(null);
@@ -57,12 +61,14 @@ export function App() {
   const [activeSlug, setActiveSlug] = useState<string | null>(initialState.target);
   const [panelOpen, setPanelOpen] = useState(Boolean(initialState.target || (initialState.ra !== null && initialState.dec !== null)));
   const [panelHeight, setPanelHeight] = useState(380);
+  const [guidedHeight, setGuidedHeight] = useState(590);
   const [pick, setPick] = useState<{ ra: number; dec: number } | null>(null);
   const [statusLine, setStatusLine] = useState(
     initial.kind === 'invalid' ? initial.reason : '',
   );
   const [announce, setAnnounce] = useState('');
 
+  const [seriesView, setSeriesView] = useState<SeriesView>(initialState.guidedPair ? 'guided' : 'regular');
   const [seriesStatus, setSeriesStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [progress, setProgress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -121,6 +127,7 @@ export function App() {
     const view = engineRef.current?.getView();
     const state: AppUrlState = {
       target: activeSlug,
+      guidedPair: seriesView === 'guided',
       ra: view?.ra ?? pick?.ra ?? null,
       dec: view?.dec ?? pick?.dec ?? null,
       fov: view?.fov ?? 40,
@@ -133,11 +140,12 @@ export function App() {
     if (window.location.search !== next) {
       window.history.replaceState(null, '', `${window.location.pathname}${next}`);
     }
-  }, [activeSlug, pick, plane, proj, frameIndex, mode]);
+  }, [activeSlug, pick, plane, proj, frameIndex, mode, seriesView]);
 
   // Progress ticker while loading
   useEffect(() => {
     if (seriesStatus !== 'loading') return;
+    if (seriesView !== 'regular') return;
     const start = performance.now();
     setProgress(progressMessage(0));
     const id = window.setInterval(() => {
@@ -146,13 +154,12 @@ export function App() {
     return () => {
       window.clearInterval(id);
     };
-  }, [seriesStatus]);
+  }, [seriesStatus, seriesView]);
 
   // Keyboard: Space / arrows when panel open
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement | null)?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.target instanceof Element && e.target.closest('input, textarea, select, button, a, summary, [contenteditable]')) return;
       if (e.code === 'Space' && panelOpen && seriesStatus === 'ready') {
         e.preventDefault();
         setPlaying(p => !p);
@@ -178,25 +185,31 @@ export function App() {
     };
   }, [panelOpen, seriesStatus, loaded]);
 
-  const loadSeries = (lookup: SeriesLookup, slug: string | null) => {
+  const loadSeries = (lookup: SeriesLookup, slug: string | null, view: SeriesView = 'regular') => {
+    navigationRef.current += 1;
     abortRef.current?.abort();
     const ac = new AbortController();
     abortRef.current = ac;
     setLastLookup(lookup);
+    setSeriesView(view);
+    if (view === 'guided') setMode('loop');
     setActiveSlug(slug);
     setPanelOpen(true);
     setSeriesStatus('loading');
     setError(null);
     setLoaded(null);
     setFrameIndex(0);
-    setAnnounce('Loading time series…');
-    void sourceRef.current
-      .load(lookup, ac.signal)
+    setPlaying(false);
+    setAnnounce(view === 'guided' ? 'Loading D3 comparison…' : 'Loading time series…');
+    const request = view === 'guided'
+      ? demoSourceRef.current.loadGuidedPair(ac.signal)
+      : (view === 'recorded' ? demoSourceRef.current : sourceRef.current).load(lookup, ac.signal);
+    void request
       .then(result => {
         if (ac.signal.aborted) return;
         setLoaded({ ...result, demoSlug: result.demoSlug ?? slug ?? undefined });
         setSeriesStatus('ready');
-        setPlaying(!prefersReducedMotion() && mode === 'loop');
+        setPlaying(view !== 'guided' && !prefersReducedMotion() && mode === 'loop');
         const n = result.series.frames.length;
         setAnnounce(
           n < 2
@@ -207,31 +220,43 @@ export function App() {
       .catch((err: unknown) => {
         if (ac.signal.aborted) return;
         const message =
-          err instanceof SeriesSourceError
-            ? err.detail ?? err.title
-            : err instanceof Error
-              ? err.message
-              : 'Failed to load series';
+          view === 'guided'
+            ? 'The D3 comparison could not be loaded.'
+            : err instanceof SeriesSourceError
+              ? err.detail ?? err.title
+              : err instanceof Error
+                ? err.message
+                : 'Failed to load series';
         setSeriesStatus('error');
         setError(message);
         setAnnounce(message);
       });
   };
 
+  const beginNavigation = (slug: string | null) => {
+    abortRef.current?.abort();
+    setLoaded(null);
+    setSeriesStatus('idle');
+    setSeriesView('regular');
+    setActiveSlug(slug);
+    return ++navigationRef.current;
+  };
+
   const analyzeCoords = async (ra: number, dec: number) => {
+    const navigation = beginNavigation(null);
     setPick({ ra, dec });
     await mapRef.current?.flyTo(
       { ra, dec, fov: ANALYZE_FOV_DEG },
       { reducedMotion: prefersReducedMotion() },
     );
-    loadSeries({ kind: 'coords', ra, dec, fov: FOV_ARCMIN }, null);
+    if (navigation === navigationRef.current) loadSeries({ kind: 'coords', ra, dec, fov: FOV_ARCMIN }, null);
   };
 
-  const selectTarget = async (slug: string) => {
+  const selectTarget = async (slug: string, view: SeriesView = 'regular') => {
     const target = targetBySlug(slug);
     const canonical = canonicalNameForSlug(slug);
     if (!target || !canonical) return;
-    setActiveSlug(slug);
+    const navigation = beginNavigation(slug);
     setPick({ ra: target.ra, dec: target.dec });
     setAnnounce(`Flying to ${target.name}`);
     await mapRef.current?.flyTo(
@@ -239,7 +264,7 @@ export function App() {
       { reducedMotion: prefersReducedMotion() },
     );
     // Always resolve by canonical name — never send the slug to /resolve.
-    loadSeries({ kind: 'name', name: canonical }, slug);
+    if (navigation === navigationRef.current) loadSeries({ kind: 'name', name: canonical }, slug, view);
   };
 
   const onSubmitQuery = (raw: string) => {
@@ -249,13 +274,13 @@ export function App() {
     } else if (q.kind === 'coords') {
       void analyzeCoords(q.ra, q.dec);
     } else if (q.kind === 'name') {
-      setActiveSlug(null);
+      const navigation = beginNavigation(null);
       void (async () => {
         await mapRef.current?.flyTo(
           engineRef.current?.getView() ?? { ra: 180, dec: 0, fov: ANALYZE_FOV_DEG },
           { durationMs: 0 },
         );
-        loadSeries({ kind: 'name', name: q.name }, null);
+        if (navigation === navigationRef.current) loadSeries({ kind: 'name', name: q.name }, null);
       })();
     } else if (q.kind === 'invalid') {
       setStatusLine(q.reason);
@@ -266,10 +291,10 @@ export function App() {
   const bootstrapped = useRef(false);
   useEffect(() => {
     if (bootstrapped.current) return;
-    if (!engineRef.current) return;
+    if (!engineRef.current && !initialState.guidedPair) return;
     bootstrapped.current = true;
     if (initialState.target) {
-      void selectTarget(initialState.target);
+      void selectTarget(initialState.target, initialState.guidedPair ? 'guided' : 'regular');
     } else if (initialState.ra !== null && initialState.dec !== null) {
       void analyzeCoords(initialState.ra, initialState.dec);
     }
@@ -358,17 +383,20 @@ export function App() {
 
       <TimePanel
         open={panelOpen}
-        height={panelHeight}
-        onResize={setPanelHeight}
+        height={seriesView === 'guided' ? guidedHeight : panelHeight}
+        onResize={seriesView === 'guided' ? setGuidedHeight : setPanelHeight}
         onClose={() => {
           setPanelOpen(false);
           setPlaying(false);
         }}
         status={seriesStatus}
-        progress={progress}
+        progress={seriesView === 'guided' ? 'Loading D3 comparison…' : seriesView === 'recorded' ? 'Loading recorded time series…' : progress}
+        guidedPairOpen={seriesView === 'guided'}
+        onOpenGuidedPair={activeSlug === EPSILON ? () => { loadSeries({ kind: 'name', name: 'Epsilon Indi B' }, EPSILON, 'guided'); } : undefined}
+        onReturnToSeries={() => { loadSeries({ kind: 'name', name: 'Epsilon Indi B' }, EPSILON, 'recorded'); }}
         error={error}
         onRetry={() => {
-          if (lastLookup) loadSeries(lastLookup, activeSlug);
+          if (lastLookup) loadSeries(lastLookup, activeSlug, seriesView);
         }}
         loaded={loaded}
         frameIndex={frameIndex}

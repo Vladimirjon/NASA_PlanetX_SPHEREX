@@ -3,6 +3,7 @@ export type Projection = 'SIN' | 'TAN' | 'AIT';
 
 export type AppUrlState = {
   readonly target: string | null;
+  readonly guidedPair?: boolean;
   readonly ra: number | null;
   readonly dec: number | null;
   readonly fov: number;
@@ -71,6 +72,7 @@ export function parseAppSearch(search: string): ParseResult {
     kind: 'ok',
     state: {
       target: target && target.trim() !== '' ? target.trim() : null,
+      ...(target?.trim() === 'epsilon-indi-b' && params.get('case') === 'd3' ? { guidedPair: true } : {}),
       ra,
       dec,
       fov,
@@ -85,6 +87,7 @@ export function parseAppSearch(search: string): ParseResult {
 export function toAppSearch(state: AppUrlState): string {
   const params = new URLSearchParams();
   if (state.target) params.set('target', state.target);
+  if (state.target === 'epsilon-indi-b' && state.guidedPair) params.set('case', 'd3');
   if (state.ra !== null) params.set('ra', String(state.ra));
   if (state.dec !== null) params.set('dec', String(state.dec));
   if (state.fov !== DEFAULTS.fov) params.set('fov', String(state.fov));
