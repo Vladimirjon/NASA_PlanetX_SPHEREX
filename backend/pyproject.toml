@@ -12,6 +12,7 @@ dependencies = [
     "pydantic==2.14.3",
     "pydantic-settings==2.16.3",
     "reproject==0.21.0",
+    "scipy==1.18.1",
     "uvicorn==0.54.0",
 ]
 
@@ -23,6 +24,7 @@ build-backend = "uv_build"
 dev = [
     "anyio==4.16.0",
     "hypothesis==6.170.15",
+    "jsonschema==4.26.0",
     "pyright==1.1.414",
     "pytest==9.2.0",
     "ruff==0.17.5",

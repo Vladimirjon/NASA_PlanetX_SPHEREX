@@ -58,6 +58,10 @@ run = ["uv run --directory backend ruff check .", "uv run --directory backend ru
 description = "Visual parity of our sky engine vs the IRSA (Aladin Lite) viewer; needs the web app running"
 run = "uv run --locked --script scripts/parity-check.py --ours http://127.0.0.1:5173 --out docs/reviews/parity"
 
+[tasks.measure-epsindb]
+description = "Precompute the eps Ind B motion AnalysisResult for the demo (spec 0010 §0; reads IRSA/S3, cached)"
+run = "uv run --directory backend python -m skyshift.api.measure_cli --out ../frontend/public/demo/epsilon-indi-b/analysis-result.json --checklist-out ../docs/reviews/measurement/epsilon-indi-b-checklist-evidence.json --detector 3"
+
 [tasks.smoke]
 description = "Live smoke test of the API on the 5 challenge objects (needs api-dev running)"
 run = "uv run --locked --script scripts/smoke-five-objects.py --out docs/reviews/analyzer/smoke-latest.json"

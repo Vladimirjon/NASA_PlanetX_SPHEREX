@@ -1,0 +1,143 @@
+{
+ "id": "epsilon",
+ "name": "Epsilon Indi B",
+ "focus": "Candidate · apparent motion",
+ "stage": "preselection",
+ "interpretation": "not_evaluated",
+ "evidence_supplied_by": "Mateo (measurement)",
+ "checks": {
+  "target": {
+   "status": "pass",
+   "reason": "A source was centroided in both exposures at the catalog-propagated position (proper motion + parallax, Gaia DR3); SNR 101 and 102.",
+   "evidence_refs": [
+    "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
+    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+   ]
+  },
+  "coverage": {
+   "status": "pass",
+   "reason": "Target at least 15 px inside the detector and no COMPARE_MASK bit within 2.5 px in both exposures.",
+   "evidence_refs": [
+    "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
+    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+   ]
+  },
+  "alignment": {
+   "status": "unknown",
+   "reason": "15 Gaia stars measured with the same method in 76 exposures; per-exposure offset scatter 0.159 / 0.210 arcsec (RA*cosDec / Dec), bias -0.061 / +0.029 arcsec, correlation -0.56. Exposure A used 9 stars, B 12. Acceptability is a science decision; Gaia is not independent of the SPHEREx WCS.",
+   "evidence_refs": [
+    "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
+    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+   ]
+  },
+  "quality": {
+   "status": "unknown",
+   "reason": "FLAGS clear near the target in both exposures: True. Catalog sources within 18.5 arcsec of the target at the used epochs: none. Their effect on the centroid is not quantified yet.",
+   "evidence_refs": [
+    "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
+    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+   ]
+  },
+  "uncertainty": {
+   "status": "unknown",
+   "reason": "Per-exposure covariance = centroid (weighted fit, scaled by reduced chi2 >= 1) + WCS term 0.300 / 0.300 arcsec per axis (max of the provisional 0.3 and the field-star scatter). Epochs treated as independent.",
+   "evidence_refs": [
+    "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
+    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+   ]
+  },
+  "centroid_color_bias": {
+   "status": "unknown",
+   "reason": "Residual slope vs local wavelength over 76 exposures (1.638-2.396 um): RA*cosDec -0.087 +/- 0.159, Dec -0.004 +/- 0.159 arcsec/um. Pair wavelengths 1.9344956825285478 / 1.9338200004372583 um (WCS-WAVE).",
+   "evidence_refs": [
+    "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
+    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+   ]
+  },
+  "method": {
+   "status": "pass",
+   "reason": "Reproducible: mise run measure-epsindb (backend/src/skyshift, native-frame Gaussian centroid, GLS proper motion, field registration); inputs and every exclusion listed in the referenced result.",
+   "evidence_refs": [
+    "..\\frontend\\public\\demo\\epsilon-indi-b\\analysis-result.json",
+    "git:a1231c01e718903fef6c5c30ada0773f9782184a"
+   ]
+  }
+ },
+ "observations": [
+  {
+   "product_id": "ivo://irsa.ipac/spherex_dr1?2025W24_1A_0245_4/D3",
+   "acquisition_id": "2025W24_1A_0245_4",
+   "identity_status": "resolved",
+   "midpoint_utc": "2025-06-10T04:34:17.283Z",
+   "wavelength_um": 1.9344956825285478,
+   "wavelength_method": "wcs_wave_approximation",
+   "collection": "spherex_dr1",
+   "detector": "D3",
+   "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W24_1A/l2b-v27-2026-201/3/level2_2025W24_1A_0245_4D3_spx_l2b-v27-2026-201.fits",
+   "measured_ra_deg": 331.095697865018,
+   "measured_dec_deg": -56.800429615526824,
+   "cov_pos_arcsec2": [
+    [
+     0.09412252601364987,
+     -0.000701947082195679
+    ],
+    [
+     -0.000701947082195679,
+     0.09437025893965012
+    ]
+   ],
+   "snr": 100.64009080918738,
+   "n_reference_stars": 9
+  },
+  {
+   "product_id": "ivo://irsa.ipac/spherex_qr3?2026W40_1A_0070_2/D3",
+   "acquisition_id": "2026W40_1A_0070_2",
+   "identity_status": "resolved",
+   "midpoint_utc": "2026-09-28T08:05:41.876Z",
+   "wavelength_um": 1.9338200004372583,
+   "wavelength_method": "wcs_wave_approximation",
+   "collection": "spherex_qr3",
+   "detector": "D3",
+   "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W40_1A/l2b-v27-2026-276/3/level2_2026W40_1A_0070_2D3_spx_l2b-v27-2026-276.fits",
+   "measured_ra_deg": 331.0981345053466,
+   "measured_dec_deg": -56.80134371423458,
+   "cov_pos_arcsec2": [
+    [
+     0.09255418370039456,
+     -0.00013661715002658305
+    ],
+    [
+     -0.0001366171500265832,
+     0.09423563072158285
+    ]
+   ],
+   "snr": 101.6940460527602,
+   "n_reference_stars": 12
+  }
+ ],
+ "pair_measurement": {
+  "delta_ra_cosdec_arcsec": 5.193305561577468,
+  "delta_dec_arcsec": -3.1009466489721866,
+  "separation_arcsec": 6.048660411668297,
+  "cov_arcsec2": [
+   [
+    0.18667670971404443,
+    -0.0008385642322222621
+   ],
+   [
+    -0.0008385642322222622,
+    0.18860588966123298
+   ]
+  ],
+  "chi2_2dof": 194.69734331386147,
+  "p_value": 5.272408831050986e-43,
+  "covariance_assumption": "independent_epochs",
+  "parallax": "catalog parallax removed before the difference"
+ },
+ "multi_epoch_context": {
+  "outcome": "threshold_exceeded_unverified",
+  "n_visits": 4,
+  "pm_ra_cosdec_arcsec_per_yr": 3.9072717924383604,
+  "pm_dec_arcsec_per_yr": -2.476121512129317
+ }
+}
