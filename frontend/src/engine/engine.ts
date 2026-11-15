@@ -2,7 +2,7 @@ import { parentCell } from './core/tiles/fallback';
 import { motionOrder, updateRequests, type PendingRequest } from './core/tiles/request-policy';
 import { neighbours } from './core/healpix/nested';
 import { evictions } from './core/tiles/lru';
-import { clampView, drag, interpolateView, keepPointUnder, pan, zoom, zoomAt } from './core/camera/camera';
+import { clampView, drag, interpolateView, pan, zoom, zoomAt } from './core/camera/camera';
 import { selectOrder, pointAt, screenAt, visibleCells } from './core/tiles/selection';
 import { browserClock } from './adapters/clock';
 import { browserUrlState } from './adapters/url-state';
@@ -81,6 +81,7 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
     listeners[key].forEach(listener => { listener(value); });
   };
   let grabPoint: Point | null = null;
+  let lastDrag: { x: number; y: number } | null = null;
   let moving = false;
   let movementOrder = 5;
   let destination: ViewState | null = null;
@@ -372,11 +373,21 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
       movementOrder = selectOrder(view.fov, canvasWidth * (typeof devicePixelRatio === 'number' ? devicePixelRatio : 1));
       if (settleTimer) clearTimeout(settleTimer);
       grabPoint = pointAt(view, x, y, canvasWidth, canvasHeight);
+      lastDrag = { x, y };
     },
     dragTo(x, y) {
       stopInertia();
-      if (grabPoint) view = keepPointUnder(view, grabPoint, x, y, canvasWidth, canvasHeight);
-      else view = drag(view, canvasWidth / 2, canvasHeight / 2, x, y, canvasWidth, canvasHeight);
+      if (grabPoint && lastDrag) {
+        const { x: startX, y: startY } = lastDrag;
+        const steps = Math.max(1, Math.ceil(Math.hypot(x - startX, y - startY) / 8));
+        for (let step = 1; step <= steps; step++) {
+          const from = (step - 1) / steps;
+          const to = step / steps;
+          view = drag(view, startX + (x - startX) * from, startY + (y - startY) * from,
+            startX + (x - startX) * to, startY + (y - startY) * to, canvasWidth, canvasHeight);
+        }
+      }
+      lastDrag = { x, y };
       update();
     },
     nudge(dx, dy) {

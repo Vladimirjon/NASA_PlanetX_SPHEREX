@@ -129,3 +129,15 @@ it('interpolateView slerps the centre and log-interpolates FOV', () => {
   expect(mid.fov).toBeCloseTo(Math.sqrt(10 * 40), 5);
   expect(mid.proj).toBe('SIN');
 });
+
+it('keeps wide-field drags continuous near both celestial poles', () => {
+  for (const dec of [-89, -80, 80, 89]) {
+    const start = view({ ra: 10, dec, fov: 180, proj: 'SIN' });
+    for (const x of [300, 400, 500]) for (const y of [200, 300, 400]) {
+      const next = drag(start, x, y, x + 2, y + 2, WIDTH, HEIGHT);
+      const p = screenAt(start, start.ra, start.dec, WIDTH, HEIGHT);
+      const q = screenAt(next, start.ra, start.dec, WIDTH, HEIGHT);
+      expect(p && q && Math.hypot(q.x - p.x, q.y - p.y)).toBeLessThan(25);
+    }
+  }
+});

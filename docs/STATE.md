@@ -3,6 +3,8 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- **15-nov · Codex · polos:** reproducido giro de 87°/px; navegación alejada limitada al norte y antes del polo. 175 tests, lint/build OK; preview recompilada; falta revisión humana en GPU real.
+- **15-nov · Codex · visor:** formato de coordenadas, continuidad de arrastre polar y ajustes de búsqueda/línea temporal en revisión; falta validación humana y GPU real.
 - **15-nov · landing · PR:** retratos animados y comparador revisados en Chromium; 12 pruebas landing, build estático y recorridos ES/EN, teclado, movimiento reducido y móvil en verde.
 - **15-nov · entrega landing:** ajustes locales de la página principal preparados para PR; cambios recientes del visor revertidos a petición del usuario y pendientes de otra persona.
 - **15-nov · vista local:** reiniciado el servidor 4411 como proceso independiente tras encontrar el puerto cerrado. Página verificada en el navegador integrado; log en `/tmp/copernix-preview-4411.log`.

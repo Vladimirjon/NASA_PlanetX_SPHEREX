@@ -51,3 +51,16 @@ describe('parseSearchQuery', () => {
     expect(parseSearchQuery('   ').kind).toBe('empty');
   });
 });
+
+it('parses spaced sexagesimal coordinates with degree and arcminute symbols', () => {
+  const result = parseSearchQuery('22h 03m 21.65s Dec -56° 47\' 09.52"');
+  expect(result.kind).toBe('coords');
+  if (result.kind !== 'coords') return;
+  expect(result.ra).toBeCloseTo(330.8402083, 5);
+  expect(result.dec).toBeCloseTo(-56.7859778, 5);
+});
+
+it('rejects out-of-range sexagesimal minutes and hours', () => {
+  expect(parseSearchQuery('22h 63m 21s Dec -56° 47′ 09″').kind).toBe('invalid');
+  expect(parseSearchQuery('24h 00m 00s Dec +00° 00′ 00″').kind).toBe('invalid');
+});

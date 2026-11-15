@@ -85,6 +85,11 @@ body {
   touch-action: none;
   background: var(--bg);
   filter: brightness(0.72) saturate(0.9);
+  cursor: grab;
+}
+
+.sky-canvas:active {
+  cursor: grabbing;
 }
 
 .sky-vignette {
@@ -364,6 +369,16 @@ body {
   color: var(--text);
   font: 500 0.85rem var(--f-mono);
   padding: 0.45rem 0.65rem;
+}
+
+.search-wrap input:focus-visible {
+  outline-offset: -2px;
+}
+
+.search-hint {
+  color: var(--dim);
+  font-size: 0.72rem;
+  line-height: 1.35;
 }
 
 .go {
@@ -1185,14 +1200,14 @@ body {
   position: absolute;
   left: 0;
   right: 0;
-  top: 22px;
+  top: 26px;
   height: 2px;
   background: var(--line-soft);
 }
 
 .timeline-mark {
   position: absolute;
-  top: 18px;
+  top: 22px;
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -1213,7 +1228,7 @@ body {
   border: 1px solid var(--c-gray);
   width: 8px;
   height: 8px;
-  top: 9px;
+  top: 23px;
 }
 
 .timeline-date {

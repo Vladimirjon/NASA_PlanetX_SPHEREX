@@ -447,6 +447,11 @@ export function App() {
       setSearchStatus('results');
       return;
     }
+    if (parsed.kind === 'invalid') {
+      setSearchResults([]);
+      setSearchStatus('none');
+      return;
+    }
     const ac = new AbortController();
     searchAbortRef.current = ac;
     setSearchStatus('searching');
@@ -922,6 +927,7 @@ export function App() {
       </label>
       <div className="search-wrap catalog-search-wrap">
         <input
+          aria-describedby="catalog-coordinates-hint"
           id="copernix-catalog-q"
           value={query}
           onChange={e => {
@@ -934,6 +940,7 @@ export function App() {
         />
         <Tip title={t(lang, 'tipRaDecTitle')} body={t(lang, 'tipRaDecBody')} aboutLabel={t(lang, 'about')} />
       </div>
+      <p id="catalog-coordinates-hint" className="search-hint">{t(lang, 'searchCoordinatesHint')}</p>
       {searchStatus === 'searching' ? (
         <p className="search-status mono" role="status">
           {t(lang, 'searchSearching')}

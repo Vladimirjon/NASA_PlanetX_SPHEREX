@@ -179,7 +179,31 @@ export function drag(
   const grab = pointAt(view, fromX, fromY, width, height);
   if (!grab) return { ...view };
   if (!pointAt(view, toX, toY, width, height)) return { ...view };
-  return keepPointUnder(view, grab, toX, toY, width, height);
+  // A north-up camera has no roll degree of freedom: crossing a pole with an
+  // anchored inverse solve can rotate RA by 180° while barely moving its centre.
+  // Wide-field navigation therefore uses bounded north-up angular motion.
+  if (view.fov >= 90) {
+    const degreesPerPixel = view.fov / Math.max(1, width);
+    const eastScale = Math.max(0.5, Math.cos(view.dec * Math.PI / 180));
+    return clampView({
+      ...view,
+      ra: view.ra + (toX - fromX) * degreesPerPixel / eastScale,
+      dec: Math.max(-89.9, Math.min(89.9, view.dec + (toY - fromY) * degreesPerPixel)),
+    });
+  }
+  const next = keepPointUnder(view, grab, toX, toY, width, height);
+  // Near a projection singularity the solver can converge on a distant solution.
+  // Reject a jump that is disproportionate to a small pointer movement.
+  const movement = Math.hypot(toX - fromX, toY - fromY);
+  if (movement <= 10) {
+    const center = screenAt(next, view.ra, view.dec, width, height);
+    const rotation = Math.abs(((next.ra - view.ra + 540) % 360) - 180);
+    if (rotation > Math.max(2, movement * 2) || !center
+      || Math.hypot(center.x - width / 2, center.y - height / 2) > Math.max(8, movement * 8)) {
+      return { ...view };
+    }
+  }
+  return next;
 }
 
 /** Legacy delta pan used by keyboard nudges (north-up, small steps). */
@@ -220,7 +244,7 @@ export function zoomAt(
 ): ViewState {
   const grab = pointAt(view, x, y, width, height);
   const next = zoom(view, factor);
-  if (!grab) return next;
+  if (!grab || (next.fov >= 90 && Math.abs(view.dec) > 70)) return next;
   return keepPointUnder(next, grab, x, y, width, height);
 }
 

@@ -30,7 +30,7 @@ function parseSexagesimalRa(raw: string): number | null {
   const h = Number(hms[1]);
   const m = Number(hms[2]);
   const s = Number(hms[3]);
-  if (![h, m, s].every(Number.isFinite)) return null;
+  if (![h, m, s].every(Number.isFinite) || h >= 24 || m >= 60 || s >= 60) return null;
   return (h + m / 60 + s / 3600) * 15;
 }
 
@@ -41,7 +41,7 @@ function parseSexagesimalDec(raw: string): number | null {
   const d = Number(dms[1]);
   const m = Number(dms[2]);
   const s = Number(dms[3]);
-  if (![d, m, s].every(Number.isFinite)) return null;
+  if (![d, m, s].every(Number.isFinite) || Math.abs(d) > 90 || m >= 60 || s >= 60) return null;
   const sign = d < 0 || Object.is(d, -0) || raw.trim().startsWith('-') ? -1 : 1;
   return sign * (Math.abs(d) + m / 60 + s / 3600);
 }
@@ -63,6 +63,19 @@ export function parseSearchQuery(raw: string): SearchQuery {
     const dec = Number(decimal[2]);
     if (!validRaDec(ra, dec)) return { kind: 'invalid', reason: 'RA/Dec out of range' };
     return { kind: 'coords', ra, dec };
+  }
+
+  // Accept catalog-style labels, whitespace and the usual degree/arc symbols.
+  const normalized = text.replace(/\b(?:ra|dec)\b/gi, ' ')
+    .replace(/[°º]/g, 'd').replace(/[′']/g, 'm').replace(/[″"]/g, 's')
+    .replace(/\s*([hdms])\s*/gi, '$1');
+  const labelled = normalized.match(/^\s*(\d+(?:\.\d+)?h\d+(?:\.\d+)?m\d+(?:\.\d+)?s)\s*[,;]?\s*([+-]?\d+(?:\.\d+)?d\d+(?:\.\d+)?m\d+(?:\.\d+)?s)\s*$/i);
+  if (labelled) {
+    const ra = parseSexagesimalRa(labelled[1]);
+    const dec = parseSexagesimalDec(labelled[2]);
+    return ra !== null && dec !== null && validRaDec(ra, dec)
+      ? { kind: 'coords', ra, dec }
+      : { kind: 'invalid', reason: 'RA/Dec out of range' };
   }
 
   const parts = text.split(/\s+/);
