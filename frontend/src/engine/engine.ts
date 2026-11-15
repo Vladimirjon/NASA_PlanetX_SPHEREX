@@ -1,5 +1,5 @@
 import { parentCell } from './core/tiles/fallback';
-import { updateRequests, type PendingRequest } from './core/tiles/request-policy';
+import { motionOrder, updateRequests, type PendingRequest } from './core/tiles/request-policy';
 import { neighbours } from './core/healpix/nested';
 import { evictions } from './core/tiles/lru';
 import { clampView, drag, interpolateView, keepPointUnder, pan, zoom, zoomAt } from './core/camera/camera';
@@ -10,7 +10,7 @@ import type { Clock } from './ports/clock';
 import type { UrlState } from './ports/url-state';
 import { bindInput } from './adapters/input';
 import { createWebGL2Renderer } from './adapters/webgl-renderer';
-import { irsaTileSource } from './adapters/tile-source';
+import { startupTileSource } from './adapters/tile-source';
 import type { Renderer, Tile } from './ports/renderer';
 import type { TileSource } from './ports/tile-source';
 import { DEFAULT_VIEW, maxFov, type Projection, type ViewState } from './view-state';
@@ -21,6 +21,7 @@ type Listener<K extends keyof Events> = (event: Events[K]) => void;
 type RecordState = { kind: 'loading'; controller: AbortController } | { kind: 'ready'; tile: Tile; used: number } | { kind: 'failed'; missing: boolean };
 export interface EngineOptions {
   readonly tileSource?: TileSource;
+  readonly onTileSource?: (source: 'backend' | 'irsa') => void;
   readonly renderer?: Renderer;
   readonly initialView?: Readonly<ViewState>;
   readonly cacheSize?: number;
@@ -48,7 +49,7 @@ export interface SkyEngine {
 const INERTIA_TAU_MS = 300;
 
 export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOptions = {}): SkyEngine {
-  const source = options.tileSource ?? irsaTileSource();
+  const source = options.tileSource ?? startupTileSource(options.onTileSource);
   const clockPort = options.clock ?? browserClock();
   const urlState = options.urlState ?? browserUrlState();
   const capacity = Math.max(12, options.cacheSize ?? 256);
@@ -80,6 +81,14 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
     listeners[key].forEach(listener => { listener(value); });
   };
   let grabPoint: Point | null = null;
+  let moving = false;
+  let movementOrder = 5;
+  let destination: ViewState | null = null;
+  let settleTimer: ReturnType<typeof setTimeout> | undefined;
+  function settle(): void {
+    if (settleTimer) clearTimeout(settleTimer);
+    settleTimer = setTimeout(() => { moving = false; destination = null; invalidate(); }, 150);
+  }
   let inertiaFrame = 0;
   let inertia: { vx: number; vy: number; x: number; y: number; last: number } | null = null;
   let zoomFrame = 0;
@@ -119,6 +128,8 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
     if (!flight) return;
     const active = flight;
     flight = null;
+    destination = null;
+    settle();
     active.reject(new Error(reason));
   }
   function interruptNavigation(): void {
@@ -166,6 +177,7 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
     const x1 = inertia.x + inertia.vx * dt;
     const y1 = inertia.y + inertia.vy * dt;
     view = drag(view, inertia.x, inertia.y, x1, y1, canvasWidth, canvasHeight);
+    settle();
     inertia.x = Math.min(canvasWidth - 1, Math.max(0, x1));
     inertia.y = Math.min(canvasHeight - 1, Math.max(0, y1));
     inertia.vx *= decay;
@@ -187,6 +199,7 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
     if (t >= 1) {
       const done = flight;
       flight = null;
+      settle();
       scheduleUrl(0);
       done.resolve();
       return;
@@ -206,7 +219,8 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
     }
     const width = canvasWidth;
     const height = canvasHeight;
-    const order = selectOrder(view.fov, width * (typeof devicePixelRatio === 'number' ? devicePixelRatio : 1));
+    const pixels = width * (typeof devicePixelRatio === 'number' ? devicePixelRatio : 1);
+    const order = motionOrder(selectOrder(view.fov, pixels), movementOrder, moving);
     const key = `${view.ra}/${view.dec}/${view.fov}/${view.proj}/${width}/${height}/${order}`;
     if (key !== selectionKey) {
       selectionKey = key;
@@ -214,6 +228,12 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
       expandedSelected = visibleCells({ ...view, fov: Math.min(maxFov(view.proj), view.fov * 2) }, width, height, order);
     }
     const wanted = new Map(selected.map(item => [`${item.order}/${item.npix}/${view.plane}`, item]));
+    if (destination) {
+      const destinationOrder = selectOrder(destination.fov, pixels);
+      for (const item of visibleCells(destination, width, height, destinationOrder)) {
+        wanted.set(`${item.order}/${item.npix}/${destination.plane}`, item);
+      }
+    }
     // Keep every ancestor until children arrive so zoom never flashes blank.
     for (const item of selected) {
       let candidate = item;
@@ -268,7 +288,7 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
         pending.delete(key);
         if (destroyed || controller.signal.aborted) { bitmap.close(); return; }
         failures.delete(key);
-        networkError = false;
+        networkError = [...cache.values()].some(state => state.kind === 'failed' && !state.missing);
         cache.set(key, {
           kind: 'ready',
           tile: { order: item.order, npix: item.npix, plane: Number(key.split('/')[2]), bitmap },
@@ -289,6 +309,7 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
         if (!missing) networkError = true;
         const attempts = (failures.get(key) ?? 0) + 1;
         failures.set(key, attempts);
+        attempted.delete(key);
         cache.set(key, { kind: 'failed', missing });
         status(missing
           ? 'Some detailed images are unavailable; a coarser image may be shown.'
@@ -296,14 +317,12 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
         if (!missing && attempts < 3) {
           const timer = setTimeout(() => {
             retryTimers.delete(timer);
-            if (!destroyed) { cache.delete(key); attempted.delete(key); invalidate(); }
+            if (!destroyed && cache.get(key)?.kind === 'failed' && failures.get(key) === attempts) {
+              cache.delete(key);
+              attempted.delete(key);
+              invalidate();
+            }
           }, 500 * 2 ** (attempts - 1));
-          retryTimers.add(timer);
-        } else {
-          const timer = setTimeout(() => {
-            retryTimers.delete(timer);
-            if (cache.get(key)?.kind === 'failed') cache.delete(key);
-          }, 30000);
           retryTimers.add(timer);
         }
         invalidate();
@@ -326,7 +345,10 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
       const state = cache.get(key);
       return state?.kind === 'failed' && state.missing;
     });
-    status(networkError
+    const retrying = [...failures.entries()].filter(([key, count]) => count < 3 && cache.get(key)?.kind === 'failed').length;
+    status(retrying
+      ? `IRSA busy — retrying ${String(retrying)} tiles`
+      : networkError
       ? "Can't reach IRSA right now. Cached areas remain visible."
       : missing
         ? 'Some detailed images are unavailable; a coarser image may be shown.'
@@ -346,6 +368,9 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
   const unbindInput = bindInput(canvas, {
     grab(x, y) {
       stopInertia();
+      moving = true;
+      movementOrder = selectOrder(view.fov, canvasWidth * (typeof devicePixelRatio === 'number' ? devicePixelRatio : 1));
+      if (settleTimer) clearTimeout(settleTimer);
       grabPoint = pointAt(view, x, y, canvasWidth, canvasHeight);
     },
     dragTo(x, y) {
@@ -383,6 +408,7 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
     },
     release(vx, vy, x, y) {
       grabPoint = null;
+      settle();
       if (reducedMotion() || Math.hypot(vx, vy) < 0.05) return;
       stopInertia();
       inertia = {
@@ -467,9 +493,16 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
       interruptNavigation();
       const duration = Math.max(0, flyOptions.durationMs ?? 800);
       const to = clampView({ ...view, ra: target.ra, dec: target.dec, fov: target.fov });
+      const pixels = canvasWidth * (typeof devicePixelRatio === 'number' ? devicePixelRatio : 1);
+      moving = true;
+      movementOrder = Math.min(selectOrder(view.fov, pixels), selectOrder(to.fov, pixels));
+      destination = to;
+      if (settleTimer) clearTimeout(settleTimer);
+      invalidate();
       if (duration === 0 || reducedMotion()) {
         view = to;
         update();
+        settle();
         return Promise.resolve();
       }
       return new Promise<void>((resolve, reject) => {
@@ -501,6 +534,8 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
     },
     retry() {
       networkError = false;
+      for (const timer of retryTimers) clearTimeout(timer);
+      retryTimers.clear();
       for (const key of failures.keys()) { cache.delete(key); attempted.delete(key); }
       failures.clear();
       status('Loading sky images from IRSA…');
@@ -516,6 +551,7 @@ export function createSkyEngine(canvas: HTMLCanvasElement, options: EngineOption
       for (const timer of retryTimers) clearTimeout(timer);
       if (urlTimer) clearTimeout(urlTimer);
       if (graceTimer) clearTimeout(graceTimer);
+      if (settleTimer) clearTimeout(settleTimer);
       if (frame) clockPort.cancel(frame);
       resize.disconnect();
       unbindInput();

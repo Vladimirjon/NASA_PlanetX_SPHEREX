@@ -28,7 +28,7 @@ Single product at `/` (`index.html` → `src/main.tsx` → `src/app/`). Left rai
 
 **Layers:**
 - `src/app/core/` — targets/slug map, search (incl. sexagesimal), URL state, timeline scale, progress copy
-- `src/app/ports/map-controller.ts` + `adapters/engine-map-controller.ts` — fly-to by tweening `setView` (~1.2 s); swap later for native `flyTo`
+- `src/app/ports/map-controller.ts` + `adapters/engine-map-controller.ts` — delegates fly-to to the engine (~1.2 s)
 - `src/app/components/` — search typeahead, challenge cards, segmented controls, band slider, timeline, time panel
 - Reuses `src/series/**` (core + Demo/Api/Fallback + Canvas2D). API timeout **60 s**; never send slug to `/resolve` (map to canonical name); pass Gaia/Luhman motion into `/series`.
 

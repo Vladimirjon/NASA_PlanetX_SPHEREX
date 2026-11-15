@@ -1,9 +1,11 @@
 """IRSA SPHEREx DR1 HiPS cube tiles over HTTP. Translates transport errors to cache errors."""
 
+import asyncio
 import struct
 
 import httpx
 
+from skyshift.adapters.http import get_with_retry
 from skyshift.domain.hips import HipsTileAddress
 from skyshift.ports.origin import Fetched, InvalidPayload, OriginError, OriginNotFound
 
@@ -13,9 +15,10 @@ MAX_TILE_BYTES = 4 * 1024 * 1024
 
 
 class IrsaHipsTiles:
-    def __init__(self, client: httpx.AsyncClient, base_url: str) -> None:
+    def __init__(self, client: httpx.AsyncClient, base_url: str, max_parallel: int = 6) -> None:
         self._client = client
         self._base_url = base_url.rstrip("/")
+        self._semaphore = asyncio.Semaphore(max_parallel)
 
     def url_for(self, address: HipsTileAddress) -> str:
         return f"{self._base_url}/{address.path}"
@@ -23,7 +26,8 @@ class IrsaHipsTiles:
     async def fetch(self, address: HipsTileAddress) -> Fetched:
         url = self.url_for(address)
         try:
-            response = await self._client.get(url)
+            async with self._semaphore:
+                response = await get_with_retry(self._client, url)
         except httpx.HTTPError as exc:
             raise OriginError(f"IRSA HiPS request failed: {type(exc).__name__}") from exc
         if response.status_code == 404:

@@ -14,3 +14,23 @@ function source(url: (order: number, npix: number, plane: number) => string): Ti
 }
 export const irsaTileSource = (): TileSource => source((order, npix, plane) => createIrsaTileSource().url(order, npix, plane));
 export const backendTileSource = (): TileSource => source((order, npix, plane) => createBackendTileSource().url(order, npix, plane));
+export async function selectTileSource(request: typeof fetch = fetch): Promise<'backend' | 'irsa'> {
+  try {
+    const response = await request('/api/v1/health', { signal: AbortSignal.timeout(3000) });
+    return response.status === 502 || response.status === 504 ? 'irsa' : 'backend';
+  } catch {
+    return 'irsa';
+  }
+}
+
+export function startupTileSource(onSelected?: (source: 'backend' | 'irsa') => void): TileSource {
+  const backend = backendTileSource();
+  const irsa = irsaTileSource();
+  const selected = selectTileSource().then(choice => {
+    onSelected?.(choice);
+    return choice === 'backend' ? backend : irsa;
+  });
+  return { async fetch(order, npix, plane, signal) {
+    return (await selected).fetch(order, npix, plane, signal);
+  } };
+}

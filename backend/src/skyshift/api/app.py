@@ -85,7 +85,7 @@ async def get_hips_tile(
             "X-Cache-Layer": resolved.layer.value,
             "X-Source-Url": resolved.meta.source_url,
             "X-Retrieved-At": resolved.meta.retrieved_at.isoformat(),
-            "Cache-Control": "public, max-age=86400",
+            "Cache-Control": "public, max-age=604800",
         },
     )
 
@@ -126,7 +126,9 @@ def create_app(
             )
             app.state.services = Services(
                 resolver=sia,
-                get_hips_tile=GetHipsTile(hips, IrsaHipsTiles(client, cfg.hips_base_url)),
+                get_hips_tile=GetHipsTile(
+                    hips, IrsaHipsTiles(client, cfg.hips_base_url, cfg.hips_max_parallel)
+                ),
             )
             list_observations = ListObservations(sia, IrsaSia2Catalog(client))
             app.state.search_targets = SearchTargets(

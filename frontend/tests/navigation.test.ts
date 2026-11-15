@@ -47,6 +47,8 @@ it.each<Projection>(['SIN', 'TAN', 'AIT'])(
           const x1 = Math.min(WIDTH - 1, Math.max(1, x0 + dx));
           const y1 = Math.min(HEIGHT - 1, Math.max(1, y0 + dy));
           if (!pointAt(start, x1, y1, WIDTH, HEIGHT)) return true;
+          if (proj === 'SIN' && Math.abs(1 - 2 * x1 / WIDTH) * Math.sin(fov * Math.PI / 360)
+              >= Math.cos(grab.dec * Math.PI / 180) * 0.999) return true;
           const moved = drag(start, x0, y0, x1, y1, WIDTH, HEIGHT);
           expect(moved.proj).toBe(proj);
           const screen = screenAt(moved, grab.ra, grab.dec, WIDTH, HEIGHT);
@@ -54,7 +56,7 @@ it.each<Projection>(['SIN', 'TAN', 'AIT'])(
           expect(Math.hypot(screen.x - x1, screen.y - y1)).toBeLessThan(0.5);
         },
       ),
-      { numRuns: 80 },
+      { seed: 20261114, numRuns: 200 },
     );
   },
 );
@@ -75,6 +77,17 @@ it('drag across the north pole keeps the grab without jumping', () => {
     if (!screen) return;
     expect(Math.hypot(screen.x - x0, screen.y - y1)).toBeLessThan(0.5);
   }
+});
+
+it('clamps an unreachable SIN horizontal drag near a pole', () => {
+  const start = view({ ra: 10, dec: -74, fov: 36, proj: 'SIN' });
+  const x0 = WIDTH / 2;
+  const y0 = HEIGHT / 2;
+  const edge = WIDTH / 2 * (1 - Math.cos(74 * Math.PI / 180) / Math.sin(18 * Math.PI / 180) * 0.999);
+  const actual = drag(start, x0, y0, 1, y0, WIDTH, HEIGHT);
+  const clamped = drag(start, x0, y0, edge, y0, WIDTH, HEIGHT);
+  expect(actual.ra).toBeCloseTo(clamped.ra, 4);
+  expect(actual.dec).toBeCloseTo(clamped.dec, 4);
 });
 
 it('zoom stays anchored at the cursor', () => {

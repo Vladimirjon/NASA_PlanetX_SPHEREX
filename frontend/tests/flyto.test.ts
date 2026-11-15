@@ -3,6 +3,7 @@ import { createSkyEngine } from '../src/engine/engine';
 import type { Renderer } from '../src/engine/ports/renderer';
 import type { TileSource } from '../src/engine/ports/tile-source';
 import type { Clock } from '../src/engine/ports/clock';
+import { selectOrder, visibleCells } from '../src/engine/core/tiles/selection';
 
 function mockCanvas(): HTMLCanvasElement {
   const listeners = new Map<string, Set<EventListener>>();
@@ -58,6 +59,32 @@ function mockClock(): Clock & { flush: (now: number) => void } {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+});
+
+it('prefetches destination detail without requesting detailed tiles along the flight', async () => {
+  vi.stubGlobal('matchMedia', () => ({ matches: false }));
+  vi.stubGlobal('devicePixelRatio', 1);
+  vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
+  const clock = mockClock();
+  const requests: { order: number; npix: number }[] = [];
+  const source: TileSource = { fetch(order, npix) {
+    requests.push({ order, npix });
+    return new Promise(() => {});
+  } };
+  const initial = { ra: 10, dec: 0, fov: 120, plane: 0, proj: 'SIN' as const };
+  const destination = { ...initial, ra: 100, dec: 20, fov: 0.5 };
+  const allowed = new Set(visibleCells(destination, 800, 600, selectOrder(destination.fov, 800)).map(cell => `${cell.order}/${cell.npix}`));
+  const engine = createSkyEngine(mockCanvas(), { renderer: mockRenderer(), tileSource: source, clock, urlState: { write() {} }, initialView: initial });
+  const flight = engine.flyTo(destination, { durationMs: 1000 });
+  const now = performance.now();
+  clock.flush(now);
+  clock.flush(now + 500);
+  clock.flush(now + 501);
+  expect(requests.some(request => request.order === 5)).toBe(true);
+  expect(requests.filter(request => request.order > selectOrder(initial.fov, 800)).every(request => allowed.has(`${request.order}/${request.npix}`))).toBe(true);
+  clock.flush(now + 1001);
+  await flight;
+  engine.destroy();
 });
 
 it('flyTo arrives within tolerance and emits viewchange', async () => {

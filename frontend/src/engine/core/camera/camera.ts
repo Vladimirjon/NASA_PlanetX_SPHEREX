@@ -85,6 +85,13 @@ export function keepPointUnder(
   height: number,
 ): ViewState {
   let current = clampView(view);
+  // A north-up SIN view cannot place a point farther east/west than cos(dec).
+  // Clamp to just inside that limit to avoid a singular solution at the pole.
+  if (current.proj === 'SIN' && width > 0) {
+    const scale = Math.sin(current.fov * Math.PI / 360);
+    const limit = Math.min(1, Math.cos(sky.dec * Math.PI / 180) / scale * 0.999);
+    x = Math.max(width * (1 - limit) / 2, Math.min(width * (1 + limit) / 2, x));
+  }
   const target = toVec(sky.ra, sky.dec);
   for (let step = 0; step < 24; step++) {
     const screen = screenAt(current, sky.ra, sky.dec, width, height);

@@ -30,6 +30,8 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-14 | Cursor (Composer) | Implementación vista serie temporal SPHEREx (`frontend/src/series/`, demo+API, Canvas2D, ADR 0043) | Orquestador aprobó diseño; humano revisa capturas en docs/reviews/series-viewer/ |
 | 2026-11-14 | Cursor (Composer) | App integrada mapa+timeline+5 targets (`frontend/src/app/`), fix timeout 60s y slug→canónico | Orquestador aprobó ronda 2; humano revisa docs/reviews/app/ |
 | 2026-11-14 | Claude Code (orquestador) + Codex + Cursor | Integración de ramas (backend, motor del cielo, app, búsqueda), renumeración de ADRs 0040–0044, revisión de commits y PR | Dax revisa el PR antes del merge |
+| 2026-11-14 | Codex | Corrección del proxy HiPS, navegación y búsqueda; pruebas y captura en vivo | Revisión humana pendiente; geometría AIT pendiente |
+
 | 2026-11-14 | Claude Code (Claude Opus 5.5) | Drafted TDD implementation plan `docs/specs/0011` and stack ADR `docs/adr/0010` (versions resolved with `uv pip compile`); no product code written | Mateo reviews; Johann agrees on folder; runs only after spec 0010 is approved |
 | 2026-11-14 | GitHub Copilot | Resolved merge conflicts of PR #5 (`docs/analysis-impl-plan` vs `main`) | Johann checked nothing was lost |
 | 2026-11-14 | Claude Code (Claude Opus 5.5) | Revised specs 0010/0011 and ADR 0010 after Johann's review, Sebastián's 2nd message (verified χ² threshold with scipy) and the main triage; read backend layout to avoid duplicating domain code | Mateo reviews; reviewers: Johann, Sebastián, Dax |
