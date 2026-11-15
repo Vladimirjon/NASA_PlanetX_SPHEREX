@@ -3,6 +3,8 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- **15-nov · Codex · README y demo:** capturas de la demo pública, README bilingüe y guía de operación; pendiente revisión científica y humana de los textos y cifras.
+- **15-nov · Codex · documentación:** referencia técnica y matriz de rúbrica en `docs/documentacion-tecnica/`; pendientes revisión humana, científica y traducción completa de entregables.
 - **15-nov · Codex · despliegue estático:** corregido empaquetado de `js/prefetch.js`; Worker público pendiente de redespliegue. Validado paquete en navegador local.
 - **15-nov · Dax/Codex · backend público:** API en home-server por Cloudflare Tunnel; salud y búsqueda HTTP 200; serie real ε Indi B 4 fotogramas (13,6 s en frío, 0,59 s desde memoria). Daniel conecta Vercel; IRSA tuvo errores 502 intermitentes.
 - **15-nov 00:10 · Dax/Claude Code · integración final en `main`:** base = UI de Daniel (PR #19). Integrados: HiPS/vuelo nativo de `integration/main-ready`; textos honestos de «What changed?» por región (revisión de Mateo) y el par D3 de Sebastián junto al ajuste de 4 pasadas de ε Indi B (ambos Observado · candidato); precarga de visor/assets desde la landing y de las 5 series en el visor; barra de carga de 2 px. `frontend/universe/` NO entra (queda en `backup/universe-discarded` y `feat/phase0-foundations`). Pendiente humano: Sebastián confirma qué cifra de ε Indi B va en ficha/pitch (la app muestra ambas, rotuladas); la travesía 3D de entrada se probó y se descartó (15-nov); la intro es la original de Daniel (globo → vuelo al objeto).

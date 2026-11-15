@@ -84,3 +84,7 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-15 | Codex | Ajustes de textos y despliegue del backend en home-server con Cloudflare Tunnel | Dax configuró el hostname; Daniel conecta Vercel; prueba de serie real completada |
 
 | 2026-11-15 | Codex | Diagnóstico de dependencia ausente y verificación del paquete estático | Revisión humana y redespliegue pendientes |
+
+| 2026-11-15 | Codex | Análisis del repositorio, fuentes y rúbrica; redacción de referencia técnica y matriz de trazabilidad | Revisión humana y científica pendiente |
+
+| 2026-11-15 | Codex | Capturas de demo pública, README bilingüe y guía de operación del sistema | Revisión humana y científica pendiente |
