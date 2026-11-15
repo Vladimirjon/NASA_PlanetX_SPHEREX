@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#030e22">
+<meta name="color-scheme" content="dark">
+<title>Copernix · Planet X and SPHEREx</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="description" content="Pick any spot in the sky and watch real NASA SPHEREx infrared images of it change over time. / Elige un punto del cielo y mira cómo cambian las imágenes infrarrojas reales de SPHEREx (NASA).">
+<link rel="preload" href="fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<a class="skip" href="#main" data-i="skip">Skip to content</a>
+<canvas id="bg" aria-hidden="true"></canvas><div class="vignette" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#hero" data-i="brand" data-ia="brand" aria-label="Copernix">Copernix</a>
+  <nav class="rail" data-ia="rail" aria-label="Story progress"></nav>
+  <div class="lang" role="group" data-ia="langLbl" aria-label="Language"><button type="button" data-lang="es" aria-pressed="false">ES</button><button type="button" data-lang="en" aria-pressed="true">EN</button></div>
+  <a class="navcta" href="/viewer/" data-cta="nav" data-i="nav.cta">Explore the sky</a>
+</header>
+
+<main id="main">
+<noscript><p style="padding:6rem 1.5rem 2rem;max-width:60ch">This page needs JavaScript. / Esta página necesita JavaScript.</p></noscript>
+
+<section class="scene" id="hero" style="--len:1.7">
+  <div class="stage">
+    <div class="center" id="heroTxt">
+      <h1 data-i="hero.h">The sky is never<br>the same twice.</h1>
+      <p class="lead" data-i="hero.p"></p>
+      <div class="row">
+        <a class="btn cta-big" href="/viewer/" data-cta="hero" data-i="hero.cta">Explore the sky</a>
+        <a class="btn ghost cta-big" href="#problem" data-i="hero.more">See why</a>
+      </div>
+    </div>
+    <div class="hint" aria-hidden="true"><span data-i="scroll">scroll</span><i></i></div>
+  </div>
+</section>
+
+<section class="scene" id="problem" style="--len:2.6">
+  <div class="stage">
+    <canvas class="full" id="sky1" aria-hidden="true"></canvas>
+    <div class="tag" id="tag1" aria-hidden="true" data-i="problem.tag">moved</div>
+    <div class="stack">
+      <h2 id="p1a" data-i="problem.a">Stars stay put.</h2>
+      <h2 id="p1b" data-i="problem.b">One doesn’t.</h2>
+    </div>
+  </div>
+</section>
+
+<section class="scene" id="blink" style="--len:2.2">
+  <div class="stage">
+    <canvas class="full" id="cA" aria-hidden="true"></canvas>
+    <canvas class="full" id="cB" aria-hidden="true"></canvas>
+    <div class="bar" aria-hidden="true"></div>
+    <div class="knob surface" id="knob" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg></div>
+    <input type="range" id="cmpRange" min="0" max="100" value="50" data-ia="cmp.range" aria-label="Compare before and after">
+    <div class="top"><h2 data-fade data-i="cmp.h">Can you spot<br>what changed?</h2></div>
+    <span class="lbl" style="left:14px" data-i="cmp.a">Before</span>
+    <span class="lbl" style="right:14px" data-i="cmp.b">After</span>
+    <div class="pop" id="pop" aria-hidden="true"><span data-i="cmp.pop">Look, this one changed</span></div>
+  </div>
+</section>
+
+<section class="scene" id="data" style="--len:1.6">
+  <div class="stage">
+    <canvas class="full" id="satGL" role="img" tabindex="0" data-ia="sat.alt" aria-label="3D model of the SPHEREx telescope. Drag it, or use the arrow keys, to rotate it."></canvas>
+    <div class="loadmsg" id="loadmsg" data-i="sat.load">Loading 3D model…</div>
+    <div class="top" style="top:5.6rem"><h2 data-fade data-i="sat.h">Real NASA images,<br>straight from space.</h2><p class="lead" data-fade data-i="sat.p"></p></div>
+    <div id="packets" aria-hidden="true"></div>
+    <p class="rot surface" id="satHint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg><span data-i="sat.hint">Drag to rotate it</span></p>
+    <div class="flow">
+      <span class="node surface" data-i="sat.a">NASA telescope</span>
+      <span class="arrow" aria-hidden="true"></span>
+      <span class="node surface" data-i="sat.b">Your screen</span>
+    </div>
+  </div>
+</section>
+
+<section class="scene" id="colors" style="--len:2">
+  <div class="stage">
+    <div class="spec">
+      <h2 data-fade data-i="col.h">Every color tells<br>a different story.</h2>
+      <div class="bars" id="bars" role="slider" tabindex="0" aria-valuemin="1" aria-valuemax="102" aria-valuenow="1" data-ia="col.alt" aria-label="Illustration: 102 infrared colors"></div>
+      <div class="axis" aria-hidden="true"><span data-i="col.a0">0.75 µm</span><span data-i="col.axis">wavelength</span><span data-i="col.a1">5 µm</span></div>
+      <div class="lam"><span id="lamN" data-i="col.num">Color 1 / 102</span></div>
+      <div id="colDesc"></div>
+      <p class="lead" data-fade data-i="col.p"></p>
+      <p class="hintline" data-i="col.hint">drag across the colors</p>
+    </div>
+  </div>
+</section>
+
+<section class="scene natural" id="method" aria-labelledby="methH">
+  <div class="stage">
+    <div class="meth">
+      <div class="head">
+        <h2 id="methH" data-i="meth.h">How we find a change</h2>
+        <p class="lead" data-i="meth.p"></p>
+      </div>
+        <figure class="diff">
+          <div class="frames" role="img" data-ia="meth.figalt" aria-label="Schematic of an earlier image, a later image and their difference">
+            <div><img src="assets/method-earlier.webp" alt="" width="640" height="640" loading="lazy" decoding="async"><span data-i="meth.f1">Earlier</span></div>
+            <div><img src="assets/method-later.webp" alt="" width="640" height="640" loading="lazy" decoding="async"><span data-i="meth.f2">Later</span></div>
+            <div><img src="assets/method-diff.webp" alt="" width="640" height="640" loading="lazy" decoding="async"><span data-i="meth.f3">What changed</span></div>
+          </div>
+          <figcaption data-i="meth.fig">Schematic, not real data.</figcaption>
+        </figure>
+      <div class="steps-wrap" id="stepsWrap">
+      <svg class="wave" id="wave" aria-hidden="true" focusable="false"><path class="track"/><path class="draw"/></svg>
+      <ol class="steps">
+        <li class="surface" tabindex="0"><div class="st"><b data-i="meth.s1h"></b></div><div class="d"><p data-i="meth.s1p"></p></div></li>
+        <li class="surface" tabindex="0"><div class="st"><b data-i="meth.s2h"></b></div><div class="d"><p data-i="meth.s2p"></p></div></li>
+        <li class="surface" tabindex="0"><div class="st"><b data-i="meth.s3h"></b></div><div class="d"><p data-i="meth.s3p"></p></div></li>
+        <li class="surface" tabindex="0"><div class="st"><b data-i="meth.s4h"></b></div><div class="d"><p data-i="meth.s4p"></p></div></li>
+      </ol>
+      </div>
+      <div class="method-evidence">
+
+        <h3 class="lvh" data-i="meth.lv"></h3>
+        <dl class="levels">
+          <div><dt data-i="meth.lv1"></dt><dd data-i="meth.lv1d"></dd></div>
+          <div><dt data-i="meth.lv2"></dt><dd data-i="meth.lv2d"></dd></div>
+          <div><dt data-i="meth.lv3"></dt><dd data-i="meth.lv3d"></dd></div>
+        </dl>
+        <p data-i="meth.lvn"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="scene natural" id="who" aria-labelledby="whoH">
+  <div class="stage">
+    <div class="who-in">
+      <div class="who-head">
+        <h2 id="whoH" data-i="who.h">Five objects to try</h2>
+        <p class="lead" data-i="who.p"></p>
+      </div>
+      <div id="whoList"></div>
+    </div>
+  </div>
+</section>
+
+<section class="scene" id="how" style="--len:2.4">
+  <div class="stage">
+    <canvas class="full" id="cH" data-ia="how.canvas" aria-label="Sky"></canvas>
+    <div class="top">
+      <div class="hstack" id="hstack">
+        <div class="on"><h2 data-i="how.h0">Find what moved.</h2><p class="lead" data-i="how.p0"></p></div>
+        <div><h2 data-i="how.h1">You found it!</h2><p class="lead" id="foundP"></p></div>
+      </div>
+    </div>
+    <div class="tag" id="tagH" aria-hidden="true">moved</div>
+    <div class="use-dock surface">
+      <div class="chips" id="chips" role="group" data-ia="how.targets" aria-label="Targets"></div>
+      <div class="timeline">
+        <button class="pp" id="pp" type="button" aria-label="Play / pause"></button>
+        <label for="tm" data-i="how.time">Time</label>
+        <input type="range" id="tm" min="0" max="1000" value="0">
+      </div>
+      <div class="udrow">
+        <button class="btn ghost sm" id="showMe" type="button" data-i="how.show">Show me</button>
+        <details class="coords" id="coords">
+          <summary><span data-i="how.coords">Type coordinates</span><span data-i="how.radec"></span></summary>
+          <div class="cfields">
+            <div class="field"><label for="ra">RA (°)</label><input id="ra" name="ra" class="mono" inputmode="decimal" autocomplete="off" spellcheck="false" value="133.7951"></div>
+            <div class="field"><label for="dec">Dec (°)</label><input id="dec" name="dec" class="mono" inputmode="decimal" autocomplete="off" spellcheck="false" value="-7.2452"></div>
+          </div>
+        </details>
+        <a class="btn sm" id="vCta" href="/viewer/?target=wise-0855" data-cta="how" data-i="how.open">Explore this spot</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="scene" id="why" style="--len:1.6">
+  <div class="stage">
+    <div class="why">
+      <h2 data-fade data-i="why.h">Space gives itself away<br>in two ways.</h2>
+      <div class="tabs surface" role="tablist" data-ia="why.tabs" aria-label="What changes">
+        <button class="tab" role="tab" id="t0" type="button" aria-selected="true" aria-controls="pn0" data-i="why.t0">It moves</button>
+        <button class="tab" role="tab" id="t1" type="button" aria-selected="false" aria-controls="pn1" tabindex="-1" data-i="why.t1">It flickers</button>
+      </div>
+      <div class="panel" id="pn0" role="tabpanel" aria-labelledby="t0">
+        <p class="lead" style="max-width:46ch" data-i="why.p0"></p>
+        <div class="names"><span>Barnard’s Star</span><span>WISE 0855</span><span>Epsilon Indi B</span></div>
+      </div>
+      <div class="panel" id="pn1" role="tabpanel" aria-labelledby="t1" hidden>
+        <p class="lead" style="max-width:46ch" data-i="why.p1"></p>
+        <div class="names"><span>RW Aurigae</span><span>R Draconis</span></div>
+      </div>
+      <canvas id="whyDot" aria-hidden="true"></canvas>
+    </div>
+  </div>
+</section>
+
+<section class="scene" id="go" style="--len:1">
+  <div class="stage">
+    <div class="final">
+      <h2 data-fade data-i="go.h">Pick a spot.<br>Watch it change.</h2>
+      <a class="btn cta-big" href="/viewer/" data-cta="final" data-i="go.cta">Explore the sky</a>
+      <p class="lead" style="max-width:48ch" data-i="go.p"></p>
+    </div>
+  </div>
+</section>
+
+<section class="sources" id="sources" aria-labelledby="srcH">
+  <div class="in">
+    <h2 id="srcH" data-i="src.h">Sources & credits</h2>
+    <div class="cols" id="srcCols"></div>
+    <div class="fine">
+      <p data-i="src.ack.lead"></p>
+      <p class="mono" lang="en">This publication makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of Reionization and Ices Explorer (SPHEREx), which is a joint project of the Jet Propulsion Laboratory and the California Institute of Technology, and is funded by the National Aeronautics and Space Administration.</p>
+      <p data-i="src.ai"></p>
+      <p data-i="src.unofficial"></p>
+    </div>
+  </div>
+</section>
+</main>
+<footer data-i="foot">A NA ZA team project · NASA Space Apps Challenge 2026</footer>
+
+<div id="tipbox" class="surface" role="tooltip"></div>
+<div class="devdock">
+  <button id="notesBtn" type="button" aria-pressed="false">Dev notes: off</button>
+  <button id="hudBtn" type="button" aria-pressed="false">Metrics</button>
+</div>
+<aside id="hud" hidden aria-label="Engagement metrics (debug)"></aside>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

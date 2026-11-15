@@ -1,0 +1,19 @@
+{
+  "source": "NASA\u2019s Eyes \u00b7 NASA/JPL-Caltech",
+  "model": "model/spherex.gltf",
+  "yawFrames": 180,
+  "pitchDegrees": [
+    -48.0,
+    -36.0,
+    -24.0,
+    -12.0,
+    0.0,
+    12.0,
+    24.0,
+    36.0,
+    48.0
+  ],
+  "width": 448,
+  "height": 448,
+  "rendering": "Offline SwiftShader (CPU), original scene lighting. No AI image generation."
+}

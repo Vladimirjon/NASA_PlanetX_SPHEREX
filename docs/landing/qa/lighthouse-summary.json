@@ -1,0 +1,18 @@
+{
+  "tool": "Lighthouse 13.0.1",
+  "url": "http://127.0.0.1:4412/dist/landing/",
+  "conditions": "Mobile simulation; headless Chrome with --disable-gpu --disable-webgl --disable-gpu-compositing --disable-accelerated-2d-canvas",
+  "scores": {
+    "performance": 98,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100
+  },
+  "metrics": {
+    "first-contentful-paint": "1.7 s",
+    "largest-contentful-paint": "2.2 s",
+    "total-blocking-time": "10 ms",
+    "cumulative-layout-shift": "0.057"
+  },
+  "consoleErrors": []
+}

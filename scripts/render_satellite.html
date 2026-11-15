@@ -1,0 +1,38 @@
+<!doctype html><meta charset="utf-8"><title>render</title>
+<!-- Offline renderer for the SPHEREx views. Driven by scripts/render_satellite_views.py; never shipped. -->
+<script type="importmap">{"imports":{"three":"/landing/lib/three.module.min.js","three/addons/":"/landing/lib/addons/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+const q=new URLSearchParams(location.search),YAW=+q.get('yaw'),PITCH=q.get('pitch').split(',').map(Number),SIZE=+q.get('size');
+const post=(path,body)=>fetch(path,{method:'POST',body});
+const canvas=document.createElement('canvas');document.body.append(canvas);
+const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,preserveDrawingBuffer:true,powerPreference:'low-power'});
+const gl=renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info'),name=ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'?';
+await post('/renderer',name);
+if(!/swiftshader|llvmpipe|software/i.test(name))throw new Error('refusing to render on a hardware GPU: '+name);   // keeps the Intel GPU out of it
+renderer.setPixelRatio(1);renderer.setSize(SIZE,SIZE,false);renderer.setClearColor(0x000000,0);
+renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(28,1,.1,200);cam.position.set(0,0,30);
+const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(new RoomEnvironment(),.04).texture;scene.environmentIntensity=.55;
+const sun=new THREE.DirectionalLight(0xffffff,3.2);sun.position.set(-6,7,9);scene.add(sun);
+const rim=new THREE.DirectionalLight(0x9fc3e8,1.4);rim.position.set(8,-3,-7);scene.add(rim);
+scene.add(new THREE.HemisphereLight(0x9fb4ff,0x030e22,.5));
+const holder=new THREE.Group();scene.add(holder);
+const base=new THREE.Quaternion().setFromEuler(new THREE.Euler(.38,-.95,.12));
+const g=await new GLTFLoader().loadAsync('/landing/model/spherex.gltf');
+const model=g.scene,box=new THREE.Box3().setFromObject(model),c=box.getCenter(new THREE.Vector3()),radius=box.getSize(new THREE.Vector3()).length()/2;
+model.position.sub(c);holder.add(model);
+const worldH=2*Math.tan(THREE.MathUtils.degToRad(cam.fov/2))*cam.position.z;
+holder.scale.setScalar(.9*worldH/(2*radius));          // the bounding sphere fills 90 % of the frame, as in the page
+const AX=new THREE.Vector3(1,0,0),AY=new THREE.Vector3(0,1,0),qx=new THREE.Quaternion(),qy=new THREE.Quaternion();
+for(let p=0;p<PITCH.length;p++)for(let y=0;y<YAW;y++){
+  qy.setFromAxisAngle(AY,y*2*Math.PI/YAW);qx.setFromAxisAngle(AX,THREE.MathUtils.degToRad(PITCH[p]));
+  holder.quaternion.copy(base).premultiply(qy).premultiply(qx);
+  renderer.render(scene,cam);
+  const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
+  await post(`/save?name=${p}-${String(y).padStart(2,'0')}`,blob);
+}
+await post('/done','');
+</script>

@@ -3,6 +3,8 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- **14-nov noche · Dax/Cursor · encargo 04 pulir visor:** panel lateral opaco, barra única, dock/legibilidad, bottom sheet móvil, `explain-i18n.ts` ES/EN. Capturas `docs/landing/copernix-qa/revision2-*`. Lint/test/build:copernix + `check-landing` OK. Humano: revisar visual.
+- **14-nov noche · Dax/Cursor · encargo 02 visor Copernix:** UI nueva en `frontend/copernix/` (`base /viewer/`), scripts `dev:copernix`/`build:copernix`, demo en `/demo` vía Vite + `serve_landing`. Capturas `docs/landing/copernix-qa/`. Lint/test/build:copernix OK. Humano: revisar visual ES/EN.
 - **14-nov noche · rama `integration/main-ready` (Dax + agentes):** producto funcional de punta a punta.
   - Backend `backend/` (FastAPI, hexagonal ADR 0040/0041): `/resolve`, `/search` (148 objetos reales + tolerante a errores, ADR 0044), `/observations`, `/series`, `/series/{id}/frames/{i}`, `/hips`. Caché local→IRSA por capas, un cortacircuitos por servicio. 141 tests.
   - Frontend `frontend/`: app única (`index.html`): mapa propio WebGL2 tipo Aladin (ADR 0042) + rail de los 5 objetos del reto + panel temporal con línea de tiempo, Loop/Diferencia/Color, semáforo y procedencia (ADR 0043). 99 tests (1 intermitente, ver PR).
@@ -18,6 +20,7 @@ Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o 
 - Contrastado con un producto DR1 real: el tiempo de la cabecera es UTC; `obs_id` no distingue detector ni versión; `em_min/em_max` cubren el detector entero; λ científica = `CWAVE`/`CBAND`, no `WCS-WAVE`. Esto contradice `context/03` §3 y `context/06` §5.2, que aún no se corrigen.
 - Mateo: ficha `0010` (`AnalysisResult`) en `main`, **borrador** (falta aprobación de Sebastián y Johann). Preparados sin código: plan TDD `0011` y ADR `0010` (stack Python/uv, versiones fijadas). Criterios provisionales de Sebastián (14-nov) incorporados: R6 Δλ/min(CBAND) ≤ 0,02 (solo ε Indi B), SNR ≥ 5, ≥ 5σ con covarianza; ε Indi B = candidato (falta C1–C7). Pendiente: carpeta con Johann y la ficha de Sebastián. Rango de Mateo: 0010–0019.
 - Rama `docs/observation-schema`: borrador verificable del contrato en `contracts/` (schema de `Observation`, schema del manifiesto offline, ejemplo real DR1 y sintéticos). `mise run check-contracts` lo valida sin red. Agrega la regla de IDs (probada con 906 filas reales) y los códigos cerrados. Responde a 0010 anexo E: la λ de una medición la lee `AnalysisResult` en el píxel medido, y `spectral.local` queda para un punto de referencia. Sigue en **borrador** hasta que lo revisen Mateo, Daniel y Sebastián.
+- **Copernix** (nombre de la plataforma; NA ZA = equipo): landing en `landing/` + visor propio en `frontend/copernix/` (UI de la landing sobre la plataforma; ADR 0009) + API, en un solo origen: `mise run copernix-build` y `mise run copernix` → http://localhost:4410 (`/` landing, `/viewer/`, `/api`). Solo landing: `mise run landing`. Pendiente: revisión visual humana y probar el mapa WebGL2 en la GPU Intel real (hubo un GPU HANG; ver ADR 0007/0009).
 
 ## Hitos (Ecuador, UTC−5)
 | Hora | Hito |
@@ -53,3 +56,25 @@ Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o 
 ## Preguntas para mentores (Bloque 4)
 - Duración exacta del pitch y del Q&A.
 - (agregar)
+
+## Sesión Codex · landing y estabilidad · 2026-11-14
+- Rediseño de pitch aplicado: dos ilustraciones IA nuevas, imagen oficial de SPHEREx, ES/EN, vista clara y demo accesible.
+- Journal confirma GPU HANG Intel i915 en Chrome; se retiraron WebGL automático, fondo continuo y backdrop blur. Driver sin modificar.
+- Render bajo demanda, playback explícito ≤20 fps, pausa al ocultar/salir, canvas ≤0,9 MP; validación en navegador con GPU desactivada.
+- Evidencia y capturas: docs/landing/2026-11-14-stability.md. Pendiente: revisión humana del diseño/ciencia; visor real todavía en desarrollo.
+
+## Restauración solicitada por Daniel · 2026-11-14
+- Rediseño premium revertido: estructura, imágenes, textos, estilos y scroll originales restaurados.
+- Satélite original prerenderizado por CPU, con giro y arrastre sin WebGL; hasta 8 imágenes decodificadas.
+- Render acotado, fondo animado conservado, pausa oculta y blur desactivado; controlador i915 sin modificar.
+- Verificación y capturas actuales: docs/landing/2026-11-14-restored.md; sustituye la revisión visual anterior.
+
+- Sección método reestructurada por solicitud de Daniel: comparativa protagonista, recorrido abierto de cuatro pasos y evidencia separada; resto del scroll intacto.
+
+- Ajuste solicitado: objetos alternados, hero letra por letra y escenas activas con intervalo de 33 ms; telescopio interpolado sin WebGL. Tests, lint, build y smoke de navegador aprobados; revisión humana pendiente.
+
+- Ajuste visual: método centrado completo y alternancia de objetos continua entre grupos (izquierda/derecha/izquierda/derecha/izquierda).
+
+- Fluidez: RAF sincronizado hasta ~60 Hz en telescopio/demo con reducción por coste CPU; menos escrituras de scroll y paquetes por transform. 10 tests, lint, build y smoke sin GPU aprobados.
+
+- Hero sin imagen propia; fondo compartido y escenas sincronizados a ~60 Hz. Nubes a resolución 1/4 por eje para reducir coste; pausa oculta y modo reducido conservados. Tests/lint/build/smoke aprobados.
