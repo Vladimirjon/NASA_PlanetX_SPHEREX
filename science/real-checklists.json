@@ -1,0 +1,230 @@
+{
+  "epsilon": {
+    "motion": {
+      "method": "motion",
+      "status": "pending",
+      "checks": {
+        "identity": {
+          "status": "pass",
+          "reason": "Distinct acquisitions and UTC times are documented.",
+          "evidence_refs": []
+        },
+        "time": {
+          "status": "pass",
+          "reason": "Distinct acquisitions and UTC times are documented.",
+          "evidence_refs": []
+        },
+        "target": {
+          "status": "unknown",
+          "reason": "The candidate source and its blended components require validation.",
+          "evidence_refs": []
+        },
+        "coverage": {
+          "status": "unknown",
+          "reason": "The usable footprint at the measured source has not been validated.",
+          "evidence_refs": []
+        },
+        "alignment": {
+          "status": "unknown",
+          "reason": "Reference-star matches and the local registration uncertainty are not validated.",
+          "evidence_refs": []
+        },
+        "quality": {
+          "status": "unknown",
+          "reason": "Flagged pixels were inspected near an exploratory centroid; the measurement procedure is not validated.",
+          "evidence_refs": []
+        },
+        "uncertainty": {
+          "status": "unknown",
+          "reason": "Systematic, background, registration and correlated uncertainties are incomplete.",
+          "evidence_refs": []
+        },
+        "method": {
+          "status": "unknown",
+          "reason": "The measurement and treatment of the unresolved pair remain provisional.",
+          "evidence_refs": []
+        },
+        "centroid_color_bias": {
+          "status": "unknown",
+          "reason": "Evidence not provided.",
+          "evidence_refs": []
+        }
+      }
+    },
+    "brightness": {
+      "method": "brightness",
+      "status": "pending",
+      "checks": {
+        "identity": {
+          "status": "pass",
+          "reason": "Distinct acquisitions and UTC times are documented.",
+          "evidence_refs": []
+        },
+        "time": {
+          "status": "pass",
+          "reason": "Distinct acquisitions and UTC times are documented.",
+          "evidence_refs": []
+        },
+        "target": {
+          "status": "unknown",
+          "reason": "The candidate source and its blended components require validation.",
+          "evidence_refs": []
+        },
+        "coverage": {
+          "status": "unknown",
+          "reason": "The usable footprint at the measured source has not been validated.",
+          "evidence_refs": []
+        },
+        "alignment": {
+          "status": "unknown",
+          "reason": "Reference-star matches and the local registration uncertainty are not validated.",
+          "evidence_refs": []
+        },
+        "quality": {
+          "status": "unknown",
+          "reason": "Flagged pixels were inspected near an exploratory centroid; the measurement procedure is not validated.",
+          "evidence_refs": []
+        },
+        "uncertainty": {
+          "status": "unknown",
+          "reason": "Systematic, background, registration and correlated uncertainties are incomplete.",
+          "evidence_refs": []
+        },
+        "method": {
+          "status": "unknown",
+          "reason": "The measurement and treatment of the unresolved pair remain provisional.",
+          "evidence_refs": []
+        },
+        "spectral_compatibility": {
+          "status": "unknown",
+          "reason": "A numerical wavelength filter does not establish equivalent spectral responses.",
+          "evidence_refs": []
+        },
+        "photometric_response": {
+          "status": "unknown",
+          "reason": "Evidence not provided.",
+          "evidence_refs": []
+        },
+        "background": {
+          "status": "unknown",
+          "reason": "Evidence not provided.",
+          "evidence_refs": []
+        }
+      }
+    }
+  },
+  "wise": {
+    "motion": {
+      "method": "motion",
+      "status": "pending",
+      "checks": {
+        "identity": {
+          "status": "pass",
+          "reason": "Distinct acquisitions and UTC times are documented.",
+          "evidence_refs": []
+        },
+        "time": {
+          "status": "pass",
+          "reason": "Distinct acquisitions and UTC times are documented.",
+          "evidence_refs": []
+        },
+        "target": {
+          "status": "unknown",
+          "reason": "The tentative catalogue association and positions are not confirmed.",
+          "evidence_refs": []
+        },
+        "coverage": {
+          "status": "unknown",
+          "reason": "The true target position and useful footprint are not confirmed.",
+          "evidence_refs": []
+        },
+        "alignment": {
+          "status": "unknown",
+          "reason": "Registration against independent reference sources is not evaluated.",
+          "evidence_refs": []
+        },
+        "quality": {
+          "status": "unknown",
+          "reason": "Pixel flags were inspected near a hypothetical position, not a confirmed source.",
+          "evidence_refs": []
+        },
+        "uncertainty": {
+          "status": "unknown",
+          "reason": "Position and measurement uncertainty have not been established.",
+          "evidence_refs": []
+        },
+        "method": {
+          "status": "unknown",
+          "reason": "No defensible motion or brightness measurement exists.",
+          "evidence_refs": []
+        },
+        "centroid_color_bias": {
+          "status": "unknown",
+          "reason": "Evidence not provided.",
+          "evidence_refs": []
+        }
+      }
+    },
+    "brightness": {
+      "method": "brightness",
+      "status": "pending",
+      "checks": {
+        "identity": {
+          "status": "pass",
+          "reason": "Distinct acquisitions and UTC times are documented.",
+          "evidence_refs": []
+        },
+        "time": {
+          "status": "pass",
+          "reason": "Distinct acquisitions and UTC times are documented.",
+          "evidence_refs": []
+        },
+        "target": {
+          "status": "unknown",
+          "reason": "The tentative catalogue association and positions are not confirmed.",
+          "evidence_refs": []
+        },
+        "coverage": {
+          "status": "unknown",
+          "reason": "The true target position and useful footprint are not confirmed.",
+          "evidence_refs": []
+        },
+        "alignment": {
+          "status": "unknown",
+          "reason": "Registration against independent reference sources is not evaluated.",
+          "evidence_refs": []
+        },
+        "quality": {
+          "status": "unknown",
+          "reason": "Pixel flags were inspected near a hypothetical position, not a confirmed source.",
+          "evidence_refs": []
+        },
+        "uncertainty": {
+          "status": "unknown",
+          "reason": "Position and measurement uncertainty have not been established.",
+          "evidence_refs": []
+        },
+        "method": {
+          "status": "unknown",
+          "reason": "No defensible motion or brightness measurement exists.",
+          "evidence_refs": []
+        },
+        "spectral_compatibility": {
+          "status": "unknown",
+          "reason": "Wavelengths correspond to hypothetical positions, not a confirmed source.",
+          "evidence_refs": []
+        },
+        "photometric_response": {
+          "status": "unknown",
+          "reason": "Evidence not provided.",
+          "evidence_refs": []
+        },
+        "background": {
+          "status": "unknown",
+          "reason": "Evidence not provided.",
+          "evidence_refs": []
+        }
+      }
+    }
+  }
+}

@@ -3,6 +3,11 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- Ciencia: revisión estática de mensajes de demo en `docs/specs/0035`; distinguir cuadrícula de alineación comprobada, controles no ejecutados y posición predicha de detección. Correcciones de UI/backend y revisión visual pendientes de sus dueños. `main` avanzó a `4fe5d25` (PR #8).
+- Ciencia: ficha `0034`, listas separadas por método y pruebas sintéticas; ε Indi B y WISE 0855 siguen pendientes de validación. Mateo tiene medición candidata D3 en rama `feat/measurement-motion` (`3760e8a`), con registro sin verificar; aún no integrada.
+- Ciencia (`scientific-rules`): controles y vista local de dos pares; falta evidencia de posición, alineación y calidad para declarar un par evaluado. `docs/specs/0030`–`0033` detallan límites y pasos.
+- Guía de coordinación propuesta: `docs/ciclos-entrega-skyshift.md`. Roles confirmados por el usuario; la asignación de carpetas y revisión de interfaces siguen pendientes.
+- Integración científica pendiente: acordar con Johann y Mateo cómo conectar los controles del prototipo al semáforo del backend; no asumir que la función genérica garantiza todos los controles obligatorios.
 - **14-nov noche · rama `integration/main-ready` (Dax + agentes):** producto funcional de punta a punta.
   - Backend `backend/` (FastAPI, hexagonal ADR 0040/0041): `/resolve`, `/search` (148 objetos reales + tolerante a errores, ADR 0044), `/observations`, `/series`, `/series/{id}/frames/{i}`, `/hips`. Caché local→IRSA por capas, un cortacircuitos por servicio. 141 tests.
   - Frontend `frontend/`: app única (`index.html`): mapa propio WebGL2 tipo Aladin (ADR 0042) + rail de los 5 objetos del reto + panel temporal con línea de tiempo, Loop/Diferencia/Color, semáforo y procedencia (ADR 0043). 99 tests (1 intermitente, ver PR).
@@ -10,7 +15,7 @@ Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o 
   - Correr: `mise run api-dev` + `mise run web-dev` (o `uv run --directory backend uvicorn --factory skyshift.api.app:create_app` y `pnpm --dir frontend dev`). Smoke en vivo: `mise run smoke`.
   - Pendiente: buscador del frontend aún no usa `/search`; app usa tween propio en vez de `engine.flyTo`; test de arrastre intermitente; revisión de paridad visual (R1) sobre el motor nuevo; UI necesita otra ronda (feedback de Dax: "pésima").
 - La demo vieja de WISE 0855 (`~/Desktop/skyshift-demo`) NO contiene a WISE 0855 (posición de 2010): no usarla.
-- Ciclo 1 (rama `docs/arquitectura-observation`): **borrador** `docs/specs/0001-arquitectura-observation.md` (flujo de datos, `Observation` propuesto, matriz de interfaces, fallos). Johann lo propone; roles y contrato **sin ratificar**. Falta la revisión de Mateo y Daniel, de Sebastián (requisitos científicos) y de Dax (frontera `Region`).
+- Ciclo 1 (rama `docs/arquitectura-observation`): **borrador** `docs/specs/0001-arquitectura-observation.md` (flujo de datos, `Observation` propuesto, matriz de interfaces, fallos). Falta la revisión de Mateo y Daniel, de Sebastián (requisitos científicos) y de Dax (frontera `Region`).
 - Contrastado con un producto DR1 real: el tiempo de la cabecera es UTC; `obs_id` no distingue detector ni versión; `em_min/em_max` cubren el detector entero; λ científica = `CWAVE`/`CBAND`; `WCS-WAVE` es aproximación para selección según D12 §2.2. Esto contradice `context/03` §3 y `context/06` §5.2, que aún no se corrigen.
 
 - Pitch (14-nov tarde): presentación ES de 7 diapositivas hecha como Artifact (fuera del repo), con fotos reales de NASA y el guion en las notas. Faltan animaciones por afinar, la versión en inglés, los dos PDF, el nombre y las capturas de la app. Detalle y enlace: `docs/HANDOFF_PITCH.md`.
@@ -27,19 +32,19 @@ Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o 
 | Dom 11:00 | Pitch en español + Q&A |
 | Dom 23:59 | Cierre global |
 
-## Dueños (pendiente de asignar)
+## Dueños (roles confirmados; carpetas pendientes)
 | Persona | Rol | Carpetas |
 | --- | --- | --- |
-| Dax | — | — |
-| — | — | — |
-| — | — | — |
-| — | — | — |
-| — | — | — |
+| Dax | Región y visor | Pendiente |
+| Johann | Datos e integración | Pendiente |
+| Mateo | Mediciones de movimiento y brillo | Pendiente |
+| Sebastián | Validación e interpretación científica | Pendiente |
+| Daniel | UX e interfaz | Pendiente |
 
 ## Decisiones pendientes (del equipo, no de la IA)
 1. Visión de producto y "momento wow" (ver `docs/context/04-vision-ux.md`).
 2. Stack: el de ADR 0003 es solo recomendación; cada dueño de módulo decide con su agente y deja ADR. Elegir el hosting del backend (Cloud Run pide tarjeta; HF Spaces no).
-3. Reparto de roles.
+3. Asignación de carpetas y fronteras detalladas entre roles.
 4. Nombre de la app (provisional: SkyShift).
 
 ## Bloqueos y riesgos

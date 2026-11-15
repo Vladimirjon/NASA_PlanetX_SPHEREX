@@ -4,6 +4,12 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 
 | Date | Tool | Purpose | Human review |
 | --- | --- | --- | --- |
+| 2026-11-14 | Codex (OpenAI) | Implement offline scientific checks and a local explanatory preview using IRSA cutouts | Sebastián, Johann and Mateo still need to validate scientific integration and case evidence |
+| 2026-11-14 | Codex (OpenAI) + research subagents | Investigate numerical comparison criteria against IRSA documentation and Mateo's current branch | Thresholds are scoped/provisional; no pair certified and reproducibility checks remain pending |
+| 2026-11-14 | Codex (OpenAI) | Check exploratory target coordinates and pixel values in two SPHEREx cutouts with Astropy | Identity and detection remain unverified; pixel values are not reported as target photometry |
+| 2026-11-14 | Codex (OpenAI) + research subagents | Examine WISE 0855 candidate pair, exploratory coordinates, cutouts, quality planes and spectral calibration | Human/scientific validation pending; positions and spectral values exploratory, no detection asserted |
+| 2026-11-14 | Codex (OpenAI) | Query IRSA SIA2 and inspect original FITS headers to fill WISE 0855 candidate controls | Source IDs and observation times checked; source detection and pair validity not evaluated |
+| 2026-11-14 | Codex (OpenAI) + research subagents | Rebuild science validation draft against Johann's Observation proposal and NASA/IPAC sources | Sebastián, Johann and Mateo review pending; no scientific results asserted |
 | 2026-11-14 | Claude Code (Claude Opus 5.5) | Research of challenge rules, data APIs and agent standards; drafting team context docs | Team reads and validates; decisions recorded in ADRs |
 | 2026-11-14 | Claude Code (Claude Opus 5.5) + research subagents | Evidence-based skill selection, cross-platform toolchain and stack research; drafting standards (docs/context/05–08, ADRs 0003–0005) | Dax reviews; stack ADR pending team approval |
 | 2026-11-14 | Codex | Investigación de región, caché y descarga experimental de recortes IRSA; ficha borrador | Revisión humana y científica pendientes |
@@ -32,3 +38,6 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-14 | Claude Code (Claude Opus 5.5) | Revised specs 0010/0011 and ADR 0010 after Johann's review, Sebastián's 2nd message (verified χ² threshold with scipy) and the main triage; read backend layout to avoid duplicating domain code | Mateo reviews; reviewers: Johann, Sebastián, Dax |
 | 2026-11-14 | Claude Code (Claude Opus 5.5) | Phase 0 for the first delivery: added scope section 0 to spec 0010 (Sebastián's conditions A1–A6), reduced plan 0011 to motion only with reuse of `science/validation.py`, marked ADR 0010 accepted after Dax's and Johann's approval | Mateo reviews; Sebastián approves spec 0010 before any code |
 | 2026-11-14 | Claude Code (Claude Opus 5.5) | Drafted `contracts/observation.schema.json`, `contracts/package-manifest.schema.json`, examples and `scripts/check_contracts.py`; the real example was generated from a live IRSA query, and the ID rule was tested on 906 real rows | Pending: Johann reviews; Mateo and Daniel review the contract; cross-model review noted in the PR |
+| 2026-11-14 | Codex | Incorporación de ciclos aportados por el usuario, sincronización con main y revisión del estado del prototipo científico | Revisión humana y de Johann/Mateo pendiente |
+| 2026-11-14 | Codex | Listas de control por método, pruebas sintéticas, estado de pares e investigación de límites | Revisión científica humana y de Johann/Mateo pendiente |
+| 2026-11-14 | Codex | Revisión estática de textos científicos, controles y procedencia de la demo | Daniel y responsable del backend revisan; prueba visual y revisión humana pendientes |
