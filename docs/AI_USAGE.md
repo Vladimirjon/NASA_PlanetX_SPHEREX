@@ -83,3 +83,5 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-14 | Claude Code (Claude Sonnet 5.5) + Codex (gpt-6-luna, low) | Guion y diapositivas del pitch (Artifact de 7 diapositivas, fuera del repo): estructura, textos, notas del orador, ajuste del wordmark de Copernix (ampliado y afilado, sin cambiar el diseño) y uso de capturas reales del visor; Codex solo sacó las capturas de pantalla de `docs/pitch/capturas/` | El equipo revisa, corrige y es dueño del contenido; el logotipo y el icono los generó ChatGPT Images (ya declarados arriba); cifras de Epsilon Indi B pendientes de Sebastián |
 
 | 2026-11-15 | Codex | Ajustes de textos y despliegue del backend en home-server con Cloudflare Tunnel | Dax configuró el hostname; Daniel conecta Vercel; prueba de serie real completada |
+
+| 2026-11-15 | Codex | Diagnóstico de dependencia ausente y verificación del paquete estático | Revisión humana y redespliegue pendientes |

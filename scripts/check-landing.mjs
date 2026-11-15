@@ -20,6 +20,13 @@ function inspect(file){
   for(const m of code.matchAll(/from\s+['"](\.[^'"]+)['"]/g))inspect(path.resolve(path.dirname(file),m[1]));
 }
 inspect(path.join(root,'js/app.js'));
+const bundle=path.resolve(root,'..','dist','landing');
+if(fs.existsSync(bundle)){
+  for(const file of visited){
+    const relative=path.relative(root,file);
+    assert.ok(fs.existsSync(path.join(bundle,relative)),`Missing bundled JavaScript dependency: ${relative}`);
+  }
+}
 for(const name of ['styles.css']){
   const css=fs.readFileSync(path.join(root,'css',name),'utf8');
   for(const match of css.matchAll(/backdrop-filter\s*:\s*([^;}]+)/g))assert.equal(match[1].trim(),'none','Backdrop blur reintroduced');
