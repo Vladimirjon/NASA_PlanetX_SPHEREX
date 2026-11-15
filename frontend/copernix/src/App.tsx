@@ -41,8 +41,6 @@ import {
 import { featuredLabelVisibility } from './featured-marker-layout';
 import { delay, INTRO_DELAY_MS, INTRO_FLY_MS, INTRO_GLOBE } from './intro-flight';
 import { shouldShowIntro } from './intro';
-import { Journey } from './journey/Journey';
-import { GALACTIC_CENTER } from './journey/journey-math';
 import { timelineDateVisibility } from './timeline-labels';
 import { formatLightLabel, formatVisitDate } from './light-label';
 import { parseNameParam } from './name-url';
@@ -68,27 +66,6 @@ const ANALYZE_FOV_DEG = 0.5;
 const FOV_ARCMIN = 5;
 const DEFAULT_TARGET = 'wise-0855';
 const GLOBE_FOV_THRESHOLD = 45;
-
-/** `?journey=1` (landing "Explore the sky") plays the satellite → Milky Way intro before the globe. */
-function journeyFromSearch(search: string): boolean {
-  return new URLSearchParams(search).get('journey') === '1';
-}
-
-type Gate = { readonly promise: Promise<void>; readonly open: () => void };
-function createGate(open: boolean): Gate {
-  let release: () => void = () => undefined;
-  const promise = open
-    ? Promise.resolve()
-    : new Promise<void>(r => {
-        release = r;
-      });
-  return {
-    promise,
-    open: () => {
-      release();
-    },
-  };
-}
 
 function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -181,13 +158,6 @@ export function App() {
   const nameParse = parseNameParam(window.location.search);
   const nameFromUrl = nameParse.kind === 'ok' ? nameParse.name : null;
   const mapOff = mapOffFromSearch(window.location.search);
-  const [journeyOn, setJourneyOn] = useState(
-    () => journeyFromSearch(window.location.search) && !mapOff && !prefersReducedMotion(),
-  );
-  const journeyGate = useRef<Gate | null>(null);
-  journeyGate.current ??= createGate(!journeyOn);
-  // after the journey the globe opens on the galactic centre, the view the journey ends on
-  const introGlobe = useRef(journeyOn ? { ...INTRO_GLOBE, ra: GALACTIC_CENTER.ra, dec: GALACTIC_CENTER.dec } : INTRO_GLOBE).current;
   const bootState: AppUrlState =
     initialParse.kind === 'invalid'
       ? { target: null, ra: null, dec: null, fov: 40, plane: 0, t: 0, mode: 'loop', proj: 'SIN' }
@@ -314,11 +284,11 @@ export function App() {
       sky = createSkyEngine(canvasRef.current, {
         initialView: globeBoot
           ? {
-              ra: introGlobe.ra,
-              dec: introGlobe.dec,
-              fov: introGlobe.fov,
+              ra: INTRO_GLOBE.ra,
+              dec: INTRO_GLOBE.dec,
+              fov: INTRO_GLOBE.fov,
               plane: bootState.plane,
-              proj: introGlobe.proj,
+              proj: INTRO_GLOBE.proj,
             }
           : {
               ra: bootState.ra ?? target?.ra ?? 133.7952573,
@@ -716,14 +686,13 @@ export function App() {
     introFlyAbort.current = ac;
     setIntroFlying(true);
     sky.setView({
-      ra: introGlobe.ra,
-      dec: introGlobe.dec,
+      ra: INTRO_GLOBE.ra,
+      dec: INTRO_GLOBE.dec,
       fov: maxFov('SIN'),
       plane: sky.getView().plane,
       proj: 'SIN',
     });
     try {
-      await journeyGate.current?.promise;
       await delay(INTRO_DELAY_MS, ac.signal);
       await map.flyTo({ ra: target.ra, dec: target.dec, fov: ANALYZE_FOV_DEG }, { durationMs: INTRO_FLY_MS });
     } catch {
@@ -1735,24 +1704,13 @@ export function App() {
       <div
         className="load-bar load-bar-busy"
         aria-hidden="true"
-        data-active={!journeyOn && (seriesStatus === 'loading' || engineStatus.startsWith('Loading sky images'))}
+        data-active={seriesStatus === 'loading' || engineStatus.startsWith('Loading sky images')}
       />
-
-      {journeyOn ? (
-        <Journey
-          lang={lang}
-          skipLabel={t(lang, 'skipIntroFly')}
-          onDone={() => {
-            setJourneyOn(false);
-            journeyGate.current?.open();
-          }}
-        />
-      ) : null}
 
       <IntroGuide
         lang={lang}
         open={introOpen}
-        allowShow={!introFlying && !journeyOn}
+        allowShow={!introFlying}
         onClose={() => {
           setIntroOpen(false);
         }}

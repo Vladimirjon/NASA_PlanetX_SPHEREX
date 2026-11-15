@@ -1,12 +1,7 @@
-/* Warm the browser cache for the viewer and its entry journey while the visitor reads the landing.
+/* Warm the browser cache for the viewer bundle while the visitor reads the landing.
    Idle-time only, low priority (<link rel="prefetch">), once per page; skipped on Save-Data or 2G.
    The first hover/focus on an "Explore the sky" link starts it immediately. */
 const VIEWER='/viewer/';
-const JOURNEY=[
-  '/viewer/journey/earth-day.webp','/viewer/journey/earth-night.webp','/viewer/journey/milkyway.webp',
-  '/model/spherex.gltf','/model/spherex.bin','/model/spherex_albedo_webp.webp','/model/spherex_normals.webp',
-  '/model/spherex_pbr.webp','/model/foil_normal.webp','/model/corrugated_normal.webp',
-];
 let started=false;
 
 function slowNetwork(){
@@ -30,7 +25,6 @@ export function startPrefetch(){
   if(started||slowNetwork())return;
   started=true;
   void viewerBundle();
-  for(const href of JOURNEY)hint(href);
 }
 export function schedulePrefetch(){
   if(slowNetwork())return;
