@@ -738,7 +738,8 @@ body {
 
 .dock-row {
   display: flex;
-  gap: 0.55rem;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
   align-items: center;
   width: 100%;
 }
@@ -888,8 +889,8 @@ body {
 
 .timeline {
   position: relative;
-  flex: 1;
-  min-width: 100px;
+  flex: 1 1 240px;
+  min-width: 200px;
   height: 52px;
   padding-top: 14px;
 }
@@ -955,13 +956,19 @@ body {
   visibility: visible;
 }
 
+.dock-break {
+  flex: 0 0 100%;
+  height: 0;
+}
+
 .mode-chips {
   display: flex;
   gap: 0.25rem 0.55rem;
   flex-wrap: wrap;
   align-items: center;
-  flex: 1 1 180px;
-  justify-content: flex-end;
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: flex-start;
 }
 
 .mode-item {
@@ -1482,9 +1489,22 @@ body {
     font-size: 2.2rem;
   }
 
+}
+
+/* wide screens: the dock sits beside the column, so the column can use the full height */
+@media (min-width: 1101px) {
   .viewer:not(.is-mobile) .left-col {
-    max-height: calc(100dvh - 96px - 10rem);
+    bottom: 1.5rem;
+    max-height: calc(100dvh - 4.5rem - 1.5rem);
     overflow-y: auto;
+  }
+
+  /* the guide button joins the top-right corner, next to ES | EN */
+  .viewer:not(.is-mobile) .what-seeing {
+    top: 1.45rem;
+    right: 7rem;
+    left: auto;
+    bottom: auto;
   }
 }
 

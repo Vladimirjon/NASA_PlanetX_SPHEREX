@@ -40,6 +40,7 @@ import { shouldShowIntro } from './intro';
 import { timelineDateVisibility } from './timeline-labels';
 import { formatLightLabel, formatVisitDate } from './light-label';
 import { parseNameParam } from './name-url';
+import { describeMotionAnalysis, loadMotionAnalysis, motionDetailRows, type MotionAnalysis } from './analysis/motion-analysis';
 import {
   createSelection,
   reduceSelection,
@@ -193,6 +194,7 @@ export function App() {
   const [progress, setProgress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState<LoadedSeries | null>(null);
+  const [measured, setMeasured] = useState<MotionAnalysis | null>(null);
   const [frameIndex, setFrameIndex] = useState(bootState.t);
   const [playing, setPlaying] = useState(!prefersReducedMotion());
   const [mode, setMode] = useState<ViewMode>(bootState.mode);
@@ -637,7 +639,21 @@ export function App() {
         })),
       )
     : null;
-  const level = series?.comparability.level ?? null;
+  const measuredSlug = selection.mode === 'target' ? selection.slug : null;
+  useEffect(() => {
+    setMeasured(null);
+    if (!measuredSlug) return undefined;
+    const ac = new AbortController();
+    void loadMotionAnalysis(measuredSlug, ac.signal).then(m => {
+      if (!ac.signal.aborted) setMeasured(m);
+    });
+    return () => {
+      ac.abort();
+    };
+  }, [measuredSlug]);
+  // the result file caps the traffic light (interpretation_ceiling = OBSERVED)
+  const rawLevel = series?.comparability.level ?? null;
+  const level = measured && rawLevel === 'EVALUATED' ? 'OBSERVED' : rawLevel;
   const motion = series ? describeExpectedMotionI18n(lang, series) : null;
   const demoNotice =
     loaded?.sourceKind === 'demo' ||
@@ -667,8 +683,11 @@ export function App() {
     return '';
   })();
 
+  const measuredLine = measured ? describeMotionAnalysis(lang, measured, titleName || '—') : null;
   const changeLine =
-    seriesStatus === 'ready' && series
+    seriesStatus === 'ready' && series && measuredLine
+      ? measuredLine
+      : seriesStatus === 'ready' && series
       ? describeChangeLineI18n(lang, series, titleName || '—', {
           variableHint: isVariableFeatured(selection.slug),
         })
@@ -804,6 +823,20 @@ export function App() {
         <p>{describeTimeSpanI18n(lang, series.frames)}</p>
         {motion ? <p>{motion}</p> : null}
         {series.frames.length < 2 ? <p>{t(lang, 'noSeriesFriendly')}</p> : null}
+        {measured ? (
+          <>
+            <p className="explain-note">{lang === 'es' ? 'Medición de movimiento (resultado precalculado)' : 'Motion measurement (precomputed result)'}</p>
+            <dl className="prov-list mono">
+              {motionDetailRows(lang, measured).map(r => (
+                <div key={r.label}>
+                  <dt>{r.label}</dt>
+                  <dd>{r.value}</dd>
+                </div>
+              ))}
+            </dl>
+            {measured.independenceNote ? <p className="explain-note">{measured.independenceNote}</p> : null}
+          </>
+        ) : null}
         <p className="explain-note">{t(lang, 'neverConfirmed')}</p>
       </div>
       <dl className="prov-list mono">
@@ -1308,13 +1341,14 @@ export function App() {
                 />
               ),
             )}
-            {timeline && timeline.markers.some(m => m.kind === 'frame') ? (
+            {timeline && timelineWidth >= 200 && timeline.markers.some(m => m.kind === 'frame') ? (
               <>
                 <span className="timeline-end left mono">{t(lang, 'oldest')}</span>
                 <span className="timeline-end right mono">{t(lang, 'newest')}</span>
               </>
             ) : null}
           </div>
+          <div className="dock-break" aria-hidden="true" />
           <div className="mode-chips" role="group" aria-label="View mode">
             {(
               [
