@@ -8,6 +8,9 @@
 
 Start with [AGENTS.md](AGENTS.md), then [docs/STATE.md](docs/STATE.md) and [docs/context/](docs/context/). Setup (Fedora / Windows): install [mise](docs/context/08-entorno-y-comandos.md), then `mise trust`, `mise install`, `mise run setup`.
 
+**EN** · For data, measurement and science work on one computer, use the [local coordination guide](docs/context/13-trabajo-en-una-computadora.md).
+**ES** · Para coordinar datos, mediciones y ciencia en una computadora, usa la [guía de trabajo local](docs/context/13-trabajo-en-una-computadora.md).
+
 ## Quick start / Inicio rápido
 
 **EN** · Backend (Python 3.13 + uv) and frontend (Node + pnpm) run the same on Fedora and Windows.

@@ -1,3 +1,4 @@
+import type { GuidedPairMeasurement } from '../core/guided-pair';
 import type { components } from '../../api/schema';
 
 export type Series = components['schemas']['Series'];
@@ -11,6 +12,7 @@ export type LoadedSeries = {
   readonly resolve?: ResolvedName;
   readonly demoSlug?: string;
   readonly notice?: string;
+  readonly guidedPair?: GuidedPairMeasurement;
 };
 
 export type SeriesLookup =

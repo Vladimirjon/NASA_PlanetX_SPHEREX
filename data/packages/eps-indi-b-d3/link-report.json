@@ -1,0 +1,72 @@
+{
+  "exposures": {
+    "A": {
+      "observation_id": "spherex:dr1:2025W24_1A_0245_4:D3:l2b-v27-2026-201",
+      "t_mid_utc": "2025-06-10T04:34:17.284",
+      "native_box_0based": {
+        "x0": 759,
+        "y0": 1111,
+        "nx": 70,
+        "ny": 70
+      },
+      "link_identical": {
+        "IMAGE": true,
+        "FLAGS": true,
+        "VARIANCE": true,
+        "ZODI": true
+      },
+      "calibration_link": {
+        "extension": "WCS-WAVE",
+        "byte_identical": true,
+        "calibration_sha256": "51750c8f948a30541d391e54930279aa067c62c398a7cc2679e592bc6044427a"
+      },
+      "wcs_offset_px": [
+        0.0,
+        0.0
+      ],
+      "target_native_pixel": [
+        793.6473325190804,
+        1145.8136532041958
+      ],
+      "cwave_um": 1.934140682220459,
+      "cband_um": 0.04708682373166084,
+      "flags_or_in_box": 271190085,
+      "original_sha256": "768aeb49a6fae74800631bb480dc4524f020b59eb5437f8bf4032bffc3244e9e",
+      "cutout_sha256": "e153d94619c440f066ea4ceff3c63c8aeb0fc7e7e579d070e0a209a445a2c2f7"
+    },
+    "B": {
+      "observation_id": "spherex:qr3:2026W40_1A_0070_2:D3:l2b-v27-2026-276",
+      "t_mid_utc": "2026-09-28T08:05:41.877",
+      "native_box_0based": {
+        "x0": 159,
+        "y0": 1149,
+        "nx": 70,
+        "ny": 70
+      },
+      "link_identical": {
+        "IMAGE": true,
+        "FLAGS": true,
+        "VARIANCE": true,
+        "ZODI": true
+      },
+      "calibration_link": {
+        "extension": "WCS-WAVE",
+        "byte_identical": true,
+        "calibration_sha256": "51750c8f948a30541d391e54930279aa067c62c398a7cc2679e592bc6044427a"
+      },
+      "wcs_offset_px": [
+        0.0,
+        -2.2737367544323206e-13
+      ],
+      "target_native_pixel": [
+        193.8996380215239,
+        1183.5488427957366
+      ],
+      "cwave_um": 1.9333966970443726,
+      "cband_um": 0.047672659158706665,
+      "flags_or_in_box": 271188039,
+      "original_sha256": "90625279f33ca0e046d3b6adc35e3e49b53e4f648b97c79d794b9f4135ed2968",
+      "cutout_sha256": "fd6c09d6ab64c46db491f46cd83a76ca4fc3b0532b8f3c033e610f7f603a351b"
+    }
+  }
+}

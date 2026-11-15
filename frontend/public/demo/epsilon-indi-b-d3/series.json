@@ -1,0 +1,104 @@
+{
+  "series_id": "eps-indi-b-d3-pair",
+  "target": {
+    "ra": 331.0969161851823,
+    "dec": -56.8008866648807
+  },
+  "fov_arcmin": 3.1,
+  "detector": 3,
+  "grid": {
+    "shape": [
+      31,
+      31
+    ],
+    "crval_deg": [
+      331.0969161851823,
+      -56.8008866648807
+    ],
+    "pixel_scale_arcsec": 6.15,
+    "projection": "TAN"
+  },
+  "frames": [
+    {
+      "visit_id": "d3-a",
+      "obs_id": "ivo://irsa.ipac/spherex_dr1?2025W24_1A_0245_4/D3",
+      "t_mid": "2025-06-10T04:34:17.284Z",
+      "mjd_mid": 60836.190477821,
+      "detector": 3,
+      "wavelength_um": 1.934120774269104,
+      "bandwidth_um": 0.04693116992712021,
+      "unit": "MJy / sr",
+      "provenance": {
+        "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W24_1A/l2b-v27-2026-201/3/level2_2025W24_1A_0245_4D3_spx_l2b-v27-2026-201.fits",
+        "collection": "spherex_dr1",
+        "retrieved_at": "2026-11-15T02:01:08Z",
+        "cache_layer": "precomputed",
+        "sha256": "768aeb49a6fae74800631bb480dc4524f020b59eb5437f8bf4032bffc3244e9e"
+      },
+      "index": 0,
+      "data_url": "demo/epsilon-indi-b-d3/frame-0.f32",
+      "stats": {
+        "p01": -0.03589494451880455,
+        "p50": 0.014897290617227554,
+        "p99": 0.7960397720336919,
+        "masked_fraction": 0.10093652445369407
+      }
+    },
+    {
+      "visit_id": "d3-b",
+      "obs_id": "ivo://irsa.ipac/spherex_qr3?2026W40_1A_0070_2/D3",
+      "t_mid": "2026-09-28T08:05:41.877Z",
+      "mjd_mid": 61311.33729024,
+      "detector": 3,
+      "wavelength_um": 1.9333099126815796,
+      "bandwidth_um": 0.04764776676893234,
+      "unit": "MJy / sr",
+      "provenance": {
+        "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W40_1A/l2b-v27-2026-276/3/level2_2026W40_1A_0070_2D3_spx_l2b-v27-2026-276.fits",
+        "collection": "spherex_qr3",
+        "retrieved_at": "2026-11-15T02:01:20Z",
+        "cache_layer": "precomputed",
+        "sha256": "90625279f33ca0e046d3b6adc35e3e49b53e4f648b97c79d794b9f4135ed2968"
+      },
+      "index": 1,
+      "data_url": "demo/epsilon-indi-b-d3/frame-1.f32",
+      "stats": {
+        "p01": -0.03589494451880455,
+        "p50": 0.014897290617227554,
+        "p99": 0.7960397720336919,
+        "masked_fraction": 0.045785639958376693
+      }
+    }
+  ],
+  "rejected": [],
+  "comparability": {
+    "level": "OBSERVED",
+    "checks": [
+      {
+        "name": "distinct_observations",
+        "passed": true,
+        "detail": "Two D3 exposures on separate dates."
+      },
+      {
+        "name": "common_display_grid",
+        "passed": true,
+        "detail": "Reprojected onto a common sky grid for display."
+      },
+      {
+        "name": "local_flags",
+        "passed": true,
+        "detail": "Reviewed flags around measured centres and fit windows."
+      },
+      {
+        "name": "measurement_uncertainty_review",
+        "passed": false,
+        "detail": "The uncertainty model is provisional."
+      }
+    ]
+  },
+  "provenance": {
+    "source_url": "https://irsa.ipac.caltech.edu/Missions/spherex.html",
+    "retrieved_at": "2026-11-15T02:01:21Z",
+    "cache_layer": "precomputed"
+  }
+}
