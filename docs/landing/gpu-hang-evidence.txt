@@ -1,0 +1,4 @@
+Nov 14 21:36:01 DELL-DANIEL kernel: i915 0000:00:02.0: [drm] GPU HANG: ecode 12:1:878afaf0, in chrome [5230]
+Nov 14 21:36:13 DELL-DANIEL kernel: Fence expiration time out i915-0000:00:02.0:QSGRenderThread[4269]:664!
+Nov 14 21:36:42 DELL-DANIEL kernel: i915 0000:00:02.0: [drm] GPU HANG: ecode 12:1:878afaf0
+Nov 14 21:36:43 DELL-DANIEL kernel: i915 0000:00:02.0: [drm] *ERROR* GT0: Failed to reset chip

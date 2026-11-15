@@ -30,6 +30,18 @@ run = "uv run --no-project python scripts/sync_skills.py --check"
 description = "Validate contracts/*.schema.json and every example (spec 0001); offline"
 run = "uv run --locked --script scripts/check_contracts.py"
 
+[tasks.landing]
+description = "Serve landing + viewer proxy + /api at http://127.0.0.1:4410"
+run = "uv run --no-project python scripts/serve_landing.py"
+
+[tasks.copernix-build]
+description = "Install frontend deps and build the Copernix viewer into frontend/dist-copernix"
+run = ["pnpm --dir frontend install --frozen-lockfile", "pnpm --dir frontend build:copernix"]
+
+[tasks.copernix]
+description = "API plus unified landing/viewer server (Ctrl-C stops both)"
+run = "uv run --no-project python scripts/run_copernix.py"
+
 # Added when the stack is approved and frontend/ + backend/ exist (see docs/context/08):
 # dev, dev:api, dev:web, test, lint, fmt, build, gen-api, precompute
 

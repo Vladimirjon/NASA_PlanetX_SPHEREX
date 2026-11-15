@@ -1,0 +1,81 @@
+{
+  "sections": [
+    {
+      "id": "hero",
+      "len": "1.7"
+    },
+    {
+      "id": "problem",
+      "len": "2.6"
+    },
+    {
+      "id": "blink",
+      "len": "2.2"
+    },
+    {
+      "id": "data",
+      "len": "1.6"
+    },
+    {
+      "id": "colors",
+      "len": "2"
+    },
+    {
+      "id": "method",
+      "len": ""
+    },
+    {
+      "id": "who",
+      "len": ""
+    },
+    {
+      "id": "how",
+      "len": "2.4"
+    },
+    {
+      "id": "why",
+      "len": "1.6"
+    },
+    {
+      "id": "go",
+      "len": "1"
+    }
+  ],
+  "framesPerSecondAtRest": 15,
+  "hiddenFrames": 0,
+  "webglCalls": 0,
+  "modelAndThreeRequests": 0,
+  "pixels": [
+    {
+      "id": "bg",
+      "pixels": 329160
+    },
+    {
+      "id": "sky1",
+      "pixels": 900158
+    },
+    {
+      "id": "cA",
+      "pixels": 900158
+    },
+    {
+      "id": "cB",
+      "pixels": 900158
+    },
+    {
+      "id": "satGL",
+      "pixels": 900158
+    },
+    {
+      "id": "cH",
+      "pixels": 329160
+    },
+    {
+      "id": "whyDot",
+      "pixels": 42120
+    }
+  ],
+  "errors": [],
+  "bad": [],
+  "interactions": "PASS: original scroll progression, compare, satellite yaw/pitch, reduced motion, spectrum, timeline, reveal, hidden/resume, language, mobile"
+}

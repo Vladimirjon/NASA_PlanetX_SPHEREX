@@ -6,9 +6,11 @@
   "scripts": {
     "gen:api": "openapi-typescript ../contracts/openapi.yaml -o src/api/schema.d.ts",
     "test": "vitest run",
-    "lint": "tsc --noEmit && eslint src tests",
+    "lint": "tsc --noEmit && eslint src tests copernix vite.copernix.config.ts",
     "build": "tsc --noEmit && vite build",
     "dev": "vite",
+    "dev:copernix": "vite -c vite.copernix.config.ts",
+    "build:copernix": "tsc --noEmit && vite build -c vite.copernix.config.ts",
     "test:smoke": "node smoke.mjs",
     "test:series-smoke": "node series-smoke.mjs",
     "test:app-smoke": "node app-smoke.mjs"

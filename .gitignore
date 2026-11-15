@@ -14,6 +14,7 @@ __pycache__/
 # Node
 node_modules/
 dist/
+dist-copernix/
 .vite/
 coverage/
 playwright-report/

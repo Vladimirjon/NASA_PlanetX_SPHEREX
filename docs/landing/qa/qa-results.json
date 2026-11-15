@@ -1,0 +1,38 @@
+{
+  "idleFrames": 0,
+  "interactions": "PASS: CTA, play/pause, scrub, show, hidden/visible, offscreen pause, compare, bands, tabs",
+  "gpu": {
+    "webglCalls": 0,
+    "modelOrThreeRequests": 0
+  },
+  "accessibility": {
+    "dark": [],
+    "light": [],
+    "mobile": [],
+    "reduced": []
+  },
+  "errors": [],
+  "badRequests": [],
+  "canvasPixels": [
+    {
+      "id": "sky1",
+      "pixels": 899810
+    },
+    {
+      "id": "cA",
+      "pixels": 899810
+    },
+    {
+      "id": "cB",
+      "pixels": 899810
+    },
+    {
+      "id": "cH",
+      "pixels": 899810
+    },
+    {
+      "id": "whyDot",
+      "pixels": 62400
+    }
+  ]
+}

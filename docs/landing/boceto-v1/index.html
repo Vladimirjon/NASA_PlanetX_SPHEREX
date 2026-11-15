@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#04050b">
+<meta name="color-scheme" content="dark">
+<title>NA ZA · Planet X and SPHEREx · Landing boceto v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#04050b; --deep:#0a0f24; --bone:#e9ecf5; --dim:#a3abc4;
+  --ember:#e8553a; --ice:#7fe7f0;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0}
+html{background:var(--ink);color:var(--bone);color-scheme:dark;scroll-behavior:smooth;overscroll-behavior-y:none}
+body{font:400 1.0625rem/1.55 var(--f-display);min-height:100vh;overflow-x:clip;-webkit-font-smoothing:antialiased}
+::selection{background:var(--ice);color:var(--ink)}
+:focus-visible{outline:2px solid var(--ice);outline-offset:3px;border-radius:6px}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:var(--ink)}::-webkit-scrollbar-thumb{background:#262d4a;border-radius:8px}
+a{color:inherit}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.skip{position:fixed;left:12px;top:-60px;z-index:100;background:var(--bone);color:var(--ink);padding:.6rem 1rem;border-radius:8px;transition:top .2s}
+.skip:focus{top:12px}
+
+/* ---------- liquid glass: solo instrumentos (dock, tabs, tooltip) ---------- */
+.glass{position:relative;isolation:isolate;border-radius:20px;
+  background:linear-gradient(140deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 55%,rgba(255,255,255,.08));
+  -webkit-backdrop-filter:blur(18px) saturate(1.6) brightness(1.06);backdrop-filter:blur(18px) saturate(1.6) brightness(1.06);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.36),inset 0 -1px 0 rgba(255,255,255,.06),0 18px 40px -18px rgba(0,0,0,.75)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:radial-gradient(240px circle at var(--mx,30%) var(--my,0%),rgba(255,255,255,.2),transparent 60%)}
+@supports not (backdrop-filter:blur(1px)){.glass{background:rgba(14,19,42,.94)}}
+
+/* ---------- nav: plana y discreta ---------- */
+.nav{position:fixed;z-index:50;top:12px;left:50%;translate:-50% 0;display:flex;align-items:center;gap:1rem;padding:.35rem .4rem .35rem 1rem;border-radius:999px;max-width:calc(100vw - 16px);
+  background:rgba(8,11,26,.5);border:1px solid rgba(255,255,255,.07)}
+.brand{font-weight:700;letter-spacing:.01em;text-decoration:none;white-space:nowrap;font-size:.95rem}
+.rail{display:flex;gap:.3rem;align-items:center}
+.rail a{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);transition:background .3s,width .3s var(--ease);display:block;position:relative}
+.rail a::after{content:"";position:absolute;inset:-10px -3px}
+.rail a[aria-current=true]{background:var(--ice);width:18px;border-radius:6px}
+.rail a:hover{background:rgba(255,255,255,.5)}
+.lang{display:flex;font:500 .75rem var(--f-mono)}
+.lang button{background:none;border:0;color:var(--dim);padding:.35rem .45rem;cursor:pointer;border-radius:6px}
+.lang button[aria-pressed=true]{color:var(--bone);text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--ice)}
+.navcta{font:500 .85rem var(--f-display);color:var(--bone);text-decoration:none;padding:.45rem .85rem;border-radius:999px;border:1px solid rgba(255,255,255,.16);white-space:nowrap;transition:background .2s}
+.navcta:hover{background:rgba(255,255,255,.1)}
+
+.btn{display:inline-flex;align-items:center;gap:.6rem;font:500 1rem/1 var(--f-display);color:var(--ink);background:var(--bone);border:0;border-radius:999px;padding:.85rem 1.35rem;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  box-shadow:inset 0 1px 0 #fff,0 8px 24px -8px rgba(127,231,240,.55);transition:transform .35s var(--ease),box-shadow .35s,background .2s}
+.btn:hover{transform:translateY(-2px) scale(1.02);background:#fff;box-shadow:inset 0 1px 0 #fff,0 14px 34px -8px rgba(127,231,240,.8)}
+.btn:active{transform:translateY(0) scale(.99)}
+.btn.sm{padding:.65rem 1.05rem;font-size:.9rem}
+.btn.ghost{background:transparent;color:var(--bone);box-shadow:none;border:1px solid rgba(255,255,255,.28)}
+.btn.ghost:hover{background:rgba(255,255,255,.1)}
+
+/* ---------- tooltips "?" ---------- */
+.tip{display:inline-grid;place-items:center;width:1.15em;height:1.15em;min-width:18px;min-height:18px;margin-left:.35em;vertical-align:.12em;border-radius:50%;
+  background:rgba(127,231,240,.1);border:1px solid rgba(127,231,240,.5);color:var(--ice);font:500 .72rem/1 var(--f-mono);cursor:help;padding:0;touch-action:manipulation;pointer-events:auto;transition:background .2s}
+.tip:hover,.tip[aria-expanded=true]{background:rgba(127,231,240,.28)}
+.tip::after{content:"";position:absolute;inset:0}
+.tip{position:relative}
+#tipbox{position:fixed;z-index:90;max-width:min(280px,calc(100vw - 20px));padding:.8rem .95rem;pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .18s,transform .25s var(--ease);font-size:.9rem;line-height:1.45;text-align:left;border-radius:14px}
+#tipbox.on{opacity:1;transform:none}
+#tipbox b{display:block;font-weight:700;margin-bottom:.2rem;color:var(--ice)}
+
+/* ---------- fondo universo ---------- */
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-2;display:block}
+.vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 90% at 50% 40%,transparent 40%,rgba(4,5,11,.75))}
+
+/* ---------- escenas ---------- */
+.scene{position:relative;height:calc(var(--len,2) * 100vh)}
+.stage{position:sticky;top:0;height:100vh;display:grid;place-items:center;overflow:hidden;padding:5rem clamp(1rem,5vw,4rem) 3rem}
+h1,h2{font-weight:500;line-height:1.02;letter-spacing:-.025em;text-wrap:balance}
+h1{font-size:clamp(2.8rem,8.5vw,7rem);font-weight:300}
+h2{font-size:clamp(2rem,5.4vw,4.6rem)}
+.lead{color:var(--dim);max-width:38ch;font-size:clamp(1.05rem,1.6vw,1.3rem);text-wrap:pretty}
+.center{text-align:center;display:grid;gap:1.4rem;justify-items:center;position:relative;z-index:2}
+.row{display:flex;gap:.7rem;flex-wrap:wrap;justify-content:center}
+.hint{position:absolute;bottom:1.6rem;left:50%;translate:-50% 0;display:grid;gap:.5rem;justify-items:center;color:var(--dim);font:400 .8rem var(--f-mono)}
+.hint i{width:1px;height:38px;background:linear-gradient(var(--ice),transparent);animation:drip 2s var(--ease) infinite;transform-origin:top}
+@keyframes drip{0%{transform:scaleY(0)}60%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+.full{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ph{position:absolute;border:1px dashed rgba(127,231,240,.45);border-radius:14px;color:rgba(127,231,240,.85);font:400 .72rem/1.35 var(--f-mono);padding:.55rem .7rem;pointer-events:none;background:rgba(127,231,240,.03);z-index:1}
+body:not(.notes) .ph{display:none}
+.ph b{display:block;font-weight:500;color:var(--ice)}
+.top{position:absolute;z-index:3;left:0;right:0;top:5.2rem;display:grid;justify-items:center;text-align:center;gap:.9rem;padding:0 1rem;pointer-events:none}
+.top .tip,.top a,.top button{pointer-events:auto}
+
+/* problema */
+.tag{position:absolute;font:500 .78rem var(--f-mono);color:var(--ice);background:rgba(4,5,11,.6);border:1px solid rgba(127,231,240,.4);padding:.25rem .55rem;border-radius:6px;translate:16px -50%;white-space:nowrap}
+.stack{display:grid;grid-template-areas:"s";align-items:center;justify-items:center;text-align:center;position:relative;z-index:2;pointer-events:none}
+.stack>*{grid-area:s}
+
+/* comparar (pantalla completa) */
+#cB{clip-path:inset(0 0 0 var(--x,50%))}
+.bar{position:absolute;top:0;bottom:0;left:var(--x,50%);width:2px;background:var(--bone);translate:-1px 0;box-shadow:0 0 18px rgba(255,255,255,.6);z-index:2;pointer-events:none}
+.knob{position:absolute;top:50%;left:var(--x,50%);width:46px;height:46px;translate:-50% -50%;border-radius:50%;display:grid;place-items:center;pointer-events:none;z-index:2}
+#cmpRange{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0;z-index:1;touch-action:pan-y}
+.stage:has(#cmpRange:focus-visible) .knob{outline:2px solid var(--ice);outline-offset:3px}
+.lbl{position:absolute;top:8.6rem;font:500 .78rem var(--f-mono);padding:.3rem .6rem;border-radius:8px;background:rgba(4,5,11,.65);border:1px solid rgba(255,255,255,.15);z-index:3;display:flex;align-items:center}
+.dock{position:absolute;z-index:4;left:50%;bottom:1.6rem;translate:-50% 0;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;justify-content:center;padding:.5rem .6rem;max-width:calc(100vw - 20px)}
+.note{font:400 .78rem var(--f-mono);color:var(--dim);padding:0 .5rem;display:flex;align-items:center}
+
+/* satélite */
+.sat{position:absolute;z-index:2;width:clamp(150px,22vw,260px);left:0;top:0;will-change:transform}
+.beam{position:absolute;z-index:1;inset:0;width:100%;height:100%;pointer-events:none}
+.flow{position:absolute;z-index:3;left:50%;bottom:2rem;translate:-50% 0;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;justify-content:center}
+.node{display:inline-flex;align-items:center;font:500 .9rem var(--f-display);padding:.6rem 1rem;border-radius:999px}
+.arrow{width:52px;height:2px;background:linear-gradient(90deg,transparent,var(--ice));position:relative}
+.arrow::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left:8px solid var(--ice);border-right:0}
+.pk{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--ice);box-shadow:0 0 10px var(--ice);z-index:2}
+
+/* espectro */
+.spec{display:grid;gap:1.4rem;width:min(1000px,92vw);justify-items:center;text-align:center;position:relative;z-index:2}
+.bars{display:flex;gap:2px;height:150px;align-items:flex-end;width:100%}
+.bars i{flex:1;background:hsl(var(--h) 80% 55%);height:var(--v,28%);border-radius:2px 2px 0 0;opacity:.3;transition:opacity .25s}
+.bars i.on{opacity:1}.bars i.near{opacity:.65}
+.lam{font:500 clamp(1.6rem,4vw,3rem)/1 var(--f-mono)}
+.lam small{color:var(--dim);font-size:.38em;margin-left:.5rem}
+
+/* uso (cielo = visor) */
+.hstack{display:grid;grid-template-areas:"s";justify-items:center;text-align:center}
+.hstack>div{grid-area:s;display:grid;gap:.7rem;justify-items:center;opacity:0;transform:translateY(14px);transition:opacity .5s var(--ease),transform .6s var(--ease);pointer-events:none}
+.hstack>div.on{opacity:1;transform:none}
+.hstack h2{font-size:clamp(1.9rem,4.6vw,3.8rem)}
+#tdesc{color:var(--ice);font:500 .95rem var(--f-display);min-height:1.5em}
+.use-dock{position:absolute;z-index:4;left:50%;bottom:1.4rem;translate:-50% 0;display:grid;gap:.6rem;justify-items:center;width:min(760px,calc(100vw - 20px));padding:.7rem .8rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center}
+.chip{font:500 .82rem var(--f-display);color:var(--bone);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:.45rem .85rem;cursor:pointer;touch-action:manipulation;transition:background .2s,border-color .2s}
+.chip:hover{background:rgba(255,255,255,.15)}
+.chip[aria-pressed=true]{background:var(--ice);color:var(--ink);border-color:var(--ice)}
+.udrow{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;justify-content:center;width:100%}
+details.coords{font-size:.85rem}
+details.coords summary{cursor:pointer;color:var(--dim);list-style:none;padding:.4rem .6rem;border-radius:8px;display:inline-flex;align-items:center}
+details.coords summary::-webkit-details-marker{display:none}
+details.coords summary::before{content:"+";font:500 .9rem var(--f-mono);margin-right:.45rem;color:var(--ice)}
+details.coords[open] summary::before{content:"–"}
+.cfields{display:flex;gap:.5rem;margin-top:.4rem}
+.field{display:grid;gap:.2rem}
+.field label{font:400 .7rem var(--f-mono);color:var(--dim)}
+.field input{background:rgba(4,5,11,.6);border:1px solid rgba(255,255,255,.18);border-radius:10px;color:var(--bone);font:500 .95rem var(--f-mono);padding:.5rem .65rem;width:130px}
+.field input:focus{border-color:var(--ice);outline:none;box-shadow:0 0 0 3px rgba(127,231,240,.2)}
+.vhud{position:absolute;z-index:3;right:1rem;top:6rem;font:400 .75rem var(--f-mono);color:var(--dim);display:grid;gap:.4rem;justify-items:end;min-width:120px}
+.scrub{height:3px;width:120px;background:rgba(255,255,255,.14);border-radius:3px;overflow:hidden}
+.scrub i{display:block;height:100%;width:calc(var(--sp,0)*100%);background:var(--ice)}
+
+/* por qué */
+.why{display:grid;gap:1.4rem;justify-items:center;text-align:center;width:min(980px,92vw);position:relative;z-index:2}
+.tabs{display:inline-flex;padding:.3rem;gap:.2rem;border-radius:999px}
+.tab{font:500 .95rem var(--f-display);background:transparent;color:var(--dim);border:0;border-radius:999px;padding:.6rem 1.3rem;cursor:pointer;touch-action:manipulation;transition:background .25s,color .25s}
+.tab[aria-selected=true]{background:var(--bone);color:var(--ink)}
+.panel{display:grid;gap:1.1rem;justify-items:center;align-content:start;min-height:12rem}
+.panel[hidden]{display:none}
+.names{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center}
+.names span{font:500 1.05rem var(--f-display);padding:.5rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.05)}
+#whyDot{width:min(520px,90vw);height:120px;display:block}
+
+/* cierre + fuentes */
+.final{display:grid;gap:2rem;justify-items:center;text-align:center;position:relative;z-index:2}
+.cta-big{font-size:1.2rem;padding:1.15rem 2rem}
+.sources{position:relative;z-index:2;background:linear-gradient(180deg,transparent,rgba(4,5,11,.88) 14%);padding:7rem clamp(1rem,5vw,4rem) 3rem}
+.sources .in{max-width:1100px;margin:0 auto;display:grid;gap:2.4rem}
+.sources h2{font-size:clamp(1.8rem,4vw,3rem)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2.2rem 3rem}
+.cols h3{font:500 .95rem var(--f-display);color:var(--ice);margin-bottom:.6rem}
+.cols ul{list-style:none;padding:0;display:grid;gap:.15rem}
+.cols li{border-top:1px solid rgba(255,255,255,.09);padding:.65rem 0}
+.cols a{font-weight:500;text-decoration:underline;text-decoration-color:rgba(127,231,240,.5);text-underline-offset:3px;text-decoration-thickness:1px}
+.cols a:hover{text-decoration-color:var(--ice)}
+.cols li span{display:block;color:var(--dim);font-size:.88rem;margin-top:.1rem}
+.fine{color:var(--dim);font-size:.85rem;max-width:80ch;display:grid;gap:.6rem}
+.fine .mono{font-size:.78rem}
+footer{padding:1.5rem 1rem 5rem;text-align:center;color:var(--dim);font:400 .78rem var(--f-mono);position:relative;z-index:2;background:rgba(4,5,11,.88)}
+
+/* herramientas dev */
+.devdock{position:fixed;left:14px;bottom:14px;z-index:60;display:flex;gap:.5rem}
+.devdock button{font:500 .74rem var(--f-mono);color:var(--dim);background:rgba(10,15,36,.8);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:.4rem .7rem;cursor:pointer}
+.devdock button[aria-pressed=true]{border-color:var(--ice);color:var(--ice)}
+#hud{position:fixed;right:14px;bottom:14px;z-index:60;width:min(340px,calc(100vw - 28px));max-height:46vh;overflow:auto;padding:.9rem 1rem;font:400 .74rem/1.5 var(--f-mono);background:rgba(10,15,36,.94);border:1px solid rgba(255,255,255,.2);border-radius:14px}
+#hud[hidden]{display:none}
+#hud h4{font:500 .78rem var(--f-mono);color:var(--ice);margin-bottom:.4rem}
+#hud ol{padding-left:1.1rem;color:var(--dim);margin-top:.4rem}
+#toast{position:fixed;left:50%;bottom:84px;translate:-50% 20px;opacity:0;z-index:70;padding:.7rem 1.1rem;border-radius:12px;background:rgba(10,15,36,.96);border:1px solid var(--ice);font:400 .85rem var(--f-mono);transition:opacity .3s,translate .4s var(--ease);pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1;translate:-50% 0}
+
+@media (max-width:820px){
+  .rail{display:none}
+  .navcta{display:none}
+  .stage{padding-top:4.6rem}
+  .vhud{display:none}
+  .lbl{top:auto;bottom:8.2rem}
+  .devdock{display:none}
+  .top{top:4.6rem}
+  .flow{bottom:1rem}
+  .use-dock .chips{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;max-width:100%;scrollbar-width:none}
+  .chip{white-space:nowrap}
+}
+body.rm .scene{height:auto}
+body.rm .stage{position:relative;min-height:100vh;height:auto}
+body.rm .hint i{animation:none}
+</style>
+</head>
+<body class="">
+<a class="skip" href="#main" data-i="skip">Skip to content</a>
+<canvas id="bg" aria-hidden="true"></canvas><div class="vignette" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#hero" data-track="nav_brand">NA ZA</a>
+  <nav class="rail" data-ia="rail" aria-label="Story progress"></nav>
+  <div class="lang" role="group" data-ia="langLbl" aria-label="Language"><button data-lang="es" aria-pressed="false">ES</button><button data-lang="en" aria-pressed="true">EN</button></div>
+  <a class="navcta" href="viewer/" data-cta="nav" data-i="nav.cta">Open the sky</a>
+</header>
+
+<main id="main">
+<!-- HERO -->
+<section class="scene" id="hero" style="--len:1.7">
+  <div class="stage">
+    <div class="ph" style="inset:14% 8% 18% 8%;border-radius:40px"><b>ASSET · HERO</b>Universo 3D hiperrealista a pantalla completa (R3F o secuencia AVIF/WebP). La cámara avanza con el scroll.</div>
+    <div class="center" id="heroTxt">
+      <h1 data-i="hero.h">The sky is never<br>the same twice.</h1>
+      <p class="lead" data-i="hero.p">Watch a patch of space change. Spot what moved.</p>
+      <div class="row">
+        <a class="btn cta-big" href="viewer/" data-cta="hero" data-i="hero.cta">Watch the sky change</a>
+        <a class="btn ghost cta-big" href="#problem" data-track="hero_scroll" data-i="hero.more">See why</a>
+      </div>
+    </div>
+    <div class="hint" aria-hidden="true"><span data-i="scroll">scroll</span><i></i></div>
+  </div>
+</section>
+
+<!-- PROBLEMA -->
+<section class="scene" id="problem" style="--len:2.6">
+  <div class="stage">
+    <canvas class="full" id="sky1" aria-hidden="true"></canvas>
+    <div class="tag" id="tag1" aria-hidden="true" data-i="problem.tag">moved</div>
+    <div class="stack">
+      <h2 id="p1a" data-i="problem.a">Stars stay put.</h2>
+      <h2 id="p1b" data-i="problem.b">One doesn’t.</h2>
+    </div>
+    <div class="ph" style="right:5%;bottom:12%;width:260px"><b>ASSET · cielo real</b>Recorte real SPHEREx (IRSA) con procedencia. El punto móvil es un objeto real.</div>
+  </div>
+</section>
+
+<!-- COMPARAR (pantalla completa) -->
+<section class="scene" id="blink" style="--len:2.2">
+  <div class="stage">
+    <canvas class="full" id="cA" aria-hidden="true"></canvas>
+    <canvas class="full" id="cB" aria-hidden="true"></canvas>
+    <div class="bar" aria-hidden="true"></div>
+    <div class="knob glass" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg></div>
+    <input type="range" id="cmpRange" min="0" max="100" value="50" data-ia="cmp.range" aria-label="Compare">
+    <div class="top"><h2 data-fade data-i="cmp.h">Side by side, you miss it.<br>Layered, it jumps out.</h2></div>
+    <span class="lbl" style="left:12px"><span data-i="cmp.a">Epoch A</span><span data-i="tip.epoch.btn"></span></span>
+    <span class="lbl" style="right:12px"><span data-i="cmp.b">Epoch B</span></span>
+    <div class="dock glass">
+      <button class="btn ghost sm" id="blinkBtn" aria-pressed="false" data-i="cmp.blink">Blink A / B</button><span data-i="tip.blink.btn"></span>
+      <span class="note" id="blinkNote" data-i="cmp.drag">drag the line</span>
+    </div>
+  </div>
+</section>
+
+<!-- DE DÓNDE SALEN LOS DATOS -->
+<section class="scene" id="data" style="--len:1.7">
+  <div class="stage">
+    <svg class="beam" id="beam" aria-hidden="true" preserveAspectRatio="none"><polygon id="beamPoly" fill="rgba(127,231,240,.1)"/></svg>
+    <svg class="sat" id="sat" viewBox="0 0 240 150" fill="none" stroke="#e9ecf5" stroke-width="1.5" stroke-linejoin="round" role="img" data-ia="sat.alt" aria-label="Schematic of the SPHEREx satellite">
+      <rect x="92" y="42" width="56" height="62" rx="6" fill="rgba(233,236,245,.06)"/>
+      <path d="M92 60H34l-8 18 8 18h58M148 60h58l8 18-8 18h-58" fill="rgba(127,231,240,.07)"/>
+      <path d="M104 42l-8-16h48l-8 16M104 104l-10 22h52l-10-22" fill="rgba(233,236,245,.04)"/>
+      <circle cx="120" cy="73" r="9" stroke="#7fe7f0"/>
+    </svg>
+    <div class="ph" style="left:5%;top:44%;width:240px"><b>ASSET · satélite 3D</b>Modelo glTF ligero de SPHEREx (si hay licencia/NASA 3D Resources). Aquí es un esquema.</div>
+    <div class="top" style="top:5.6rem"><h2 data-fade data-i="sat.h">The data starts up here.</h2><p class="lead" data-fade data-i="sat.p">…</p></div>
+    <div id="packets" aria-hidden="true"></div>
+    <div class="flow">
+      <span class="node glass"><span data-i="sat.irsa">NASA/IPAC archive</span><span data-i="tip.irsa.btn"></span></span>
+      <span class="arrow" aria-hidden="true"></span>
+      <span class="node glass" data-i="sat.you">This website</span>
+    </div>
+  </div>
+</section>
+
+<!-- 102 COLORES -->
+<section class="scene" id="colors" style="--len:2">
+  <div class="stage">
+    <div class="spec">
+      <h2 data-fade data-i="col.h">Same spot. 102 colors<br>your eyes can’t see.</h2>
+      <div class="bars" id="bars" role="img" data-ia="col.alt" aria-label="Illustration"></div>
+      <div class="lam"><span id="lamN">0.75</span><small><span data-i="col.unit">µm · illustrative</span><span data-i="tip.um.btn"></span></small></div>
+      <p class="lead" data-fade data-i="col.p">…</p>
+    </div>
+    <div class="ph" style="left:5%;top:20%;width:250px"><b>ASSET · banda a banda</b>Mismo recorte en varias bandas (secuencia real). Las barras son ilustrativas.</div>
+  </div>
+</section>
+
+<!-- USO: el cielo es el visor -->
+<section class="scene" id="how" style="--len:3.4">
+  <div class="stage">
+    <canvas class="full" id="cH" aria-hidden="true"></canvas>
+    <div class="top">
+      <div class="hstack" id="hstack">
+        <div class="on"><h2 data-i="how.1h">Pick a spot.</h2><p class="lead" data-i="how.1p"></p></div>
+        <div><h2 data-i="how.2h">Watch it change.</h2><p class="lead" data-i="how.2p"></p></div>
+        <div><h2 data-i="how.3h">See what moved.</h2><p class="lead" data-i="how.3p"></p></div>
+      </div>
+    </div>
+    <div class="vhud mono" aria-hidden="true"><span id="vFrame">1/8</span><div class="scrub"><i id="vScrub"></i></div></div>
+    <div class="tag" id="tagH" aria-hidden="true" data-i="how.tagmove">moved</div>
+    <div class="use-dock glass">
+      <div id="tdesc" aria-live="polite"></div>
+      <div class="chips" id="chips" role="group" data-ia="how.targets" aria-label="Targets"></div>
+      <div class="udrow">
+        <details class="coords" id="coords">
+          <summary><span data-i="how.coords">Type coordinates</span><span data-i="tip.radec.btn"></span></summary>
+          <div class="cfields">
+            <div class="field"><label for="ra">RA (°)</label><input id="ra" class="mono" inputmode="decimal" autocomplete="off" spellcheck="false" value="133.7951"></div>
+            <div class="field"><label for="dec">Dec (°)</label><input id="dec" class="mono" inputmode="decimal" autocomplete="off" spellcheck="false" value="-7.2452"></div>
+          </div>
+        </details>
+        <a class="btn sm" id="vCta" href="viewer/?ra=133.7951&dec=-7.2452" data-cta="how" data-i="how.open">Open this view</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POR QUÉ -->
+<section class="scene" id="why" style="--len:1.6">
+  <div class="stage">
+    <div class="why">
+      <h2 data-fade data-i="why.h">Two ways space<br>gives itself away.</h2>
+      <div class="tabs glass" role="tablist" data-ia="why.tabs" aria-label="What changes">
+        <button class="tab" role="tab" id="t0" aria-selected="true" aria-controls="pn0" data-i="why.t0">It moves</button>
+        <button class="tab" role="tab" id="t1" aria-selected="false" aria-controls="pn1" tabindex="-1" data-i="why.t1">It flickers</button>
+      </div>
+      <div class="panel" id="pn0" role="tabpanel" aria-labelledby="t0">
+        <p class="lead" style="max-width:46ch" data-i="why.p0"></p>
+        <div class="names"><span>Barnard’s Star</span><span>WISE 0855</span><span>Epsilon Indi B</span></div>
+      </div>
+      <div class="panel" id="pn1" role="tabpanel" aria-labelledby="t1" hidden>
+        <p class="lead" style="max-width:46ch" data-i="why.p1"></p>
+        <div class="names"><span>RW Aurigae</span><span>R Draconis</span></div>
+      </div>
+      <canvas id="whyDot" aria-hidden="true"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- CIERRE -->
+<section class="scene" id="go" style="--len:1">
+  <div class="stage">
+    <div class="final">
+      <h2 data-fade data-i="go.h">Pick a spot.<br>Watch it change.</h2>
+      <a class="btn cta-big" href="viewer/" data-cta="final" data-i="go.cta">Open the sky</a>
+      <p class="lead" style="max-width:48ch" data-i="go.p"></p>
+    </div>
+  </div>
+</section>
+
+<!-- FUENTES -->
+<section class="sources" id="sources" aria-labelledby="srcH">
+  <div class="in">
+    <h2 id="srcH" data-i="src.h">Sources & credits</h2>
+    <div class="cols" id="srcCols"></div>
+    <div class="fine">
+      <p data-i="src.ack.lead"></p>
+      <p class="mono" lang="en" id="ackText">This publication makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of Reionization and Ices Explorer (SPHEREx), which is a joint project of the Jet Propulsion Laboratory and the California Institute of Technology, and is funded by the National Aeronautics and Space Administration.</p>
+      <p data-i="src.ai"></p>
+      <p data-i="src.unofficial"></p>
+    </div>
+  </div>
+</section>
+</main>
+<footer data-i="foot">NA ZA · NASA Space Apps 2026</footer>
+
+<div id="tipbox" class="glass" role="tooltip"></div>
+<div class="devdock">
+  <button id="notesBtn" aria-pressed="false">Dev notes: off</button>
+  <button id="hudBtn" aria-pressed="false">Metrics</button>
+</div>
+<aside id="hud" hidden aria-label="Engagement metrics (debug)"></aside>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(()=>{
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>1-Math.pow(1-t,3);
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(RM)document.body.classList.add('rm');
+
+/* ===================== TEXTOS (ES / EN) ===================== */
+const D={
+en:{
+skip:"Skip to content","nav.cta":"Open the sky","rail":"Story progress","langLbl":"Language","scroll":"scroll",
+"hero.h":"The sky is never<br>the same twice.","hero.p":"Watch a patch of space change. Spot what moved.","hero.cta":"Watch the sky change","hero.more":"See why",
+"problem.a":"Stars stay put.","problem.b":"One doesn’t.","problem.tag":"moved",
+"cmp.h":"Side by side, you miss it.<br>Layered, it jumps out.","cmp.a":"Epoch A","cmp.b":"Epoch B","cmp.blink":"Blink A / B","cmp.drag":"drag the line","cmp.range":"Compare epoch A and epoch B","cmp.stop":"1.4 flashes/s · click to stop",
+"sat.h":"The data starts up here.","sat.p":"The {tip:spherex} telescope orbits Earth and photographs the whole sky. NASA shares every image, free.","sat.irsa":"NASA/IPAC archive","sat.you":"This website","sat.alt":"Schematic of the SPHEREx satellite",
+"col.h":"Same spot. 102 colors<br>your eyes can’t see.","col.p":"Each color is a slice of {tip:infrared} light, called a {tip:band}. Warm and cold things shine differently in each one.","col.unit":"µm · illustrative","col.alt":"Illustration: 102 infrared bands from 0.75 to 5 micrometers",
+"how.1h":"Pick a spot.","how.1p":"Choose a known target, or type coordinates.","how.2h":"Watch it change.","how.2p":"Every visit to that spot, played as a short loop.","how.3h":"See what moved.","how.3p":"What moves stands out. Every view has a shareable link.",
+"how.coords":"Type coordinates","how.open":"Open this view","how.targets":"Targets","how.tagmove":"moved","how.tagflick":"changes brightness",
+"why.h":"Two ways space<br>gives itself away.","why.tabs":"What changes","why.t0":"It moves","why.t1":"It flickers",
+"why.p0":"Cold, faint neighbors drift across the sky. Some are {tip:browndwarf}. Motion is how you find them.","why.p1":"Some stars stay in place and change brightness. They are called {tip:variable}. Same spot, different light.",
+"go.h":"Pick a spot.<br>Watch it change.","go.cta":"Open the sky","go.p":"Built from NASA SPHEREx public data. Every view has a shareable link.",
+"src.h":"Sources & credits","src.mission":"Mission and data","src.challenge":"Challenge and inspiration","src.tools":"Tools","src.science":"Science of seeing change",
+"src.ack.lead":"Acknowledgement requested by NASA/IPAC for SPHEREx data:",
+"src.ai":"Illustrations in this draft are schematic placeholders. Any AI-generated image will carry a visible mark and be listed in our AI usage log.",
+"src.unofficial":"NA ZA is a NASA Space Apps 2026 team project. It is not an official NASA product and NASA does not endorse it.",
+"foot":"NA ZA · NASA Space Apps 2026 · Planet X and SPHEREx · Data: NASA/IPAC IRSA",
+"toast.cta":"Sketch: the /viewer route does not exist yet · event “cta_click” logged","about":"About",
+"tip.epoch.btn":"{tip:epoch}","tip.blink.btn":"{tip:blink}","tip.irsa.btn":"{tip:irsa}","tip.um.btn":"{tip:um}","tip.radec.btn":"{tip:radec}",
+"tip.spherex":["SPHEREx","A NASA space telescope launched in March 2025. It maps the entire sky in infrared light."],
+"tip.infrared":["Infrared","Light our eyes can’t see. We feel it as heat. Cool objects that give off no visible light glow here."],
+"tip.band":["Band","A thin slice of the spectrum, like one stripe of a rainbow. SPHEREx records 102 of them."],
+"tip.um":["Micrometer (µm)","One millionth of a meter. Visible light is about 0.4 to 0.7 µm; SPHEREx sees 0.75 to 5."],
+"tip.epoch":["Epoch","One visit: the same patch of sky photographed on a different date."],
+"tip.blink":["Blink","Flipping quickly between two images. Your eye catches whatever changed."],
+"tip.irsa":["IRSA","NASA/IPAC’s public archive of infrared data. Anyone can download from it."],
+"tip.radec":["RA and Dec","A sky address, like longitude and latitude. RA runs east–west, Dec north–south."],
+"tip.browndwarf":["Brown dwarf","An object too small to be a star and too big to be a planet. Faint and cold."],
+"tip.variable":["Variable stars","Stars whose brightness rises and falls over time."],
+"T.wise":["WISE 0855","A faint, icy neighbor of the Sun. It drifts across the sky."],
+"T.barnard":["Barnard’s Star","A nearby star that moves faster across the sky than any other we know."],
+"T.eps":["Epsilon Indi B","Two brown dwarfs orbiting each other, close to us."],
+"T.rw":["RW Aurigae","A star whose brightness keeps changing."],
+"T.rdra":["R Draconis","A star that slowly brightens and fades."],
+"s.mission":[
+ ["SPHEREx at IRSA","irsa.ipac.caltech.edu/Missions/spherex.html","https://irsa.ipac.caltech.edu/Missions/spherex.html","Mission page and public image archive."],
+ ["SPHEREx Quick Release overview","irsa.ipac.caltech.edu","https://irsa.ipac.caltech.edu/data/SPHEREx/docs/overview_qr.html","Release notes, citation rules and acknowledgement."],
+ ["Data DOI · Quick Release 2","doi.org/10.26131/IRSA652","https://doi.org/10.26131/IRSA652","SPHEREx Quick Release Spectral Images, QR2. QR1: 10.26131/IRSA629."],
+ ["SPHEREx: NASA’s Near-Infrared Spectrophotometric All-Sky Survey","arXiv:2404.11017","https://arxiv.org/abs/2404.11017","Mission paper: 0.75–5 µm all-sky survey and data plan."],
+ ["The SPHEREx Image and Spectrophotometry Processing Pipeline","arXiv:2511.15823","https://arxiv.org/abs/2511.15823","How the images are processed and which archive tools exist."],
+ ["IRSA SPHEREx tutorials","caltech-ipac.github.io/irsa-tutorials/spherex","https://caltech-ipac.github.io/irsa-tutorials/spherex/","Notebooks to read and cut out SPHEREx images."]],
+"s.challenge":[
+ ["Planet X and SPHEREx · NASA Space Apps 2026","spaceappschallenge.org","https://www.spaceappschallenge.org/2026/challenges/planet-x-and-spherex/?tab=details","The challenge this project answers."],
+ ["WiseView and Backyard Worlds","blog.backyardworlds.org","https://blog.backyardworlds.org/2017/09/13/wiseview/","Inspiration: flipping through infrared images to find movers."]],
+"s.tools":[
+ ["Gaia DR3 at MAST","archive.stsci.edu","https://archive.stsci.edu/missions-and-data/gaia","Star positions and motions for overlays."],
+ ["Aladin Lite","aladin.cds.unistra.fr","https://aladin.cds.unistra.fr/AladinLite/doc","Sky viewer for context maps."],
+ ["Astropy","astropy.org","https://www.astropy.org","Python library used to read the images and sky coordinates."]],
+"s.science":[
+ ["Rensink, O’Regan & Clark (1997) · To See or Not to See","Psychological Science 8(5)","https://homepage.villanova.edu/diego.fernandezduque/Teaching/CognitivePsychology/Lectures_and_Labs/s3Attention/sReading/Rensink_etal_97.pdf","Why people miss changes between two images."],
+ ["WCAG 2.2 · Three Flashes","w3.org","https://www.w3.org/WAI/WCAG22/Understanding/three-flashes-or-below-threshold.html","Why blinking stays below 3 flashes per second."]]
+},
+es:{
+skip:"Saltar al contenido","nav.cta":"Abrir el cielo","rail":"Progreso de la historia","langLbl":"Idioma","scroll":"desliza",
+"hero.h":"El cielo nunca es<br>el mismo dos veces.","hero.p":"Mira cómo cambia un trozo de espacio. Encuentra lo que se movió.","hero.cta":"Ver cómo cambia el cielo","hero.more":"Ver por qué",
+"problem.a":"Las estrellas no se mueven.","problem.b":"Una sí.","problem.tag":"se movió",
+"cmp.h":"Lado a lado, no lo ves.<br>Superpuesto, salta a la vista.","cmp.a":"Época A","cmp.b":"Época B","cmp.blink":"Alternar A / B","cmp.drag":"arrastra la línea","cmp.range":"Comparar época A y época B","cmp.stop":"1,4 destellos/s · clic para parar",
+"sat.h":"Los datos salen de aquí.","sat.p":"El telescopio {tip:spherex} orbita la Tierra y fotografía todo el cielo. La NASA comparte cada imagen, gratis.","sat.irsa":"Archivo NASA/IPAC","sat.you":"Este sitio web","sat.alt":"Esquema del satélite SPHEREx",
+"col.h":"El mismo punto. 102 colores<br>que tus ojos no ven.","col.p":"Cada color es una rebanada de luz {tip:infrared}, llamada {tip:band}. Lo caliente y lo frío brillan distinto en cada una.","col.unit":"µm · ilustrativo","col.alt":"Ilustración: 102 bandas infrarrojas de 0,75 a 5 micrómetros",
+"how.1h":"Elige un punto.","how.1p":"Escoge un objeto conocido o escribe coordenadas.","how.2h":"Míralo cambiar.","how.2p":"Cada visita a ese punto, reproducida como un lazo corto.","how.3h":"Mira qué se movió.","how.3p":"Lo que se mueve destaca. Cada vista tiene un enlace para compartir.",
+"how.coords":"Escribir coordenadas","how.open":"Abrir esta vista","how.targets":"Objetivos","how.tagmove":"se movió","how.tagflick":"cambia de brillo",
+"why.h":"Dos formas en que el espacio<br>se delata.","why.tabs":"Qué cambia","why.t0":"Se mueve","why.t1":"Parpadea",
+"why.p0":"Vecinos fríos y tenues cruzan el cielo. Algunos son {tip:browndwarf}. El movimiento es la forma de encontrarlos.","why.p1":"Algunas estrellas siguen en su sitio y cambian de brillo. Se llaman {tip:variable}. Mismo lugar, otra luz.",
+"go.h":"Elige un punto.<br>Míralo cambiar.","go.cta":"Abrir el cielo","go.p":"Hecho con datos públicos de SPHEREx, de la NASA. Cada vista tiene un enlace para compartir.",
+"src.h":"Fuentes y créditos","src.mission":"Misión y datos","src.challenge":"Reto e inspiración","src.tools":"Herramientas","src.science":"Ciencia de percibir cambios",
+"src.ack.lead":"Agradecimiento que NASA/IPAC pide para los datos de SPHEREx (texto oficial, en inglés):",
+"src.ai":"Las ilustraciones de este borrador son esquemas provisionales. Toda imagen generada con IA llevará una marca visible y constará en nuestro registro de uso de IA.",
+"src.unofficial":"NA ZA es un proyecto de equipo de NASA Space Apps 2026. No es un producto oficial de la NASA y la NASA no lo respalda.",
+"foot":"NA ZA · NASA Space Apps 2026 · Planet X and SPHEREx · Datos: NASA/IPAC IRSA",
+"toast.cta":"Boceto: la ruta /viewer aún no existe · evento “cta_click” registrado","about":"Sobre",
+"tip.spherex":["SPHEREx","Un telescopio espacial de la NASA lanzado en marzo de 2025. Mapea todo el cielo en luz infrarroja."],
+"tip.infrared":["Infrarrojo","Luz que nuestros ojos no ven. La sentimos como calor. Los objetos fríos que no emiten luz visible brillan aquí."],
+"tip.band":["Banda","Una rebanada fina del espectro, como una franja del arcoíris. SPHEREx registra 102."],
+"tip.um":["Micrómetro (µm)","Una millonésima de metro. La luz visible mide de 0,4 a 0,7 µm; SPHEREx ve de 0,75 a 5."],
+"tip.epoch":["Época","Una visita: el mismo trozo de cielo fotografiado en otra fecha."],
+"tip.blink":["Alternar","Cambiar rápido entre dos imágenes. El ojo detecta lo que cambió."],
+"tip.irsa":["IRSA","El archivo público de datos infrarrojos de NASA/IPAC. Cualquiera puede descargar."],
+"tip.radec":["RA y Dec","Una dirección en el cielo, como longitud y latitud. RA va de este a oeste, Dec de norte a sur."],
+"tip.browndwarf":["Enana marrón","Un objeto demasiado pequeño para ser estrella y demasiado grande para ser planeta. Tenue y frío."],
+"tip.variable":["Estrellas variables","Estrellas cuyo brillo sube y baja con el tiempo."],
+"T.wise":["WISE 0855","Un vecino tenue y helado del Sol. Se desplaza por el cielo."],
+"T.barnard":["Estrella de Barnard","Una estrella cercana que se mueve por el cielo más rápido que cualquier otra conocida."],
+"T.eps":["Epsilon Indi B","Dos enanas marrones que orbitan entre sí, cerca de nosotros."],
+"T.rw":["RW Aurigae","Una estrella cuyo brillo cambia sin parar."],
+"T.rdra":["R Draconis","Una estrella que se aviva y se apaga lentamente."],
+"s.mission":[
+ ["SPHEREx en IRSA","irsa.ipac.caltech.edu/Missions/spherex.html","https://irsa.ipac.caltech.edu/Missions/spherex.html","Página de la misión y archivo público de imágenes."],
+ ["Resumen de las Quick Release de SPHEREx","irsa.ipac.caltech.edu","https://irsa.ipac.caltech.edu/data/SPHEREx/docs/overview_qr.html","Notas de lanzamiento, reglas de cita y agradecimiento."],
+ ["DOI de los datos · Quick Release 2","doi.org/10.26131/IRSA652","https://doi.org/10.26131/IRSA652","SPHEREx Quick Release Spectral Images, QR2. QR1: 10.26131/IRSA629."],
+ ["SPHEREx: NASA’s Near-Infrared Spectrophotometric All-Sky Survey","arXiv:2404.11017","https://arxiv.org/abs/2404.11017","Artículo de la misión: sondeo de todo el cielo de 0,75 a 5 µm y plan de datos."],
+ ["The SPHEREx Image and Spectrophotometry Processing Pipeline","arXiv:2511.15823","https://arxiv.org/abs/2511.15823","Cómo se procesan las imágenes y qué herramientas ofrece el archivo."],
+ ["Tutoriales de SPHEREx en IRSA","caltech-ipac.github.io/irsa-tutorials/spherex","https://caltech-ipac.github.io/irsa-tutorials/spherex/","Notebooks para leer y recortar imágenes de SPHEREx."]],
+"s.challenge":[
+ ["Planet X and SPHEREx · NASA Space Apps 2026","spaceappschallenge.org","https://www.spaceappschallenge.org/2026/challenges/planet-x-and-spherex/?tab=details","El reto que responde este proyecto."],
+ ["WiseView y Backyard Worlds","blog.backyardworlds.org","https://blog.backyardworlds.org/2017/09/13/wiseview/","Inspiración: pasar imágenes infrarrojas para encontrar objetos que se mueven."]],
+"s.tools":[
+ ["Gaia DR3 en MAST","archive.stsci.edu","https://archive.stsci.edu/missions-and-data/gaia","Posiciones y movimientos estelares para las capas."],
+ ["Aladin Lite","aladin.cds.unistra.fr","https://aladin.cds.unistra.fr/AladinLite/doc","Visor del cielo para mapas de contexto."],
+ ["Astropy","astropy.org","https://www.astropy.org","Biblioteca de Python para leer imágenes y coordenadas del cielo."]],
+"s.science":[
+ ["Rensink, O’Regan y Clark (1997) · To See or Not to See","Psychological Science 8(5)","https://homepage.villanova.edu/diego.fernandezduque/Teaching/CognitivePsychology/Lectures_and_Labs/s3Attention/sReading/Rensink_etal_97.pdf","Por qué las personas no notan cambios entre dos imágenes."],
+ ["WCAG 2.2 · Tres destellos","w3.org","https://www.w3.org/WAI/WCAG22/Understanding/three-flashes-or-below-threshold.html","Por qué el parpadeo se mantiene bajo 3 destellos por segundo."]]
+}};
+let lang='en';
+try{const q=new URLSearchParams(location.search).get('lang');const s=localStorage.getItem('naza_lang');
+  lang=(q==='es'||q==='en')?q:(s==='es'||s==='en')?s:((navigator.languages&&navigator.languages[0]||navigator.language||'en').toLowerCase().startsWith('es')?'es':'en');}catch(e){}
+const t=k=>(D[lang][k]!==undefined?D[lang][k]:D.en[k]);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function r(s){return s.replace(/\{tip:(\w+)\}/g,(_,k)=>{const n=t('tip.'+k)[0];return `<button type="button" class="tip" data-tip="${k}" aria-label="${esc(t('about'))}: ${esc(n)}" aria-expanded="false">?</button>`;});}
+
+/* ===================== métricas ===================== */
+let hudOn=false;
+const NZ=window.NZ={t0:performance.now(),events:[],depth:0,scenes:new Set(),interacted:false,cta:0,tips:new Set(),
+  track(name,props={}){
+    const e={name,t:Math.round(performance.now()-this.t0),...props};
+    this.events.push(e);(window.dataLayer=window.dataLayer||[]).push({event:'naza_'+name,...props});
+    if(['cmp_drag','blink_toggle','target_select','coord_edit','tab_change','tip_open'].includes(name))this.interacted=true;
+    renderHud();
+  }};
+function renderHud(){
+  if(!hudOn)return;
+  const last=NZ.events.slice(-6).reverse().map(e=>`<li>${e.t}ms · ${e.name}${e.id?' · '+e.id:''}</li>`).join('');
+  $('#hud').innerHTML=`<h4>Engagement · sesión local</h4>
+  lang: ${lang}<br>scroll depth: ${Math.round(NZ.depth*100)}%<br>scenes seen: ${NZ.scenes.size}/${scenes.length}<br>
+  interacted: ${NZ.interacted?'yes':'no'} · tooltips: ${NZ.tips.size}<br>
+  CTA clicks: ${NZ.cta} → CTR ${NZ.cta?'100%':'0%'} (1 visita)<ol>${last}</ol>`;
+}
+$('#hudBtn').onclick=e=>{hudOn=!hudOn;$('#hud').hidden=!hudOn;e.target.setAttribute('aria-pressed',hudOn);renderHud();};
+$('#notesBtn').onclick=e=>{const on=document.body.classList.toggle('notes');e.target.setAttribute('aria-pressed',on);e.target.textContent='Dev notes: '+(on?'on':'off');};
+addEventListener('keydown',e=>{if(e.key==='m'&&!/input|textarea/i.test(e.target.tagName))$('#hudBtn').click();});
+function toast(msg){const x=$('#toast');x.textContent=msg;x.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>x.classList.remove('on'),2800);}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('[data-cta]');
+  if(a){NZ.cta++;NZ.track('cta_click',{id:a.dataset.cta});e.preventDefault();toast(t('toast.cta'));return;}
+  const s=e.target.closest('.sources a');if(s){NZ.track('source_click',{id:s.textContent.slice(0,40)});return;}
+  const tr=e.target.closest('[data-track]');if(tr)NZ.track(tr.dataset.track);
+});
+const depthMarks=new Set();
+
+/* ===================== tooltips ===================== */
+const tb=$('#tipbox');let tipBtn=null;
+function showTip(b,byClick){
+  const [n,d]=t('tip.'+b.dataset.tip);
+  tb.innerHTML=`<b>${esc(n)}</b>${esc(d)}`;
+  if(tipBtn&&tipBtn!==b)tipBtn.setAttribute('aria-expanded','false');
+  tipBtn=b;b.setAttribute('aria-expanded','true');b.setAttribute('aria-describedby','tipbox');
+  const rc=b.getBoundingClientRect();tb.style.left='0px';tb.style.top='0px';tb.classList.add('on');
+  const w=tb.offsetWidth,h=tb.offsetHeight;
+  let x=clamp(rc.left+rc.width/2-w/2,8,innerWidth-w-8),y=rc.top-h-10;if(y<8)y=rc.bottom+10;
+  tb.style.left=x+'px';tb.style.top=y+'px';
+  if(!NZ.tips.has(b.dataset.tip)){NZ.tips.add(b.dataset.tip);NZ.track('tip_open',{id:b.dataset.tip,via:byClick?'click':'hover'});}
+}
+function hideTip(){tb.classList.remove('on');if(tipBtn){tipBtn.setAttribute('aria-expanded','false');tipBtn=null;}}
+document.addEventListener('pointerover',e=>{const b=e.target.closest&&e.target.closest('.tip');if(b&&e.pointerType==='mouse')showTip(b,false);});
+document.addEventListener('pointerout',e=>{const b=e.target.closest&&e.target.closest('.tip');if(b&&e.pointerType==='mouse'&&!b.matches(':focus-visible'))hideTip();});
+document.addEventListener('focusin',e=>{const b=e.target.closest&&e.target.closest('.tip');if(b)showTip(b,false);});
+document.addEventListener('focusout',e=>{if(e.target.closest&&e.target.closest('.tip'))hideTip();});
+document.addEventListener('click',e=>{const b=e.target.closest('.tip');if(b){e.preventDefault();e.stopPropagation();(tipBtn===b&&tb.classList.contains('on')&&e.pointerType!=='mouse')?hideTip():showTip(b,true);}else if(!e.target.closest('#tipbox'))hideTip();},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTip();});
+addEventListener('scroll',()=>{if(tb.classList.contains('on')&&tipBtn)showTip(tipBtn);},{passive:true});
+
+/* ===================== idioma ===================== */
+const TARGETS=[
+ {id:'wise',k:'T.wise',kind:'move',ra:'133.7951',dec:'-7.2452',seed:101},
+ {id:'barnard',k:'T.barnard',kind:'move',seed:102},
+ {id:'eps',k:'T.eps',kind:'move',seed:103},
+ {id:'rw',k:'T.rw',kind:'flicker',seed:104},
+ {id:'rdra',k:'T.rdra',kind:'flicker',seed:105}];
+let cur=TARGETS[0];
+function buildSources(){
+  const groups=[['src.mission','s.mission'],['src.challenge','s.challenge'],['src.tools','s.tools'],['src.science','s.science']];
+  $('#srcCols').innerHTML=groups.map(([h,l])=>`<div><h3>${esc(t(h))}</h3><ul>${t(l).map(([title,short,url,desc])=>
+   `<li><a href="${url}" target="_blank" rel="noopener noreferrer">${esc(title)}</a><span class="mono" style="font-size:.75rem">${esc(short)}</span><span>${esc(desc)}</span></li>`).join('')}</ul></div>`).join('');
+}
+function buildChips(){
+  $('#chips').innerHTML=TARGETS.map(x=>`<button class="chip" data-id="${x.id}" aria-pressed="${x===cur}">${esc(t(x.k)[0])}</button>`).join('');
+  $$('.chip').forEach(c=>c.onclick=()=>selectTarget(TARGETS.find(x=>x.id===c.dataset.id)));
+  $('#tdesc').textContent=t(cur.k)[1];
+}
+function apply(){
+  document.documentElement.lang=lang;
+  $$('[data-i]').forEach(el=>{el.innerHTML=r(t(el.dataset.i));});
+  $$('[data-ia]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.ia)));
+  $$('.lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===lang));
+  $('#tagH').textContent=t(cur.kind==='flicker'?'how.tagflick':'how.tagmove');
+  if(blinkT)$('#blinkNote').textContent=t('cmp.stop');
+  dots&&dots.forEach((d,i)=>d.setAttribute('aria-label',scenes[i].id));
+  buildSources();buildChips();setCta();
+  document.title='NA ZA · Planet X and SPHEREx';
+}
+$$('.lang button').forEach(b=>b.onclick=()=>{lang=b.dataset.lang;try{localStorage.setItem('naza_lang',lang);}catch(e){}apply();NZ.track('lang_change',{id:lang});req&&req();});
+
+/* ===================== rail ===================== */
+const scenes=$$('.scene'),rail=$('.rail');
+scenes.forEach((s,i)=>{const a=document.createElement('a');a.href='#'+s.id;rail.append(a);});
+const dots=$$('a',rail);
+
+/* ===================== estrellas ===================== */
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function stars(seed,n){const q=rng(seed);return Array.from({length:n},()=>({x:q(),y:q(),m:q()}));}
+function fit(c){const d=Math.min(devicePixelRatio||1,2),w=c.clientWidth,h=c.clientHeight;if(c.width!==Math.round(w*d)||c.height!==Math.round(h*d)){c.width=Math.round(w*d);c.height=Math.round(h*d);}const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);return[g,w,h];}
+function paintSky(c,S,o={}){
+  const[g,w,h]=fit(c);g.clearRect(0,0,w,h);
+  if(o.bg){g.fillStyle='#060917';g.fillRect(0,0,w,h);}
+  for(const s of S){g.globalAlpha=.35+.65*s.m;g.fillStyle='#dfe6ff';g.beginPath();g.arc(s.x*w,s.y*h,.5+s.m*1.4,0,7);g.fill();}
+  g.globalAlpha=1;
+  if(o.reticle){g.strokeStyle='rgba(127,231,240,.5)';g.lineWidth=1;const x=o.reticle.x*w,y=o.reticle.y*h;g.beginPath();g.moveTo(x-30,y);g.lineTo(x-12,y);g.moveTo(x+12,y);g.lineTo(x+30,y);g.moveTo(x,y-30);g.lineTo(x,y-12);g.moveTo(x,y+12);g.lineTo(x,y+30);g.stroke();}
+  if(o.dot){const x=o.dot.x*w,y=o.dot.y*h;
+    if(o.trail){g.strokeStyle='rgba(127,231,240,.5)';g.lineWidth=1.2;g.setLineDash([4,5]);g.beginPath();g.moveTo(o.trail.x*w,o.trail.y*h);g.lineTo(x,y);g.stroke();g.setLineDash([]);}
+    g.fillStyle=o.color||'#fff';g.shadowColor=o.color||'#fff';g.shadowBlur=12;g.beginPath();g.arc(x,y,o.r||3,0,7);g.fill();g.shadowBlur=0;
+    if(o.ring){g.strokeStyle='#7fe7f0';g.lineWidth=1.5;g.beginPath();g.arc(x,y,18,0,7);g.stroke();}}
+  return[w,h];
+}
+
+/* ===================== fondo global ===================== */
+const bg=$('#bg'),L=[stars(1,160),stars(2,80),stars(3,30)];let scrollY=0;
+function drawBg(){
+  const[g,w,h]=fit(bg);g.clearRect(0,0,w,h);
+  const grd=g.createRadialGradient(w*.5,h*.35,0,w*.5,h*.35,Math.max(w,h)*.8);grd.addColorStop(0,'#0c1230');grd.addColorStop(1,'#04050b');g.fillStyle=grd;g.fillRect(0,0,w,h);
+  L.forEach((layer,li)=>{const k=[.04,.1,.22][li];for(const s of layer){const y=((s.y*h*1.6-scrollY*k)%(h*1.6)+h*1.6)%(h*1.6);if(y>h)continue;
+    g.globalAlpha=(.25+.6*s.m)*(li?1:.7);g.fillStyle=li===2?'#ffd9c9':'#dfe6ff';g.beginPath();g.arc(s.x*w,y,(.4+s.m*(.8+li*.7)),0,7);g.fill();}});
+  g.globalAlpha=1;
+}
+
+/* ===================== motor ===================== */
+let geo=[],vh=innerHeight;
+function measure(){vh=innerHeight;geo=scenes.map(s=>({top:s.offsetTop,h:s.offsetHeight}));}
+const P=[];
+function prog(i){const g=geo[i];if(!g)return 0;return clamp((scrollY-g.top)/Math.max(1,g.h-vh));}
+const idx=id=>scenes.findIndex(s=>s.id===id);
+
+const heroTxt=$('#heroTxt');
+function sHero(p){heroTxt.style.opacity=1-ease(clamp(p*1.6));heroTxt.style.transform=`translateY(${-p*80}px) scale(${1+p*.08})`;heroTxt.style.filter=`blur(${p*10}px)`;}
+
+const S1=stars(11,190),p1a=$('#p1a'),p1b=$('#p1b'),tag1=$('#tag1');
+function sProblem(p){
+  const x=lerp(.16,.8,ease(p)),y=lerp(.72,.34,ease(p));
+  const[w,h]=paintSky($('#sky1'),S1,{dot:{x,y},trail:{x:.16,y:.72},ring:p>.4,color:p>.4?'#7fe7f0':'#fff',r:3.2});
+  tag1.style.left=x*w+'px';tag1.style.top=y*h+'px';tag1.style.opacity=clamp((p-.45)*6);
+  const k=clamp((p-.38)*8);p1a.style.opacity=1-k;p1a.style.transform=`translateY(${-k*24}px)`;p1b.style.opacity=k;p1b.style.transform=`translateY(${(1-k)*24}px)`;
+}
+
+const S2=stars(22,260),cmp=$('#blink'),range=$('#cmpRange');let manual=false,blinkT=null;
+function drawCmp(){paintSky($('#cA'),S2,{bg:1,dot:{x:.34,y:.62},r:3.2});paintSky($('#cB'),S2,{bg:1,dot:{x:.64,y:.42},r:3.2});}
+function setX(v){$('#blink .stage').style.setProperty('--x',v+'%');range.value=v;}
+range.addEventListener('input',()=>{manual=true;setX(+range.value);});
+range.addEventListener('pointerdown',()=>NZ.track('cmp_drag'));
+range.addEventListener('keydown',()=>NZ.track('cmp_drag',{via:'key'}));
+function sCompare(p){if(!manual&&!blinkT)setX(Math.round(lerp(8,92,ease(clamp((p-.1)/.7)))));}
+$('#blinkBtn').onclick=e=>{
+  const on=!blinkT;e.currentTarget.setAttribute('aria-pressed',on);NZ.track('blink_toggle',{on});
+  if(on){let s=false;blinkT=setInterval(()=>{s=!s;setX(s?0:100);},700);$('#blinkNote').textContent=t('cmp.stop');}
+  else{clearInterval(blinkT);blinkT=null;setX(50);$('#blinkNote').textContent=t('cmp.drag');}
+};
+
+/* satélite */
+const sat=$('#sat'),beamPoly=$('#beamPoly'),packets=$('#packets');
+for(let i=0;i<8;i++){const d=document.createElement('i');d.className='pk';packets.append(d);}
+const pk=[...packets.children];
+function sData(p){
+  const W=innerWidth,H=innerHeight,sw=sat.getBoundingClientRect().width||200;
+  const a=ease(clamp(p/.55));
+  const x=lerp(W*.78,W*.62,a)-sw/2+Math.sin(p*5)*6,y=lerp(H*.34,H*.40,a);
+  sat.style.transform=`translate(${x}px,${y}px) rotate(${lerp(-8,-3,a)}deg)`;
+  const cx=x+sw/2,cy=y+sw*.5,sweep=Math.sin(p*7)*W*.12;
+  const B=$('#beam');B.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  beamPoly.setAttribute('points',`${cx-8},${cy} ${cx+8},${cy} ${cx+sweep+W*.16},${H*.86} ${cx+sweep-W*.16},${H*.86}`);
+  pk.forEach((d,i)=>{const f=(p*2.4+i/pk.length)%1;d.style.left=lerp(cx+sweep,W*.5,f)+'px';d.style.top=lerp(cy+sw*.2,H-62,f)+'px';d.style.opacity=clamp(p*8)*(1-Math.abs(f-.5)*.8);});
+}
+
+/* espectro */
+const bars=$('#bars');
+for(let i=0;i<102;i++){const b=document.createElement('i');b.style.setProperty('--h',String(12-i*.65));b.style.setProperty('--v',(20+55*Math.abs(Math.sin(i*.17)*Math.cos(i*.05))+10)+'%');bars.append(b);}
+const barEls=[...bars.children],lamN=$('#lamN');let lastB=-1;
+function sSpec(p){const i=Math.round(clamp(p*1.1)*101);if(i===lastB)return;lastB=i;
+  barEls.forEach((b,k)=>{const d=Math.abs(k-i);b.className=d===0?'on':d<4?'near':'';});
+  lamN.textContent=(0.75+(i/101)*4.25).toFixed(2);}
+
+/* uso: el cielo ES el visor */
+const hsteps=$$('#hstack>div'),vS=$('#vScrub'),vF=$('#vFrame'),tagH=$('#tagH'),frameN=8;let lastStep=-1;
+function sUse(p){
+  const si=p<.3?0:p<.65?1:2;
+  if(si!==lastStep){lastStep=si;hsteps.forEach((s,i)=>s.classList.toggle('on',i===si));}
+  const tt=si===0?0:clamp((p-.3)/.35),f=si===0?0:Math.min(frameN-1,Math.floor(tt*frameN)),u=f/(frameN-1);
+  const S=stars(cur.seed,230);
+  let d,r=3.2;
+  if(cur.kind==='move')d={x:lerp(.4,.6,u),y:lerp(.58,.46,u)};
+  else{d={x:.5,y:.52};r=2+4*(.5+.5*Math.sin(u*Math.PI*3));}
+  const o={bg:1,dot:d,r,ring:si===2,color:si===2?'#7fe7f0':'#fff'};
+  if(si===0)o.reticle={x:.5,y:.52};
+  if(si===2&&cur.kind==='move')o.trail={x:.4,y:.58};
+  const[w,h]=paintSky($('#cH'),S,o);
+  tagH.style.left=d.x*w+'px';tagH.style.top=d.y*h+'px';tagH.style.opacity=si===2?1:0;
+  vS.style.setProperty('--sp',si===0?0:si===1?tt:1);vF.textContent=`${f+1}/${frameN}`;
+}
+const raI=$('#ra'),decI=$('#dec'),vCta=$('#vCta');
+function setCta(){const ra=raI.value.trim(),dec=decI.value.trim();vCta.href='viewer/'+(ra&&dec?`?ra=${encodeURIComponent(ra)}&dec=${encodeURIComponent(dec)}`:'?q='+encodeURIComponent(t(cur.k)[0]));}
+function selectTarget(x){
+  cur=x;$$('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.id===x.id));
+  $('#tdesc').textContent=t(x.k)[1];$('#tagH').textContent=t(x.kind==='flicker'?'how.tagflick':'how.tagmove');
+  if(x.ra){raI.value=x.ra;decI.value=x.dec;}else{raI.value='';decI.value='';}
+  setCta();NZ.track('target_select',{id:x.id});lastStep=-1;req&&req();
+}
+[raI,decI].forEach(i=>i.addEventListener('input',()=>{setCta();NZ.track('coord_edit');}));
+
+/* por qué */
+const tabs=$$('.tab');
+function selTab(i){tabs.forEach((x,k)=>{x.setAttribute('aria-selected',k===i);x.tabIndex=k===i?0:-1;$('#'+x.getAttribute('aria-controls')).hidden=k!==i;});NZ.track('tab_change',{id:i?'flicker':'move'});drawWhy(performance.now());}
+tabs.forEach((x,i)=>{x.onclick=()=>selTab(i);x.onkeydown=e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const j=(i+(e.key==='ArrowRight'?1:-1)+2)%2;selTab(j);tabs[j].focus();}};});
+const whyC=$('#whyDot');
+function drawWhy(now){
+  const[g,w,h]=fit(whyC);g.clearRect(0,0,w,h);const flick=tabs[1].getAttribute('aria-selected')==='true',ph=(now/1000)%4/4;
+  g.strokeStyle='rgba(255,255,255,.12)';g.setLineDash([3,6]);g.beginPath();g.moveTo(10,h/2);g.lineTo(w-10,h/2);g.stroke();g.setLineDash([]);
+  const x=flick?w/2:lerp(w*.15,w*.85,RM?.5:ph),r=flick?5+9*(RM?.5:.5+.5*Math.sin(ph*Math.PI*2)):6;
+  g.fillStyle=flick?'#ffd9c9':'#fff';g.shadowColor=flick?'#e8553a':'#7fe7f0';g.shadowBlur=18;g.beginPath();g.arc(x,h/2,r,0,7);g.fill();g.shadowBlur=0;
+}
+
+/* títulos con entrada/salida */
+function fadeHeads(){scenes.forEach((s,i)=>{const hs=$$('[data-fade]',s);if(!hs.length)return;
+  const e=ease(s.id==='go'?clamp((scrollY+vh-geo[i].top)/(vh*.7)):Math.min(clamp(P[i]*7),clamp((1-P[i])*7)));
+  hs.forEach(el=>{el.style.opacity=e;el.style.transform=`translateY(${(1-e)*26}px)`;});});}
+
+/* ===================== bucle ===================== */
+let ticking=false,curS=-1,vis={};
+function frame(){
+  ticking=false;scrollY=window.scrollY;
+  scenes.forEach((s,i)=>P[i]=prog(i));
+  if(!RM){drawBg();sHero(P[idx('hero')]);sProblem(P[idx('problem')]);sCompare(P[idx('blink')]);sData(P[idx('data')]);sSpec(P[idx('colors')]);sUse(P[idx('how')]);fadeHeads();}
+  let a=0;scenes.forEach((s,i)=>{if(scrollY+vh*.5>=geo[i].top)a=i;});
+  if(a!==curS){curS=a;dots.forEach((d,i)=>d.setAttribute('aria-current',i===a));NZ.scenes.add(a);NZ.track('scene_view',{id:scenes[a].id});}
+  const dp=clamp(scrollY/Math.max(1,document.documentElement.scrollHeight-vh));NZ.depth=Math.max(NZ.depth,dp);
+  [.25,.5,.75,1].forEach(m=>{if(dp>=m-.001&&!depthMarks.has(m)){depthMarks.add(m);NZ.track('scroll_depth',{id:Math.round(m*100)});}});
+}
+function req(){if(!ticking){ticking=true;requestAnimationFrame(frame);}}
+addEventListener('scroll',req,{passive:true});
+addEventListener('resize',()=>{measure();drawCmp();req();});
+document.addEventListener('pointermove',e=>{const g=e.target.closest&&e.target.closest('.glass');if(!g)return;const rc=g.getBoundingClientRect();g.style.setProperty('--mx',(e.clientX-rc.left)+'px');g.style.setProperty('--my',(e.clientY-rc.top)+'px');},{passive:true});
+document.fonts&&document.fonts.ready.then(()=>{measure();req();});
+// animación ligera del mini-ejemplo (solo si hay movimiento permitido y es visible)
+if(!RM){(function loop(n){if(P[idx('why')]>0&&P[idx('why')]<1||(scrollY+vh>geo[idx('why')]?.top&&scrollY<geo[idx('why')]?.top+geo[idx('why')]?.h))drawWhy(n);requestAnimationFrame(loop);})(0);}
+apply();measure();drawCmp();NZ.track('page_view',{rm:RM,lang,w:innerWidth});
+if(RM){drawBg();sProblem(.8);sCompare(.5);sData(.6);sSpec(.5);sUse(.9);drawWhy(1000);}
+frame();
+})();
+</script>
+</body>
+</html>
