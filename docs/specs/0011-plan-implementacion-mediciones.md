@@ -6,6 +6,13 @@
 - Método: TDD (`AGENTS.md` §6): primero la prueba en rojo, después el código mínimo, después limpiar. Tareas de 2–15 min.
 - Revisión 2 (14-nov, noche): reorganizado sobre el backend real (`backend/src/skyshift`, PR #6) y corregido según la revisión de Johann y el 2.º mensaje de Sebastián.
 - Revisión 3 (14-nov, 19:30): **primera entrega = solo movimiento de ε Indi B como candidato** (ficha 0010 §0, condiciones A1–A6 de Sebastián). La prueba χ² y la diferencia con covarianza se **reutilizan** de `science/validation.py` (Sebastián), no se reimplementan. Dax aprobó la integración en el backend y las dependencias; Dax, Daniel y Johann aprobaron entregar el resultado como JSON estático en `frontend/public/demo/`.
+- **Implementación de la primera entrega (14-nov, 19:50, rama `feat/measurement-motion`)** y desviaciones respecto del plan:
+  - Tarea 5 (recorte → píxel original) **no hace falta**: `FrameReader` ya lee recuadros en píxeles originales del detector.
+  - Tarea 1: en vez de comparar pydantic con el esquema, el serializador (`api/analysis_json.py`) se valida **contra el esquema escrito a mano** con `jsonschema` en los tests y en `mise run check-contracts`. Mismo objetivo (el código obedece al contrato), con una dependencia menos.
+  - Tarea 0: solo se agregó `scipy` (ya venía en el lockfile vía `reproject`); `photutils` queda para la 2.ª entrega (A3, ePSF). `jsonschema` se agregó solo como dependencia de desarrollo.
+  - Tarea 9: `astrometric_p_value` y `compare_significance` de Sebastián se movieron **sin cambios** a `backend/src/skyshift/domain/significance.py`. Cuando el PR #9 entre, `science/validation.py` debe importarlas desde ahí.
+  - Tarea 9b (estrellas Gaia) **pendiente**: el resultado lleva `registration_unverified`.
+  - Con p redondeada a 0 (Q > ~1490), la decisión compara Q con el umbral calculado (regla equivalente).
 
 ## 1. Arquitectura: dentro del backend hexagonal existente
 

@@ -32,6 +32,8 @@ Condiciones de Sebastián (revisión del PR #8, 14-nov, noche), aceptadas tal cu
 
 **Fuera de la primera entrega:** brillo, las otras cuatro regiones, la API HTTP (`AnalysisResult` no está en `contracts/openapi.yaml` v0.3) y cualquier nivel por encima de "observado".
 
+**Contrato implementado (primera entrega):** `contracts/analysis-result.schema.json` (borrador 0.1) fija `kind = astrometric_shift`, `photometry = null` e `interpretation_ceiling = OBSERVED`, y agrega el resultado `threshold_exceeded_unverified` para A4.
+
 **Cómo llega a la app:** un JSON precalculado offline, validado contra `contracts/analysis-result.schema.json`, como recurso estático de la demo en `frontend/public/demo/` (aprobado por Dax, Daniel y Johann el 14-nov). Así no cambia la API.
 
 ## 1. Objetivo funcional
@@ -103,7 +105,8 @@ AnalysisResult:
     status: comparable | comparable_with_warnings | not_comparable
     checks:                      # uno por regla de la sección 4
       - {check_id, status: pass | warn | fail | not_evaluated, observed_value, criterion, source}
-  outcome: change_measured | change_below_criterion | no_usable_detection | not_evaluable | data_error
+  outcome: change_measured | threshold_exceeded_unverified | change_below_criterion | no_usable_detection | not_evaluable | data_error
+  # threshold_exceeded_unverified: Q ≥ umbral pero sin verificar los supuestos A4 (§0): NO es change_measured
   criteria_ref: {source, version}  # p. ej. {"Sebastián, mensaje 14-nov-2026", "provisional"}; luego su ficha
   measurements:                  # una fila por entrada, usada o descartada
     - observation_id: string

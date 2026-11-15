@@ -1,0 +1,321 @@
+{
+ "schema_version": "0.1-draft",
+ "analysis_id": "synthetic-motion-example",
+ "created_utc": "2026-11-14T23:00:00Z",
+ "kind": "astrometric_shift",
+ "is_synthetic": true,
+ "target": {
+  "label": "synthetic target",
+  "reference_position": {
+   "ra_deg": 331.0,
+   "dec_deg": -56.8,
+   "frame": "ICRS",
+   "epoch_jyear": 2016.0,
+   "source": "synthetic"
+  },
+  "reference_motion": {
+   "pm_ra_cosdec_mas_per_yr": 4000.0,
+   "pm_dec_mas_per_yr": -2500.0,
+   "parallax_mas": 270.0,
+   "source": "synthetic catalog"
+  }
+ },
+ "criteria": {
+  "reference": "TEST values (synthetic fixtures only)",
+  "min_snr_per_exposure": {
+   "value": 5.0,
+   "source": "test"
+  },
+  "min_significance_sigma_two_sided": {
+   "value": 5.0,
+   "source": "test"
+  },
+  "q_threshold_2dof": 28.743702426857556,
+  "p_threshold": 5.733031437583891e-07,
+  "sigma_wcs_arcsec_per_axis": {
+   "value": 0.3,
+   "source": "test"
+  },
+  "flag_radius_px": {
+   "value": 2.5,
+   "source": "test"
+  },
+  "comparison_mask": 1070780103
+ },
+ "inputs": [
+  {
+   "observation_id": "synthetic/0/D3",
+   "obs_id": "synthetic_0",
+   "detector": 3,
+   "collection": "spherex_dr1",
+   "access_url": "https://example.invalid/x.fits"
+  },
+  {
+   "observation_id": "synthetic/1/D3",
+   "obs_id": "synthetic_1",
+   "detector": 3,
+   "collection": "spherex_dr1",
+   "access_url": "https://example.invalid/x.fits"
+  },
+  {
+   "observation_id": "synthetic/2/D3",
+   "obs_id": "synthetic_2",
+   "detector": 3,
+   "collection": "spherex_dr1",
+   "access_url": "https://example.invalid/x.fits"
+  },
+  {
+   "observation_id": "synthetic/3/D3",
+   "obs_id": "synthetic_3",
+   "detector": 3,
+   "collection": "spherex_dr1",
+   "access_url": "https://example.invalid/x.fits"
+  },
+  {
+   "observation_id": "synthetic/4/D3",
+   "obs_id": "synthetic_4",
+   "detector": 3,
+   "collection": "spherex_dr1",
+   "access_url": "https://example.invalid/x.fits"
+  }
+ ],
+ "measurements": [
+  {
+   "observation_id": "synthetic/0/D3",
+   "visit_id": "va",
+   "time_mjd_utc": 60800,
+   "x_pix": 100.0,
+   "y_pix": 100.0,
+   "ra_deg": 330.99967569033765,
+   "dec_deg": -56.79988901247243,
+   "cov_pos_arcsec2": [
+    [
+     0.09,
+     0.0
+    ],
+    [
+     0.0,
+     0.09
+    ]
+   ],
+   "snr": 50.0,
+   "fwhm_px": 1.2,
+   "flags_bitmask": 0,
+   "flag_names": [],
+   "used": true,
+   "excluded_reason": null
+  },
+  {
+   "observation_id": "synthetic/1/D3",
+   "visit_id": "va",
+   "time_mjd_utc": 60805,
+   "x_pix": 100.0,
+   "y_pix": 100.0,
+   "ra_deg": 330.9997034684672,
+   "dec_deg": -56.79989851889877,
+   "cov_pos_arcsec2": [
+    [
+     0.09,
+     0.0
+    ],
+    [
+     0.0,
+     0.09
+    ]
+   ],
+   "snr": 50.0,
+   "fwhm_px": 1.2,
+   "flags_bitmask": 0,
+   "flag_names": [],
+   "used": true,
+   "excluded_reason": null
+  },
+  {
+   "observation_id": "synthetic/2/D3",
+   "visit_id": "vb",
+   "time_mjd_utc": 61000,
+   "x_pix": 100.0,
+   "y_pix": 100.0,
+   "ra_deg": 331.00078681551906,
+   "dec_deg": -56.8002692695262,
+   "cov_pos_arcsec2": [
+    [
+     0.09,
+     0.0
+    ],
+    [
+     0.0,
+     0.09
+    ]
+   ],
+   "snr": 50.0,
+   "fwhm_px": 1.2,
+   "flags_bitmask": 0,
+   "flag_names": [],
+   "used": true,
+   "excluded_reason": null
+  },
+  {
+   "observation_id": "synthetic/3/D3",
+   "visit_id": "vb",
+   "time_mjd_utc": 61005,
+   "x_pix": 100.0,
+   "y_pix": 100.0,
+   "ra_deg": 331.0008145936486,
+   "dec_deg": -56.80027877595254,
+   "cov_pos_arcsec2": [
+    [
+     0.09,
+     0.0
+    ],
+    [
+     0.0,
+     0.09
+    ]
+   ],
+   "snr": 50.0,
+   "fwhm_px": 1.2,
+   "flags_bitmask": 0,
+   "flag_names": [],
+   "used": true,
+   "excluded_reason": null
+  },
+  {
+   "observation_id": "synthetic/4/D3",
+   "visit_id": "vc",
+   "time_mjd_utc": 61200,
+   "x_pix": 100.0,
+   "y_pix": 100.0,
+   "ra_deg": 331.0018979407005,
+   "dec_deg": -56.80064952657997,
+   "cov_pos_arcsec2": [
+    [
+     0.09,
+     0.0
+    ],
+    [
+     0.0,
+     0.09
+    ]
+   ],
+   "snr": 50.0,
+   "fwhm_px": 1.2,
+   "flags_bitmask": 0,
+   "flag_names": [],
+   "used": true,
+   "excluded_reason": null
+  }
+ ],
+ "outcome": "threshold_exceeded_unverified",
+ "interpretation_ceiling": "OBSERVED",
+ "astrometry": {
+  "model": "linear_fit_known_parallax",
+  "n_visits": 3,
+  "time_span_days": 400.0000000000107,
+  "proper_motion": {
+   "pm_ra_cosdec_arcsec_per_yr": 4.138643543768815,
+   "pm_dec_arcsec_per_yr": -2.373660731651652,
+   "cov_arcsec2_per_yr2": [
+    [
+     0.10833421117927132,
+     0.0
+    ],
+    [
+     0.0,
+     0.10833421117927132
+    ]
+   ]
+  },
+  "displacement": {
+   "delta_ra_cosdec_arcsec": 4.532395393586777,
+   "delta_dec_arcsec": -2.599491561014883,
+   "separation_arcsec": 5.224936782353852,
+   "position_angle_deg": 119.83581968761112,
+   "cov_arcsec2": [
+    [
+     0.1299287196607339,
+     0.0
+    ],
+    [
+     0.0,
+     0.1299287196607339
+    ]
+   ]
+  },
+  "test": {
+   "statistic": "chi2",
+   "value": 210.1149341799034,
+   "dof": 2,
+   "p_value": 2.366583106810562e-46,
+   "equivalent_sigma_two_sided": 14.294541790182585,
+   "tested_quantity": "proper_motion"
+  },
+  "covariance_assumption": "independent_epochs",
+  "fit_residual_rms_arcsec": 0.24282397330914934,
+  "reference_comparison": {
+   "source": "synthetic catalog",
+   "object_relation": "photocenter_of_unresolved_pair",
+   "delta_pm_ra_cosdec_arcsec_per_yr": 0.13864354376881494,
+   "delta_pm_dec_arcsec_per_yr": 0.1263392683483482,
+   "independence_note": "Not independent: SPHEREx WCS is calibrated against Gaia DR3; the catalog parallax is also used to correct the positions. Contrast only."
+  },
+  "reference_star_check": null
+ },
+ "photometry": null,
+ "issues": [
+  {
+   "code": "registration_unverified",
+   "severity": "warn",
+   "detail": "0.3 arcsec per axis WCS term not yet checked against field reference stars (A5)",
+   "observation_id": null
+  },
+  {
+   "code": "wavelength_dependent_position",
+   "severity": "warn",
+   "detail": "Ba/Bb photocenter vs wavelength not tested in the first delivery (C6)",
+   "observation_id": null
+  },
+  {
+   "code": "assumptions_unverified",
+   "severity": "warn",
+   "detail": "Gaussian errors and covariance not independently verified (A4): no change_measured",
+   "observation_id": null
+  },
+  {
+   "code": "synthetic_data",
+   "severity": "info",
+   "detail": "test fixture",
+   "observation_id": null
+  }
+ ],
+ "method": {
+  "name": "native-frame-gaussian-centroid+gls-proper-motion",
+  "version": "0.1.0",
+  "parameters": {
+   "detector": 3,
+   "box_half_px": 6,
+   "centroid_half_window_px": 4,
+   "psf_model": "circular Gaussian + constant",
+   "parallax": "catalog parallax subtracted before the fit"
+  },
+  "software": [
+   {
+    "name": "astropy",
+    "version": "8.0.2"
+   },
+   {
+    "name": "numpy",
+    "version": "2.5.4"
+   },
+   {
+    "name": "scipy",
+    "version": "1.18.1"
+   }
+  ]
+ },
+ "provenance": {
+  "code_ref": null,
+  "computed_by": "test_fixture",
+  "executed_at": "2026-11-14T23:00:00Z"
+ }
+}
