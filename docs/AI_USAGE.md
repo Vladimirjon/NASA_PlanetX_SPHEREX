@@ -51,3 +51,4 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-14 | Codex | Auditoría científica del par D3 del PR #11, recálculo de Q y recomendaciones por control | Sebastián revisa la decisión; Mateo y Johann aportan evidencias pendientes |
 | 2026-11-14 | Codex | Comparación reproducida de píxeles y calibración espectral del PR #12 y propuesta de identificadores | Revisión de Johann/Mateo y comprobación científica pendientes |
 | 2026-11-14 | Codex y subagentes | Guía para coordinar datos, mediciones y ciencia en una computadora; auditoría de rutas y salidas | Equipo revisa el flujo y confirma el estado de sus entregas |
+| 2026-11-14 | Codex y tres subagentes | Preparación de imágenes D3 verificadas, contraste de la medición del par e integración del caso guiado | El usuario aprobó el alcance. La revisión del PR corresponde al equipo. |

@@ -1,5 +1,6 @@
 import type { components } from '../../api/schema';
 import { decodeFloat32LE } from '../core/decode';
+import { readD3Measurement } from '../core/guided-pair';
 import type { LoadedSeries, SeriesLookup, SeriesSource } from '../ports/series-source';
 import { SeriesSourceError } from '../ports/series-source';
 
@@ -96,6 +97,36 @@ export class DemoSeriesSource implements SeriesSource {
     }
     const seriesPath = entry.series.startsWith('/') ? entry.series : `/${entry.series}`;
     const series = await fetchJson<Series>(seriesPath, signal);
+    const frames = await this.loadFrames(series, signal);
+    return {
+      series,
+      frames,
+      sourceKind: 'demo',
+      resolve: entry.resolve,
+      demoSlug: entry.slug,
+      notice: 'Recorded data (offline).',
+    };
+  }
+
+  async loadGuidedPair(signal?: AbortSignal): Promise<LoadedSeries> {
+    const root = `${this.basePath}/epsilon-indi-b-d3`;
+    const [series, metadata] = await Promise.all([
+      fetchJson<Series>(`${root}/series.json`, signal),
+      fetchJson<unknown>(`${root}/case.json`, signal),
+    ]);
+    const guidedPair = readD3Measurement(metadata, series.frames.map(frame => frame.obs_id));
+    if (!guidedPair || series.comparability.level !== 'OBSERVED' ||
+        !series.frames.every((frame, index) => frame.detector === 3 && frame.index === index &&
+          `/${frame.data_url.replace(/^\//, '')}` === `${root}/frame-${String(index)}.f32` &&
+          frame.provenance.source_url.startsWith('https://irsa.ipac.caltech.edu/') &&
+          Number.isFinite(Date.parse(frame.t_mid)) && Number.isFinite(frame.wavelength_um))) {
+      throw new Error('The D3 evidence does not match the observations.');
+    }
+    const frames = await this.loadFrames(series, signal);
+    return { series, frames, sourceKind: 'demo', demoSlug: 'epsilon-indi-b', guidedPair };
+  }
+
+  private async loadFrames(series: Series, signal?: AbortSignal): Promise<Float32Array[]> {
     const frames: Float32Array[] = [];
     const [height, width] = series.grid.shape;
     for (const frame of series.frames) {
@@ -112,14 +143,7 @@ export class DemoSeriesSource implements SeriesSource {
       const buf = await res.arrayBuffer();
       frames.push(decodeFloat32LE(buf, height, width));
     }
-    return {
-      series,
-      frames,
-      sourceKind: 'demo',
-      resolve: entry.resolve,
-      demoSlug: entry.slug,
-      notice: 'Recorded data (offline).',
-    };
+    return frames;
   }
 
   listObjects(): Promise<DemoEntry[]> {

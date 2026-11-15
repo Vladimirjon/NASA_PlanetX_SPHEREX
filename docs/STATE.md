@@ -3,6 +3,7 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- Caso guiado D3 de ε Indi B (`docs/specs/0038`): paquete de Johann y controles de Mateo integrados en `main` (PR #12 y #14). La vista usa las dos exposiciones y conserva **Observado** para el desplazamiento del centro de luz (~6,05″ tras corregir el paralaje).
 - Coordinación local: `docs/context/13-trabajo-en-una-computadora.md` reúne a Johann, Mateo y Sebastián; escritura serial o worktrees separados, sin tocar frontend. Paquete PR #12 y controles de Mateo (`feat/measurement-pair-controls`, `c643009`) aún requieren revisión/integración.
 - Ciencia: `docs/specs/0037` resuelve λ del PR #12 (centro del recorte frente a centroide); IDs locales aceptados, paquete regenerado y verificado independientemente. Par aún pendiente de controles de 0036.
 - Ciencia: revisión de PR #11 en `docs/specs/0036`; se reproduce Q del par, pero alineación, calidad completa, incertidumbre y sesgo de color siguen pendientes de evidencia y revisión humana. Mateo/Johann: FLAGS en centroide medido, residuos A/B, correlaciones e inyección.
