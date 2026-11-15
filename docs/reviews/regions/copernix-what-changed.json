@@ -1,0 +1,22 @@
+{
+  "barnards-star": {
+    "whatChanged": "Across these 3 photos, Barnard's Star shifted by ≈ 1.7 pixels (≈ 10.2 arcseconds).",
+    "pageErrors": []
+  },
+  "epsilon-indi-b": {
+    "whatChanged": "Across 4 passes, Epsilon Indi B shifts 6.6″ toward the southeast in 1.4 years (≈ 4.6″ a year). Not independently verified yet.",
+    "pageErrors": []
+  },
+  "wise-0855": {
+    "whatChanged": "Across these 2 photos, WISE 0855-0714 shifted by ≈ 0.8 pixels (≈ 5.0 arcseconds).",
+    "pageErrors": []
+  },
+  "rw-aurigae": {
+    "whatChanged": "Across these 2 photos, its brightness changes.",
+    "pageErrors": []
+  },
+  "r-draconis": {
+    "whatChanged": "Across these 3 photos, its brightness changes.",
+    "pageErrors": []
+  }
+}
