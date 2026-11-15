@@ -30,6 +30,7 @@ Nunca separar una imagen de sus metadatos de procedencia (archivo, fecha, banda/
 | `docs/context/06-stack-propuesto.md` | Stack técnico propuesto (bajo y alto nivel) |
 | `docs/context/07-estandar-ui.md` | **Norma de UI formal y anti-slop** (obligatoria para cualquier UI) |
 | `docs/context/08-entorno-y-comandos.md` | Instalar y correr todo igual en Fedora y Windows |
+| `docs/context/13-trabajo-en-una-computadora.md` | Coordinación local de datos, mediciones y ciencia sin modificar frontend |
 | `docs/GLOSARIO.md` | Términos de astronomía en lenguaje simple |
 | `docs/fuentes/` | Rúbrica oficial de Sangolquí (PDF) y otras fuentes primarias |
 | `docs/adr/` | Decisiones tomadas. No propongas lo contrario sin leer el ADR. Rangos de 10 por integrante (Dax: 0040–0049; 0000–0005 compartidos) |
