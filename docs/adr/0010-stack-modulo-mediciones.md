@@ -1,8 +1,9 @@
 # 0010 · Stack del módulo de mediciones (`AnalysisResult`)
 
-- Estado: **propuesta** (Mateo). Johann está de acuerdo con integrarlo en el backend; falta el visto bueno de Dax (dueño de `backend/`).
-- Fecha: 2026-11-14 (revisión 2, noche)
-- Decidido por: Mateo (dueño del módulo, `AGENTS.md` §3). Numeración en el rango 0010–0019 de Mateo.
+- Estado: **aceptada** (14-nov, noche). Dax (dueño de `backend/`) aprobó la integración y las dependencias; Johann está de acuerdo; Sebastián propuso el mismo lugar para el cálculo puro (`domain/`).
+- Fecha: 2026-11-14 (revisión 3)
+- Decidido por: Mateo (dueño del módulo, `AGENTS.md` §3), con aprobación de Dax y Johann. Numeración en el rango 0010–0019 de Mateo.
+- **No reemplaza la regla dura 1:** que el stack esté aceptado no autoriza a programar; eso depende de que se apruebe la ficha 0010.
 
 ## Contexto
 La ficha `docs/specs/0010-analysis-result.md` pide medir posición y flujo sobre FITS reales de SPHEREx en el marco nativo de cada imagen (WCS TAN-SIP, FLAGS, VARIANCE, `CWAVE`/`CBAND`), con covarianzas y una prueba χ². La demo se precalcula offline. Desde el PR #6 ya existe un backend Python 3.13 + `uv` en `backend/` (paquete `skyshift`, hexagonal según ADR 0041) que lee recortes por rango desde S3 y ya implementa pasadas, máscara de FLAGS, movimiento con paralaje y semáforo.

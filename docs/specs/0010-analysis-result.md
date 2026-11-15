@@ -1,12 +1,12 @@
 > Estado tras revisión 2026-11-14: ver docs/reviews/2026-11-14-triage-specs-main.md. Implementación vigente: contracts/openapi.yaml v0.2 y docs/specs/0002.
 >
-> **Revisión de Mateo (14-nov, noche):** esta versión corrige los puntos ERRÓNEO/CONTRADICE del triage (pasadas > 45 d, máscara `COMPARE_MASK`, paralaje, WCS-WAVE para selección), incorpora el 2.º mensaje de Sebastián (R12 con χ², C_WCS por eje, R6 como preselección) y la revisión de Johann. `AnalysisResult` **no** está en `contracts/openapi.yaml` v0.2: sigue siendo propuesta.
+> **Revisión de Mateo (14-nov, noche):** esta versión corrige los puntos ERRÓNEO/CONTRADICE del triage (pasadas > 45 d, máscara `COMPARE_MASK`, paralaje, WCS-WAVE para selección), incorpora el 2.º mensaje de Sebastián (R12 con χ², C_WCS por eje, R6 como preselección) y la revisión de Johann. `AnalysisResult` **no** está en `contracts/openapi.yaml` (v0.3 vigente): sigue siendo propuesta. La sección 0 fija el alcance de la primera entrega según la revisión de Sebastián.
 
 # Ficha de tarea para agente — Mediciones temporales (`AnalysisResult`)
 
 - Dueño humano: Mateo (rango de fichas 0010–0019)
-- Estado: **borrador** (Ciclo 1, documentación; no implementar todavía)
-- Revisores: Sebastián (ciencia), Johann (frontera con `Observation`)
+- Estado: **borrador listo para aprobación** del alcance de la sección 0. No se implementa hasta que un humano la apruebe (`AGENTS.md` §4.1).
+- Revisores: Sebastián (ciencia), Johann (frontera con `Observation`), Dax (backend: integración y dependencias ya aprobadas el 14-nov)
 - Depende de: [0001 — Arquitectura de datos y `Observation`](0001-arquitectura-observation.md) (borrador de Johann, en `main`)
 - ADRs relacionados: 0003 (stack recomendado), 0010 (stack del módulo, propuesta). Pendiente: ADR de alcance MVP (guiado vs. libre).
 - **Criterios científicos:** R6, R11, R12, el modelo de incertidumbre y las condiciones del caso son los **propuestos por Sebastián** en su mensaje del 14-nov-2026, adoptados aquí como **provisionales** hasta que su ficha (`ScientificCase`) los publique. Esta ficha los citará entonces en vez de duplicarlos.
@@ -16,6 +16,23 @@
 > **Regla del módulo:** este módulo **mide**, no **interpreta**. Devuelve números con unidades, incertidumbre, método y advertencias. Nunca dice "es un asteroide", "es Planet X" ni asigna el semáforo; eso lo hace `ScientificCase` (Sebastián).
 
 ---
+
+## 0. Alcance de la primera entrega (lo que se pide aprobar)
+
+Condiciones de Sebastián (revisión del PR #8, 14-nov, noche), aceptadas tal cual:
+
+| # | Condición | Qué significa en esta ficha |
+| --- | --- | --- |
+| A1 | **Solo movimiento de ε Indi B, como candidato** | La primera entrega implementa solo la tarea (a) `astrometric_shift` para ε Indi B. El resultado es un **candidato de movimiento**: el software **nunca** asigna "evaluado" en esta entrega, aunque `Q` supere el umbral. Como máximo se muestra "observado", con la lista de controles pendientes (§4.4). |
+| A2 | **El brillo queda fuera** | La tarea (b) `flux_change`, R6, R-2, R-3 y el anexo B.3 quedan para una **segunda entrega**. En la primera, `photometry: null` (válido según §3). |
+| A3 | **Resultados reales pendientes de recalcular** | Todos los números del anexo B (movimiento, flujos y SNR) son sondeos exploratorios **sin FLAGS aplicados, sin paralaje y sin covarianzas**. Se marcan `[PENDIENTE DE RECALCULAR]` y no se citan como resultado del producto ni en el pitch hasta recalcularlos con el método aprobado. |
+| A4 | **Q ≥ 28,7437 solo bajo los supuestos de la ficha** | El umbral vale únicamente si se cumplen: errores gaussianos, `C_Δ` estimada correctamente (§4.3), una sola prueba definida de antemano (sin buscar entre muchas) y una hipótesis nula clara (sin desplazamiento). Si un supuesto no se cumple o no se comprobó, se reporta `Q` y `p`, pero **no** `change_measured`. |
+| A5 | **0,3″ por eje es provisional** | `C_WCS = diag(0,09; 0,09)` arcsec² es una aproximación que **debe contrastarse con referencias del campo** (tarea 9b del plan 0011). Sin ese contraste, el resultado lleva `registration_unverified` y la incertidumbre se declara como no validada. |
+| A6 | **Cálculo puro en `backend/src/skyshift/domain/`, sin duplicar `science/validation.py`** | La prueba χ² (`astrometric_p_value`) y la diferencia con covarianza son las de Sebastián. Este módulo las **reutiliza**: su ubicación final en `domain/` se coordina con Sebastián y Johann. No se reimplementan. |
+
+**Fuera de la primera entrega:** brillo, las otras cuatro regiones, la API HTTP (`AnalysisResult` no está en `contracts/openapi.yaml` v0.3) y cualquier nivel por encima de "observado".
+
+**Cómo llega a la app:** un JSON precalculado offline, validado contra `contracts/analysis-result.schema.json`, como recurso estático de la demo en `frontend/public/demo/` (aprobado por Dax, Daniel y Johann el 14-nov). Así no cambia la API.
 
 ## 1. Objetivo funcional
 
@@ -295,6 +312,8 @@ Opciones con pros y contras. **La selección es humana.** No se propone entrenar
 
 ## Anexo B — Lo que dicen los datos reales (verificado el 14-nov-2026)
 
+> **[PENDIENTE DE RECALCULAR] (condición A3):** B.2 y B.3 son sondeos exploratorios, sin FLAGS aplicados, sin paralaje y sin covarianzas. Las épocas (B.1) y las magnitudes de catálogo (B.4) son datos de archivo y no cambian. Los números de B.2 y B.3 no se usan como resultado del producto ni en el pitch hasta recalcularlos con el método aprobado (plan 0011, tarea 13).
+
 ### B.1 Épocas disponibles (IRSA SIA2)
 
 | Objeto | DR1 | QR3 | Grupos de fechas |
@@ -359,8 +378,8 @@ Conversión Vega→AB usada: K +1,85, W2 +3,34 `[VERIFICAR fuente exacta]`.
 
 | Nivel | Qué | Estado |
 | --- | --- | --- |
-| **Obligatorio** | 1 caso real guiado de movimiento con medición defendible (candidato técnico: ε Indi B), precalculado offline, con `AnalysisResult` completo | Viable según B.2 |
-| Recomendado | El mismo objeto como **control de brillo**: `change_below_criterion` a λ emparejada (R6) y `not_comparable` a λ distinta (B.3) | Viable según B.3 |
+| **Primera entrega (obligatorio)** | Movimiento de ε Indi B como **candidato**, precalculado offline, con `AnalysisResult` (`photometry: null`) y como máximo "observado" (§0) | Viable según B.2, pendiente de recalcular |
+| Segunda entrega | El mismo objeto como **control de brillo**: `change_below_criterion` a λ emparejada (R6) y `not_comparable` a λ distinta (B.3) | Fuera de la primera entrega (A2) |
 | Opcional | Un caso de variabilidad real (requiere una variable no saturada) | Falta candidato |
 | Fuera del MVP | Detección automática de múltiples fuentes en 5 regiones; declarar objetos nuevos | No se compromete |
 

@@ -5,6 +5,7 @@
 - Base: ficha 0010 (qué hacer), ficha [0001](0001-arquitectura-observation.md) (entradas), ADR [0010](../adr/0010-stack-modulo-mediciones.md) (stack), ADR [0041](../adr/0041-arquitectura-y-patrones.md) (hexagonal), [D12](../context/12-mapa-de-datos-spherex.md) (reglas de datos), ficha 0032 de Sebastián (rama `scientific-rules`, criterios cuantitativos).
 - Método: TDD (`AGENTS.md` §6): primero la prueba en rojo, después el código mínimo, después limpiar. Tareas de 2–15 min.
 - Revisión 2 (14-nov, noche): reorganizado sobre el backend real (`backend/src/skyshift`, PR #6) y corregido según la revisión de Johann y el 2.º mensaje de Sebastián.
+- Revisión 3 (14-nov, 19:30): **primera entrega = solo movimiento de ε Indi B como candidato** (ficha 0010 §0, condiciones A1–A6 de Sebastián). La prueba χ² y la diferencia con covarianza se **reutilizan** de `science/validation.py` (Sebastián), no se reimplementan. Dax aprobó la integración en el backend y las dependencias; Dax, Daniel y Johann aprobaron entregar el resultado como JSON estático en `frontend/public/demo/`.
 
 ## 1. Arquitectura: dentro del backend hexagonal existente
 
@@ -18,7 +19,8 @@ El backend ya resuelve parte del trabajo. Se **reutiliza** y no se duplica (ADR 
 | Movimiento propio + paralaje | `domain/motion.py` | — |
 | Selección de λ para la serie (λ/(4R), WCS-WAVE) | `domain/wavelength.py` | — |
 | Semáforo OBSERVED/EVALUATED | `domain/comparability.py` | — |
-| Medición en marco nativo, covarianza y prueba χ² | — | `domain/measurement/astrometry.py`, `significance.py` |
+| Prueba χ² 2D y diferencia con covarianza | `science/validation.py` de Sebastián (`astrometric_p_value`, `flux_difference`, PR #9) | **Nada propio:** se reutiliza. Sebastián y Johann deciden su lugar final en `domain/`; este módulo solo lo llama |
+| Medición en marco nativo y covarianza por imagen | — | `domain/measurement/astrometry.py` |
 | Fotometría de apertura y límites superiores | — | `domain/measurement/photometry.py` |
 | Reglas de la ficha 0010 → `checks` + `issues` | — | `domain/measurement/rules.py` |
 | `CWAVE`/`CBAND` en el píxel medido | — | puerto `ports/spectral_calibration.py` + adaptador S3 por rango (como `s3_archive.py`) |
@@ -52,21 +54,30 @@ Cada tarea dice qué prueba escribir primero y cuándo está terminada.
 | 4 | Política de FLAGS: **reutilizar** `domain/flags.py` en un radio de 2,5 px | T6: `HOT`, `OVERFLOW` y `GHOST` bloquean; `OUTLIER` solo marca; `SOURCE` nunca bloquea | `bad_pixels_near_target` / `outlier_near_target` con `paths` | R7–R9 |
 | 5 | Píxel de recorte → píxel original | T9: `CRPIX1A = −375` → x_orig = x + 376 | Coincide con 0001 §7.4 I | T9 |
 | 6 | WCS alternas sin SIP | Con SIP en la cabecera, la WCS `A` devuelve el píxel exacto (error < 0,01 px) | La WCS principal conserva la SIP | §2.1 |
-| 7 | λ en el píxel medido (`CWAVE`/`CBAND`) vía el puerto nuevo | Lector falso → valores del píxel pedido; píxel fuera de rango → error; T7 | `wavelength_method = cwave_cband` | R6, T7, T9 |
+| 7 *(2.ª entrega)* | λ en el píxel medido (`CWAVE`/`CBAND`) vía el puerto nuevo | Lector falso → valores del píxel pedido; píxel fuera de rango → error; T7 | `wavelength_method = cwave_cband` | R6, T7, T9 |
 | 8 | Centroide en marco nativo | T1 (idénticas), T2 (WCS desplazado), T3 (fuente movida 1,0 px) | Error < 0,05 px en T3 sin ruido `[VERIFICAR]`; σ_stat > 0 con ruido | §1, A2 |
-| 9 | Covarianza y prueba χ² | T13: `C_Δ = C_A + C_B − C_AB − C_ABᵀ`; `Q = Δᵀ C_Δ⁻¹ Δ`; `p = e^{−Q/2}`; `z = Φ⁻¹(1 − p/2)`. Comprobar que el umbral calculado es 28,7437024269 (no 28,7, ni 25, ni √Q) | Con N fechas, la prueba se aplica al **vector de movimiento** con su covarianza, no al χ² de los residuos | §4.3, R12 |
+| 9 | Covarianza de la diferencia y llamada a la prueba χ² **de Sebastián** | T13: armar `C_Δ = C_A + C_B − C_AB − C_ABᵀ` (o `C_A + C_B` con `covariance_assumption = independent_epochs`) y pasarla a `astrometric_p_value`; comprobar que el umbral derivado de 5σ bilateral es 28,7437024269 (no 28,7, ni 25, ni √Q). Si a esta hora el PR #9 no está integrado, Sebastián y Johann suben **solo esa función** a `domain/` en un PR mínimo: este módulo no la copia | Con N fechas, la prueba se aplica al **vector de movimiento** con su covarianza; `change_measured` solo si se cumplen los supuestos A4 de 0010 §0, y aun así el nivel máximo es "observado" (A1) | §0, §4.3, R12 |
 | 9b | Registro con estrellas de referencia (Gaia vía puerto `reference_stars`) | T15: residuos de 0,6″ → `C_WCS` inflado + `uncertainty_inflated`; sin estrellas → `registration_unverified` | Estrellas Gaia propagadas a la fecha, no saturadas y aisladas | §4.4 C3 |
 | 9c | Residuos de posición contra λ (Ba/Bb) | T14: dos fuentes no resueltas cuya razón de flujo cambia con λ → `wavelength_dependent_position` | Reporta `residuals_vs_wavelength` | §4.4 C6 |
-| 10 | Fotometría de apertura | T4, T5; T8 (SNR < 5 → límite superior, nunca 0) | MJy/sr → µJy con `OMEGA`; 3 % una vez; fondo **fijo y documentado** (resolver la discrepancia con 0032 §4.1, que usó un anillo de 3–5 px frente a mi 5–9 px) | §4.3, R11, B.3 |
-| 11 | Reglas de comparabilidad | T6, T7, T8, T10, T11, T12; R1 con `domain/visits.py`; R6 = preselección + `spectral_bias_unverified` | Cada fallo produce `check` + `issue` con `code`, `paths`, `detail` | §4.1 |
+| 10 *(2.ª entrega)* | Fotometría de apertura | T4, T5; T8 (SNR < 5 → límite superior, nunca 0) | MJy/sr → µJy con `OMEGA`; 3 % una vez; fondo **fijo y documentado** (resolver la discrepancia con 0032 §4.1, que usó un anillo de 3–5 px frente a mi 5–9 px) | §4.3, R11, B.3 |
+| 11 | Reglas de comparabilidad | T6, T8, T10, T11, T12; R1 con `domain/visits.py`. *(2.ª entrega: T7 y R6)* | Cada fallo produce `check` + `issue` con `code`, `paths`, `detail` | §4.1 |
 | 12 | Ensamblado y `outcome` | Tabla de verdad: checks + `test.equivalent_sigma_two_sided` (≥ 5, calculado) → `change_measured` / `change_below_criterion` / `no_usable_detection` | El JSON valida con `contracts/analysis-result.schema.json` vía `mise run check-contracts` | §3 |
-| 13 | Precálculo del candidato ε Indi B | **R-1** siempre; **R-2 y R-3 solo si la tarea 10 está hecha** (si se cortó la fotometría, `photometry: null` y esas pruebas se omiten con un motivo) | Cumple C1–C5 de 0010 §4.4; posición esperada con `domain/motion.py` (Gaia DR3, con paralaje); escribe `data/derived/` y un manifiesto válido contra `contracts/package-manifest.schema.json` | B.2, B.3, §4.4 |
+| 13 | Precálculo del candidato ε Indi B | **R-1** (movimiento) con `photometry: null`. R-2 y R-3 pasan a la 2.ª entrega (A2). Los números del anexo B se **recalculan** aquí (A3); la prueba compara con Gaia dentro de σ, no con el sondeo | Cumple C1–C5 de 0010 §4.4; posición esperada con `domain/motion.py` (Gaia DR3, con paralaje); escribe `data/derived/` y un manifiesto válido contra `contracts/package-manifest.schema.json` | B.2, B.3, §4.4 |
 
 **Dependencias entre tareas (corregido tras la revisión de Johann):** la 7 va **antes** de la 11, porque R6 y T7 necesitan la λ. La 10 va antes de la parte de brillo de la 11 y de R-2/R-3 en la 13.
 
-**Ruta crítica para la demo (solo movimiento):** 0 → 1 → 2 → 3 → 4 → 5 → 6 → 8 → 9 → 9b → 11 (sin R6) → 12 → 13 (solo R-1). Después: 9c (Ba/Bb), 7, 10 y la parte de brillo.
+**Primera entrega (antes de las 02:00):** 0 → 1 → 2 → 3 → 4 → 5 → 6 → 8 → 9 → 9b → 11 (sin R6) → 12 → 13 (solo R-1) → JSON en `frontend/public/demo/`. **Segunda entrega (después):** 9c (Ba/Bb), 7, 10 y todo lo de brillo.
 
-**Corte por tiempo (congelación a las 02:00):** si no alcanza, el mínimo defendible es la ruta crítica de arriba, con `photometry: null` (válido según el contrato) y R-2/R-3 omitidas con su motivo. Sin 9c, el resultado lleva `wavelength_dependent_position` como no evaluado y **no puede pedir el nivel "evaluado"**: se presenta como candidato.
+| Bloque | Tareas | Ventana objetivo (sábado, UTC−5) |
+| --- | --- | --- |
+| Contrato y base | 0, 1, 2 | 20:00–21:00 |
+| Sintético y píxeles | 3, 4, 5, 6 | 21:00–22:15 |
+| Medición | 8, 9 | 22:15–23:30 |
+| Registro con Gaia | 9b | 23:30–00:15 (si se atrasa: `registration_unverified`) |
+| Reglas, ensamblado y caso real | 11, 12, 13 | 00:15–01:30 |
+| Evidencia y PR | tests, `ruff`, `pyright --strict`, revisión de Sebastián | 01:30–02:00 |
+
+**Corte por tiempo:** si a la 01:30 falta la tarea 13, no se publica ningún número real: la demo muestra la serie existente sin medición, y el método se presenta en el pitch con las pruebas sintéticas (rotuladas). En la primera entrega el resultado **nunca** pasa de "observado" (A1); sin 9c, además lleva `wavelength_dependent_position` como no evaluado.
 
 ## 3. Diseño de las pruebas sintéticas
 
@@ -120,11 +131,13 @@ Todas usan un generador con semilla fija. Todo lo generado lleva `is_synthetic =
 | Tema | Quién lo libera | Afecta a tareas | Estado |
 | --- | --- | --- | --- |
 | Aprobación de la ficha 0010 | Sebastián + Johann | todas | Pendiente: **no se programa antes** |
-| Umbrales R6 (preselección), R11, R12, `C_WCS` | Sebastián | 2, 9, 11, 12 | Propuestos y documentados (0032 en `scientific-rules`); provisionales |
+| Umbrales R11, R12, `C_WCS` | Sebastián | 2, 9, 11, 12 | Aceptados para la primera entrega con los supuestos A4–A5; R6 pasa a la 2.ª entrega |
+| Lugar final de `astrometric_p_value` / `flux_difference` en `domain/` | Sebastián + Johann | 9 | Pendiente (A6); este módulo no los duplica |
 | Dos criterios de λ (λ/(4R) en la serie frente a 0,02 × CBAND en brillo) | Sebastián + Dax | 7, 11 | Confirmar que es intencional (0010 §4.2) |
 | Pendiente espectral para validar R6 | Sebastián | 11, 13 | Sin medir: R6 queda como preselección |
 | Método de fondo de la fotometría (3–5 px frente a 5–9 px) | Mateo + Sebastián | 10 | Pendiente |
 | Adaptador Gaia: ¿este módulo o el de Johann? | Johann + Mateo | 9b | Propuesta: puerto propio con el cliente HTTP existente |
 | `AnalysisResult` en `contracts/openapi.yaml` | Johann + Dax | ruta HTTP (fuera de este plan) | No se expone por API todavía |
-| Carpeta | Johann + Dax | 0 | Resuelto: `backend/src/skyshift/` según ADR 0041 (actualiza ADR 0010) |
+| Carpeta y dependencias (scipy, photutils) | Johann + Dax | 0 | **Aprobado** por Dax y Johann (14-nov): `backend/src/skyshift/` |
+| Cómo llega a la UI | Daniel + Johann + Dax | 13 | **Aprobado** (14-nov): JSON estático en `frontend/public/demo/` |
 | Formato del manifiesto | Johann | 13 | Resuelto: `contracts/package-manifest.schema.json` |
