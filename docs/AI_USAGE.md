@@ -96,3 +96,7 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-15 | Codex | Corrección del solapamiento en ε Indi B y animación del polvo de RW Aurigae, con consulta NASA | Giro y geometría ilustrativos; revisión visual del usuario pendiente |
 
 | 2026-11-15 | Codex | Línea del comparador acortada bajo el título según solicitud del usuario | Revisión visual local pendiente |
+
+| 2026-11-15 | Codex | Análisis del repositorio, fuentes y rúbrica; redacción de referencia técnica y matriz de trazabilidad | Revisión humana y científica pendiente |
+
+| 2026-11-15 | Codex | Capturas de demo pública, README bilingüe y guía de operación del sistema | Revisión humana y científica pendiente |
