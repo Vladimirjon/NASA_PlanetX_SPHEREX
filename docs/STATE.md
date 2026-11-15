@@ -3,6 +3,7 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- Ciencia: ficha `0034`, listas separadas por método y pruebas sintéticas; ε Indi B y WISE 0855 siguen pendientes de fuente, alineación, calidad e incertidumbre. `main` en `39609f2`; Mateo actualizó su ficha en rama `docs/analysis-review-fixes` (`931e94a`), no integrada.
 - Ciencia (`scientific-rules`): controles y vista local de dos pares; falta evidencia de posición, alineación y calidad para declarar un par evaluado. `docs/specs/0030`–`0033` detallan límites y pasos.
 - Guía de coordinación propuesta: `docs/ciclos-entrega-skyshift.md`. Roles confirmados por el usuario; la asignación de carpetas y revisión de interfaces siguen pendientes.
 - Integración científica pendiente: acordar con Johann y Mateo cómo conectar los controles del prototipo al semáforo del backend; no asumir que la función genérica garantiza todos los controles obligatorios.

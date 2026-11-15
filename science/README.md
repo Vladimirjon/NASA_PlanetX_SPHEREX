@@ -12,6 +12,8 @@
 - `compare_significance(p_value, sigma_threshold, trials)`: compara una probabilidad individual con un umbral gaussiano bilateral explícito y una corrección de Bonferroni con el número de pruebas indicado. La selección, el modelo estadístico y la cifra de pruebas deben estar justificados por el llamador; el resultado no confirma descubrimientos.
 - `aggregate_checks(checks, stage=...)`: bloquea la elegibilidad si falta cualquier control, hay advertencias o la etapa es preselección. Los estados son **aportados por el llamador**, que es responsable de obtener y validar su evidencia; esta función no inspecciona FITS ni mide el cielo.
 
+`science.checklists.build_checklist` genera listas distintas para movimiento y brillo con estado, motivo y referencias aportadas. Las referencias no se verifican automáticamente; aprobar todos los controles solo permite aplicar el método, no demuestra un cambio. Regenerar los informes exploratorios de los pares reales con `python -m science.checklists`; ver [ficha 0034](../docs/specs/0034-controles-casos-y-limites.md) para sus límites y pasos pendientes.
+
 La vista emplea `science.preview.build_report`; exige fuentes explícitas para considerar un control externo como aprobado y nunca convierte el filtro espectral en aprobación espectral. No se generan `AnalysisResult` ni se cambia ningún esquema compartido. Las funciones no asignan automáticamente `confirmed`.
 
 Con Python 3.11 o superior, en Fedora y Windows, desde la raíz del repo:
