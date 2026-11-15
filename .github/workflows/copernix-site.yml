@@ -92,7 +92,11 @@ jobs:
             echo "$path -> $code"
             [ "$code" = "200" ]
           done
-          # no API on the static site: it must answer 404, not the landing, so the viewer falls back to the demo
-          code=$(curl -s -o /dev/null -w '%{http_code}' "$base/api/v1/health")
+          # /api/v1 goes through the Worker to the backend. The backend is another team's server, so a 502 (backend
+          # down) must not block a deploy of the site; a 404 would mean the proxy route itself is missing.
+          code=$(curl -s -o /dev/null -w '%{http_code}' --retry 3 --retry-delay 3 "$base/api/v1/health")
           echo "/api/v1/health -> $code"
-          [ "$code" = "404" ]
+          [ "$code" = "200" ] || [ "$code" = "502" ]
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$base/api/v1/health")
+          echo "POST /api/v1/health -> $code"
+          [ "$code" = "405" ]
