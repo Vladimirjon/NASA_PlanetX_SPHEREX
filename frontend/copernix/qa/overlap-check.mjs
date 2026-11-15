@@ -31,7 +31,7 @@ const BLOCKS = [
   { id: 'intro', selector: '.intro-card', optional: true },
   { id: 'lang', selector: '.lang' },
   { id: 'tip', selector: '.tipbox.on', optional: true },
-  { id: 'advanced', selector: '.map-menu[open] .menu-panel', optional: true },
+  { id: 'return', selector: '.return-pill', optional: true },
 ];
 
 const PAIR_IDS = [
@@ -41,18 +41,22 @@ const PAIR_IDS = [
   ['left-col', 'intro'],
   ['left-col', 'lang'],
   ['left-col', 'tip'],
-  ['left-col', 'advanced'],
+  ['left-col', 'return'],
   ['dock', 'cutout'],
   ['dock', 'zoom'],
   ['dock', 'intro'],
   ['dock', 'lang'],
   ['dock', 'tip'],
-  ['dock', 'advanced'],
+  ['dock', 'return'],
   ['cutout', 'zoom'],
   ['cutout', 'intro'],
   ['cutout', 'tip'],
-  ['cutout', 'advanced'],
+  ['cutout', 'return'],
   ['zoom', 'intro'],
+  ['zoom', 'return'],
+  ['lang', 'return'],
+  ['intro', 'return'],
+  ['tip', 'return'],
   ['zoom', 'lang'],
   ['zoom', 'tip'],
   ['intro', 'lang'],
@@ -100,11 +104,7 @@ async function collectRects(page, isMobile) {
       if (block.optional || block.needSeries) continue;
       throw new Error(`missing ${block.id}`);
     }
-    const visible = await el.isVisible();
-    if (!visible) {
-      if (block.optional) continue;
-      if (block.needSeries) continue;
-    }
+    if (!(await el.isVisible())) continue;   // a hidden element cannot overlap anything
     const box = await el.boundingBox();
     if (box) map.set(block.id, box);
   }
@@ -188,39 +188,72 @@ for (const vp of VIEWPORTS) {
     {
       key: 'intro',
       setup: async page => {
-        await page.addInitScript(() => localStorage.removeItem('copernix_intro'));
+        await page.addInitScript(() => localStorage.removeItem('copernix_tour_off'));
       },
     },
     {
       key: 'no-intro',
       setup: async page => {
-        await page.addInitScript(() => localStorage.setItem('copernix_intro', '1'));
+        await page.addInitScript(() => localStorage.setItem('copernix_tour_off', '1'));
       },
     },
     {
       key: 'light-open',
       setup: async page => {
-        await page.addInitScript(() => localStorage.setItem('copernix_intro', '1'));
+        await page.addInitScript(() => localStorage.setItem('copernix_tour_off', '1'));
       },
       after: async page => {
+        const opts = page.locator('.options-toggle');
+        if (await opts.isVisible()) await opts.click();
         const btn = page.getByRole('button', { name: /Tipo de luz|Type of light/i });
         if (await btn.isVisible()) await btn.click();
       },
     },
     {
-      key: 'advanced-open',
+      key: 'options-open',
       setup: async page => {
-        await page.addInitScript(() => localStorage.setItem('copernix_intro', '1'));
+        await page.addInitScript(() => localStorage.setItem('copernix_tour_off', '1'));
       },
       after: async page => {
-        const summary = page.locator('details.map-menu summary');
-        if (await summary.isVisible()) await summary.click();
+        const opts = page.locator('.options-toggle');
+        if (await opts.isVisible()) await opts.click();
+        await page.waitForTimeout(150);
       },
     },
     {
+      key: 'return-pill',
+      setup: async page => {
+        await page.addInitScript(() => localStorage.setItem('copernix_tour_off', '1'));
+      },
+      after: async page => {
+        const box = await page.getByTestId('sky-map').boundingBox();
+        if (!box) return;
+        for (let i = 0; i < 6; i++) {   // far enough that "Return to …" is offered
+          await page.mouse.move(box.x + box.width * 0.8, box.y + box.height * 0.3);
+          await page.mouse.down();
+          await page.mouse.move(box.x + box.width * 0.45, box.y + box.height * 0.7, { steps: 10 });
+          await page.mouse.up();
+          await page.waitForTimeout(250);
+        }
+        await page.waitForTimeout(600);
+      },
+    },
+    ...[2, 3, 4, 5].map(n => ({
+      key: `intro-step-${String(n)}`,
+      setup: async page => {
+        await page.addInitScript(() => localStorage.removeItem('copernix_tour_off'));
+      },
+      after: async page => {
+        for (let i = 1; i < n; i++) {
+          await page.locator('.intro-card .go').click();
+          await page.waitForTimeout(450);
+        }
+      },
+    })),
+    {
       key: 'tip-open',
       setup: async page => {
-        await page.addInitScript(() => localStorage.setItem('copernix_intro', '1'));
+        await page.addInitScript(() => localStorage.setItem('copernix_tour_off', '1'));
       },
       after: async page => {
         const tip = page.locator('.tip').first();
@@ -232,7 +265,6 @@ for (const vp of VIEWPORTS) {
 
   for (const sc of scenarios) {
     if (sc.key === 'tip-open' && isMobile) continue;
-    if (sc.key === 'advanced-open' && isMobile) continue;
 
     const page = await browser.newPage({ viewport: { width: vp.w, height: vp.h } });
     await sc.setup(page);
@@ -260,9 +292,9 @@ for (const vp of VIEWPORTS) {
         fullPage: false,
       });
     }
-    if (vp.shot === '686x800' && sc.key === 'advanced-open') {
+    if (vp.shot === '686x800' && sc.key === 'options-open') {
       await page.screenshot({
-        path: resolve(qaOut, 'revision6-686-advanced-es.png'),
+        path: resolve(qaOut, 'revision6-686-options-es.png'),
         fullPage: false,
       });
     }
@@ -273,7 +305,7 @@ for (const vp of VIEWPORTS) {
 try {
   const crossPage = await browser.newPage({ viewport: { width: 1280, height: 720 } });
   await crossPage.addInitScript(() => {
-    localStorage.setItem('copernix_intro', '1');
+    localStorage.setItem('copernix_tour_off', '1');
   });
   await crossPage.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 60_000 });
   await preparePage(crossPage, false);

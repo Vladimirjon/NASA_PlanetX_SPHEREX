@@ -16,7 +16,7 @@ const browser = await chromium.launch({
 await mkdir(qaOut, { recursive: true });
 
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-await page.addInitScript(() => localStorage.setItem('copernix_intro', '1'));
+await page.addInitScript(() => localStorage.setItem('copernix_tour_off', '1'));
 await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 60_000 });
 await page.waitForSelector('[data-testid="sky-map"]', { timeout: 30_000 });
 
