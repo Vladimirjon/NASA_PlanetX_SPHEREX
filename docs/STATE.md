@@ -3,6 +3,7 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- Ciencia: `docs/specs/0037` resuelve λ del PR #12 (centro del recorte frente a centroide); IDs locales aceptados, paquete regenerado y verificado independientemente. Par aún pendiente de controles de 0036.
 - Ciencia: revisión de PR #11 en `docs/specs/0036`; se reproduce Q del par, pero alineación, calidad completa, incertidumbre y sesgo de color siguen pendientes de evidencia y revisión humana. Mateo/Johann: FLAGS en centroide medido, residuos A/B, correlaciones e inyección.
 
 - Pitch (14-nov tarde): presentación ES de 7 diapositivas hecha como Artifact (fuera del repo), con fotos reales de NASA y el guion en las notas. Faltan animaciones por afinar, la versión en inglés, los dos PDF, el nombre y las capturas de la app. Detalle y enlace: `docs/HANDOFF_PITCH.md`.

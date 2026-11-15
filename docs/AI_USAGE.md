@@ -44,3 +44,4 @@ Required by NASA Space Apps 2026 ("Use of Super Intelligence") and the Sangolqu�
 | 2026-11-14 | Codex | Listas de control por método, pruebas sintéticas, estado de pares e investigación de límites | Revisión científica humana y de Johann/Mateo pendiente |
 | 2026-11-14 | Codex | Revisión estática de textos científicos, controles y procedencia de la demo | Daniel y responsable del backend revisan; prueba visual y revisión humana pendientes |
 | 2026-11-14 | Codex | Auditoría científica del par D3 del PR #11, recálculo de Q y recomendaciones por control | Sebastián revisa la decisión; Mateo y Johann aportan evidencias pendientes |
+| 2026-11-14 | Codex | Comparación reproducida de píxeles y calibración espectral del PR #12 y propuesta de identificadores | Revisión de Johann/Mateo y comprobación científica pendientes |
