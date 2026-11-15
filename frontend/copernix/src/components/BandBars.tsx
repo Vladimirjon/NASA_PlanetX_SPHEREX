@@ -1,9 +1,15 @@
 import { useMemo, useRef } from 'react';
 import { WAVELENGTHS } from '../../../src/engine/engine';
+import { formatLightLabel } from '../light-label';
+import type { Lang } from '../i18n';
+import { Tip } from './Tip';
+import { t } from '../i18n';
 
 type Props = {
   readonly plane: number;
+  readonly lang: Lang;
   readonly label: string;
+  readonly hint: string;
   readonly onChange: (plane: number) => void;
 };
 
@@ -15,7 +21,7 @@ function barHue(i: number): string {
   return String((330 + i * 0.74) % 360);
 }
 
-export function BandBars({ plane, label, onChange }: Props) {
+export function BandBars({ plane, lang, label, hint, onChange }: Props) {
   const hold = useRef(false);
   const bars = useMemo(
     () =>
@@ -29,14 +35,16 @@ export function BandBars({ plane, label, onChange }: Props) {
 
   const fromEvent = (clientX: number, el: HTMLElement) => {
     const rc = el.getBoundingClientRect();
-    const t = (clientX - rc.left) / Math.max(1, rc.width);
-    return Math.min(101, Math.max(0, Math.round(t * 101)));
+    const tFrac = (clientX - rc.left) / Math.max(1, rc.width);
+    return Math.min(101, Math.max(0, Math.round(tFrac * 101)));
   };
 
   const lambda = WAVELENGTHS[plane] ?? WAVELENGTHS[0];
+  const lightWords = formatLightLabel(lambda, lang);
 
   return (
-    <div>
+    <div className="band-block">
+      <p className="band-hint">{hint}</p>
       <div
         className="bars"
         role="slider"
@@ -45,7 +53,7 @@ export function BandBars({ plane, label, onChange }: Props) {
         aria-valuemin={0}
         aria-valuemax={101}
         aria-valuenow={plane}
-        aria-valuetext={`${lambda.toFixed(3)} µm`}
+        aria-valuetext={lightWords}
         onPointerDown={e => {
           hold.current = true;
           (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -96,11 +104,10 @@ export function BandBars({ plane, label, onChange }: Props) {
         })}
       </div>
       <div className="band-meta">
-        <span>0.75 µm</span>
-        <span className="mono">
-          {lambda.toFixed(3)} µm · {plane}
+        <span className="band-words">
+          {lightWords}
+          <Tip title={t(lang, 'tipMicronTitle')} body={t(lang, 'tipMicronBody')} aboutLabel={t(lang, 'about')} />
         </span>
-        <span>5.0 µm</span>
       </div>
     </div>
   );

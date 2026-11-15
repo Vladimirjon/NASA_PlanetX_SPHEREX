@@ -1,9 +1,10 @@
 /* Original NASA/JPL-Caltech model, rendered offline (scripts/render_satellite_views.py) and played back in a 2D canvas.
    180 turns x 9 tilts. Neighbouring views are blended, so the turn is continuous without opening a GL context. */
-export const VIEWS={yaw:180,pitchDegrees:[-48,-36,-24,-12,0,12,24,36,48],start:4};
-const N=VIEWS.yaw,ROWS=VIEWS.pitchDegrees.length,MAX_ROWS=3,PARALLEL=6;
+export const VIEWS={yaw:180,pitchDegrees:[-36,-24,-12,0,12,24,36,48,60],start:4.83};
+const N=VIEWS.yaw,ROWS=VIEWS.pitchDegrees.length,MAX_ROWS=5,PARALLEL=6;
 const DEG_PER_PX=.45,PX_YAW=DEG_PER_PX/(360/N),PX_PITCH=DEG_PER_PX/(VIEWS.pitchDegrees[1]-VIEWS.pitchDegrees[0]);   // drag distance -> frames / rows
-const IDLE_RAD_S=.3;
+const IDLE_FRAMES_S=.3*N/(2*Math.PI);   // lazy turn, 0.3 rad/s
+const EASE_S=1.1,PITCH_DECAY=3,MAX_FLICK=700;   // seconds to settle back to the lazy turn; frames/s cap on a flick
 
 export const SAT3D={ready:false,failed:false,started:false,onready:null,onfail:null,onchange:null,onframe:null,update:null};
 
@@ -39,10 +40,15 @@ SAT3D.init=function(canvas){
       }
       const [r,y]=queue.splice(best,1)[0],key=id(r,y),img=new Image();
       img.decoding='async';active++;
-      img.onload=()=>{
-        active--;queued.delete(key);rows[r].set(y,img);loaded++;evictRows();
+      const arrive=()=>{
+        queued.delete(key);rows[r].set(y,img);loaded++;evictRows();
         if(!SAT3D.ready){SAT3D.ready=true;SAT3D.onready?.();}
-        SAT3D.onframe?.();pump();
+        SAT3D.onframe?.();
+      };
+      img.onload=()=>{
+        active--;pump();
+        // decode off the main thread so the first paint of a view never stalls the turn
+        if(Math.abs(r-pitch)<=1.5&&typeof img.decode==='function')img.decode().then(arrive,arrive);else arrive();
       };
       img.onerror=()=>{
         active--;queued.delete(key);bad.add(key);
@@ -56,7 +62,7 @@ SAT3D.init=function(canvas){
   function prefetch(){
     const r=Math.round(pitch),y=Math.round(yaw);
     for(let i=0;i<N;i++)want(r,y+i);
-    if(rows[r].size>=N-4){for(const q of [r-1,r+1])if(q>=0&&q<ROWS)for(let i=0;i<N;i+=2)want(q,y+i);}
+    if(rows[r].size>=N-4){for(const q of [r-1,r+1])if(q>=0&&q<ROWS)for(let i=0;i<N;i++)want(q,y+i);}
     pump();
   }
   /* nearest view that is already here, so a missing frame never leaves a hole */
@@ -86,7 +92,8 @@ SAT3D.init=function(canvas){
     if(!dragging)return;
     const now=performance.now(),dt=Math.max(.008,(now-lastMove)/1000),dx=(event.clientX-lastX)*PX_YAW,dy=event.pointerType==='touch'?0:(event.clientY-lastY)*PX_PITCH;
     yaw=wrap(yaw+dx);pitch=clampRow(pitch+dy);
-    vYaw=vYaw*.6+(dx/dt)*.4;vPitch=vPitch*.6+(dy/dt)*.4;   // release speed, for the glide
+    const cap=v=>Math.max(-MAX_FLICK,Math.min(MAX_FLICK,v));
+    vYaw=vYaw*.6+cap(dx/dt)*.4;vPitch=vPitch*.6+(dy/dt)*.4;   // release speed, for the glide
     lastX=event.clientX;lastY=event.clientY;lastMove=now;changed();
   });
   const end=()=>{
@@ -103,10 +110,11 @@ SAT3D.init=function(canvas){
   SAT3D.update=(now,layout,reduced)=>{
     const dt=Math.max(0,Math.min(.1,(now-lastTime)/1000));lastTime=now;
     if(!dragging&&!reduced){
-      if(Math.abs(vYaw)>.05||Math.abs(vPitch)>.002){
-        yaw=wrap(yaw+vYaw*dt);pitch=clampRow(pitch+vPitch*dt);
-        const k=Math.exp(-dt*3.2);vYaw*=k;vPitch*=k;wantNear();
-      }else{vYaw=vPitch=0;yaw=wrap(yaw+IDLE_RAD_S*dt*N/(2*Math.PI));wantNear();}
+      // One velocity: a flick glides and settles into the lazy turn with no stop-and-restart.
+      const ease=1-Math.exp(-dt/EASE_S);
+      vYaw+=(IDLE_FRAMES_S-vYaw)*ease;
+      vPitch*=Math.exp(-dt*PITCH_DECAY);if(Math.abs(vPitch)<.001)vPitch=0;
+      yaw=wrap(yaw+vYaw*dt);pitch=clampRow(pitch+vPitch*dt);wantNear();
     }
     const w=canvas.clientWidth,h=canvas.clientHeight;
     const scale=Math.min(1,Math.sqrt(900000/Math.max(1,w*h)));

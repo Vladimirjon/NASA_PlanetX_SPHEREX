@@ -3,6 +3,8 @@
 Actualizado: sáb 14-nov-2026, noche (UTC−5). Regla: cada sesión de agente o reunión actualiza esto en ≤5 líneas.
 
 ## Ahora
+- **14-nov noche · Dax/Cursor · encargo 06 catálogo+controles:** catálogo abierto (`catalog/`), buscador columna + `?name=`, modos/timeline/luz legibles, guía intro. Capturas `revision4-*`. Lint/test/build:copernix + check-landing + `copernix-qa-catalog.mjs` OK. Humano: revisar búsqueda y guía.
+- **14-nov noche · Dax/Cursor · encargo 05 rediseño visor:** layout editorial (scrim, sin barra azul), `selection.ts` (marcador anclado; candidato; custom), dock delgado, sheet móvil. Capturas `revision3-*`. Lint/test/build:copernix + check-landing + `copernix-qa.mjs` OK. Humano: revisar visual y flujo candidato.
 - **14-nov noche · Dax/Cursor · encargo 04 pulir visor:** panel lateral opaco, barra única, dock/legibilidad, bottom sheet móvil, `explain-i18n.ts` ES/EN. Capturas `docs/landing/copernix-qa/revision2-*`. Lint/test/build:copernix + `check-landing` OK. Humano: revisar visual.
 - **14-nov noche · Dax/Cursor · encargo 02 visor Copernix:** UI nueva en `frontend/copernix/` (`base /viewer/`), scripts `dev:copernix`/`build:copernix`, demo en `/demo` vía Vite + `serve_landing`. Capturas `docs/landing/copernix-qa/`. Lint/test/build:copernix OK. Humano: revisar visual ES/EN.
 - **14-nov noche · rama `integration/main-ready` (Dax + agentes):** producto funcional de punta a punta.

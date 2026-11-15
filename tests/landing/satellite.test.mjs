@@ -19,7 +19,7 @@ const layout={cx:100,cy:100,diam:80};
 test('current row is requested at once, at most six downloads in flight',async()=>{
   const f=await fixture();try{
     assert.equal(f.pending.length,6);
-    assert.ok(f.pending.every(i=>i.url.includes('/'+f.VIEWS.start+'-')));
+    assert.ok(f.pending.every(i=>i.url.includes('/'+Math.round(f.VIEWS.start)+'-')));
     assert.equal(f.SAT3D.ready,false);f.pending.shift().onload();assert.equal(f.SAT3D.ready,true);
   }finally{f.restore();}
 });

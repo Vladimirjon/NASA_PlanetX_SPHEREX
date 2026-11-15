@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef, useState, type SyntheticEvent } from 'react';
 import { EngineMapController } from '../../src/app/adapters/engine-map-controller';
 import { parseSearchQuery } from '../../src/app/core/search';
 import { buildTimeline } from '../../src/app/core/timeline';
@@ -10,10 +10,15 @@ import { DemoSeriesSource } from '../../src/series/adapters/demo-source';
 import { BLINK_HZ_DEFAULT, blinkIntervalMs, nextBlinkIndex, prevBlinkIndex } from '../../src/series/core/blink';
 import type { LoadedSeries, SeriesLookup } from '../../src/series/ports/series-source';
 import { SeriesSourceError } from '../../src/series/ports/series-source';
+import { createCompositeCatalog, featuredEntries } from './catalog/composite-source';
+import { isSearchAbort } from './catalog/api-source';
+import type { CatalogEntry } from './catalog/port';
 import { BandBars } from './components/BandBars';
+import { IntroGuide } from './components/IntroGuide';
 import { SeriesCutout } from './components/SeriesCutout';
 import { Tip } from './components/Tip';
 import {
+  describeChangeLineI18n,
   describeExpectedMotionI18n,
   describeTimeSpanI18n,
   describeWavelengthI18n,
@@ -21,7 +26,27 @@ import {
   localizeEngineStatus,
   motionProvenanceI18n,
 } from './explain-i18n';
-import { detectLang, persistLang, seriesProgressMessage, t, type Lang } from './i18n';
+import {
+  detectLang,
+  formatPointTitle,
+  persistLang,
+  returnLabel,
+  seriesProgressMessage,
+  t,
+  targetDescription,
+  type Lang,
+} from './i18n';
+import { shouldShowIntro } from './intro';
+import { timelineDateVisibility } from './timeline-labels';
+import { formatLightLabel, formatVisitDate } from './light-label';
+import { parseNameParam } from './name-url';
+import {
+  createSelection,
+  reduceSelection,
+  shouldOfferReturn,
+  type SelectionState,
+  type SkyCoords,
+} from './selection';
 
 const ANALYZE_FOV_DEG = 0.5;
 const FOV_ARCMIN = 5;
@@ -53,40 +78,115 @@ function useIsMobile(breakpoint = 820): boolean {
   return mobile;
 }
 
+function bootSelection(state: AppUrlState, nameFromUrl: string | null): SelectionState {
+  if (state.target) {
+    const target = targetBySlug(state.target);
+    if (target) {
+      return createSelection({
+        mode: 'target',
+        slug: target.slug,
+        coords: { ra: target.ra, dec: target.dec },
+      });
+    }
+  }
+  if (nameFromUrl) {
+    return createSelection({
+      mode: 'named',
+      slug: null,
+      catalogName: nameFromUrl,
+      catalogKind: null,
+      catalogDescription: null,
+      coords: { ra: 0, dec: 0 },
+    });
+  }
+  if (state.ra !== null && state.dec !== null) {
+    return createSelection({
+      mode: 'custom',
+      slug: null,
+      coords: { ra: state.ra, dec: state.dec },
+    });
+  }
+  const fallback = targetBySlug(DEFAULT_TARGET) ?? CHALLENGE_TARGETS[0];
+  return createSelection({
+    mode: 'target',
+    slug: fallback.slug,
+    coords: { ra: fallback.ra, dec: fallback.dec },
+  });
+}
+
+function stopUiBubble(e: SyntheticEvent): void {
+  e.stopPropagation();
+}
+
+function modeHelpKey(mode: ViewMode): 'modeHelpLoop' | 'modeHelpDiff' | 'modeHelpColour' {
+  if (mode === 'difference') return 'modeHelpDiff';
+  if (mode === 'colour') return 'modeHelpColour';
+  return 'modeHelpLoop';
+}
+
+function isVariableFeatured(slug: string | null): boolean {
+  return slug === 'rw-aurigae' || slug === 'r-draconis';
+}
+
 export function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const timelineRef = useRef<HTMLDivElement | null>(null);
+  const [timelineWidth, setTimelineWidth] = useState(0);
   const engineRef = useRef<SkyEngine | null>(null);
   const mapRef = useRef<EngineMapController | null>(null);
   const sourceRef = useRef(new FallbackSeriesSource(new ApiSeriesSource(), new DemoSeriesSource(), 60_000));
   const abortRef = useRef<AbortController | null>(null);
-  const mapMenuRef = useRef<HTMLDetailsElement | null>(null);
+  const searchAbortRef = useRef<AbortController | null>(null);
+  const catalogRef = useRef(createCompositeCatalog({ lang: detectLang(window.location.search) }));
+  const selectionRef = useRef<SelectionState | null>(null);
 
   const initialParse = parseAppSearch(window.location.search);
+  const nameParse = parseNameParam(window.location.search);
+  const nameFromUrl = nameParse.kind === 'ok' ? nameParse.name : null;
   const mapOff = mapOffFromSearch(window.location.search);
   const bootState: AppUrlState =
     initialParse.kind === 'invalid'
       ? { target: null, ra: null, dec: null, fov: 40, plane: 0, t: 0, mode: 'loop', proj: 'SIN' }
       : initialParse.kind === 'empty'
-        ? { ...initialParse.state, target: DEFAULT_TARGET }
-        : initialParse.state.target || (initialParse.state.ra !== null && initialParse.state.dec !== null)
-          ? initialParse.state
+        ? { ...initialParse.state, target: nameFromUrl ? null : DEFAULT_TARGET }
+        : initialParse.state.target ||
+            nameFromUrl ||
+            (initialParse.state.ra !== null && initialParse.state.dec !== null)
+          ? { ...initialParse.state, target: nameFromUrl ? null : initialParse.state.target }
           : { ...initialParse.state, target: DEFAULT_TARGET };
 
   const [lang, setLang] = useState<Lang>(() => detectLang(window.location.search));
   const [plane, setPlane] = useState(bootState.plane);
   const [proj, setProj] = useState<Projection>(bootState.proj);
-  const [activeSlug, setActiveSlug] = useState<string | null>(bootState.target);
-  const [pick, setPick] = useState<{ ra: number; dec: number } | null>(
-    bootState.ra !== null && bootState.dec !== null ? { ra: bootState.ra, dec: bootState.dec } : null,
+  const [selection, dispatchSelection] = useReducer(
+    reduceSelection,
+    undefined,
+    () => bootSelection(bootState, nameFromUrl),
   );
+  selectionRef.current = selection;
+
+  const [featured, setFeatured] = useState<CatalogEntry[]>(() => featuredEntries(lang));
   const [markerScreen, setMarkerScreen] = useState<{ x: number; y: number } | null>(null);
+  const [candidateScreen, setCandidateScreen] = useState<{ x: number; y: number } | null>(null);
+  const [offerReturn, setOfferReturn] = useState(false);
   const [engineStatus, setEngineStatus] = useState(
-    initialParse.kind === 'invalid' ? t(detectLang(window.location.search), 'urlInvalid') : '',
+    initialParse.kind === 'invalid' || nameParse.kind === 'invalid'
+      ? t(detectLang(window.location.search), 'urlInvalid')
+      : '',
   );
   const [announce, setAnnounce] = useState('');
   const [query, setQuery] = useState('');
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchStatus, setSearchStatus] = useState<'idle' | 'empty' | 'searching' | 'results' | 'none' | 'error'>(
+    'idle',
+  );
+  const [searchResults, setSearchResults] = useState<CatalogEntry[]>([]);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [cutoutOpen, setCutoutOpen] = useState(false);
+  const [lightOpen, setLightOpen] = useState(false);
+  // Colour mode opens the light picker once; keep it optional afterwards.
+  const [mapHintVisible, setMapHintVisible] = useState(true);
+  const [introOpen, setIntroOpen] = useState(() => shouldShowIntro());
   const isMobile = useIsMobile(820);
 
   const [seriesStatus, setSeriesStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
@@ -100,8 +200,27 @@ export function App() {
   const [engineOk, setEngineOk] = useState(!mapOff);
 
   useEffect(() => {
+    const el = timelineRef.current;
+    if (!el || isMobile) {
+      setTimelineWidth(0);
+      return;
+    }
+    const ro = new ResizeObserver(entries => {
+      const w = entries[0]?.contentRect.width ?? 0;
+      setTimelineWidth(w);
+    });
+    ro.observe(el);
+    setTimelineWidth(el.getBoundingClientRect().width);
+    return () => {
+      ro.disconnect();
+    };
+  }, [isMobile, seriesStatus]);
+
+  useEffect(() => {
     document.documentElement.lang = lang;
     document.title = t(lang, 'title');
+    catalogRef.current = createCompositeCatalog({ lang });
+    void catalogRef.current.featured().then(setFeatured);
   }, [lang]);
 
   useEffect(() => {
@@ -128,17 +247,24 @@ export function App() {
     setEngineOk(true);
     sky.on('status', setEngineStatus);
     sky.on('pick', p => {
-      setPick(p);
+      dispatchSelection({ type: 'set_candidate', coords: { ra: p.ra, dec: p.dec } });
       setAnnounce(`${p.ra.toFixed(4)}°, ${p.dec.toFixed(4)}°`);
+      setMapHintVisible(false);
     });
     sky.on('viewchange', v => {
       setPlane(v.plane);
       setProj(v.proj);
-      const aim = pickRef.current;
-      if (aim) {
-        const scr = sky.screenPosition({ ra: aim.ra, dec: aim.dec });
-        setMarkerScreen(scr);
+      setMapHintVisible(false);
+      const sel = selectionRef.current;
+      if (!sel) return;
+      const scr = sky.screenPosition({ ra: sel.coords.ra, dec: sel.coords.dec });
+      setMarkerScreen(scr);
+      if (sel.candidate) {
+        setCandidateScreen(sky.screenPosition({ ra: sel.candidate.ra, dec: sel.candidate.dec }));
+      } else {
+        setCandidateScreen(null);
       }
+      setOfferReturn(shouldOfferReturn(sel.coords, { ra: v.ra, dec: v.dec }, v.fov) || scr === null);
     });
     return () => {
       mapRef.current?.destroy();
@@ -148,24 +274,30 @@ export function App() {
     };
   }, []);
 
-  const pickRef = useRef(pick);
-  pickRef.current = pick;
-
   useEffect(() => {
     const sky = engineRef.current;
-    if (!sky || !pick) {
+    if (!sky) {
       setMarkerScreen(null);
+      setCandidateScreen(null);
       return;
     }
-    setMarkerScreen(sky.screenPosition({ ra: pick.ra, dec: pick.dec }));
-  }, [pick, plane, proj]);
+    setMarkerScreen(sky.screenPosition({ ra: selection.coords.ra, dec: selection.coords.dec }));
+    if (selection.candidate) {
+      setCandidateScreen(sky.screenPosition({ ra: selection.candidate.ra, dec: selection.candidate.dec }));
+    } else {
+      setCandidateScreen(null);
+    }
+    const view = sky.getView();
+    const scr = sky.screenPosition({ ra: selection.coords.ra, dec: selection.coords.dec });
+    setOfferReturn(shouldOfferReturn(selection.coords, { ra: view.ra, dec: view.dec }, view.fov) || scr === null);
+  }, [selection, plane, proj]);
 
   useEffect(() => {
     const view = engineRef.current?.getView();
     const state: AppUrlState = {
-      target: activeSlug,
-      ra: view?.ra ?? pick?.ra ?? null,
-      dec: view?.dec ?? pick?.dec ?? null,
+      target: selection.mode === 'target' ? selection.slug : null,
+      ra: selection.mode === 'custom' ? selection.coords.ra : (view?.ra ?? null),
+      dec: selection.mode === 'custom' ? selection.coords.dec : (view?.dec ?? null),
       fov: view?.fov ?? 40,
       plane,
       t: frameIndex,
@@ -173,6 +305,14 @@ export function App() {
       proj,
     };
     const params = new URLSearchParams((toAppSearch(state) || '?').slice(1));
+    if (selection.mode === 'named' && selection.catalogName) {
+      params.delete('target');
+      params.delete('ra');
+      params.delete('dec');
+      params.set('name', selection.catalogName);
+    } else {
+      params.delete('name');
+    }
     if (lang !== detectLang('')) params.set('lang', lang);
     else if (new URLSearchParams(window.location.search).has('lang')) params.set('lang', lang);
     if (mapOff) params.set('map', 'off');
@@ -180,7 +320,7 @@ export function App() {
     if (window.location.search !== next) {
       window.history.replaceState(null, '', `${window.location.pathname}${next}`);
     }
-  }, [activeSlug, pick, plane, proj, frameIndex, mode, lang, mapOff]);
+  }, [selection, plane, proj, frameIndex, mode, lang, mapOff]);
 
   useEffect(() => {
     if (seriesStatus !== 'loading') {
@@ -217,9 +357,211 @@ export function App() {
   }, [playing, mode, loaded]);
 
   useEffect(() => {
+    searchAbortRef.current?.abort();
+    const q = query.trim();
+    if (!q) {
+      setSearchResults([]);
+      setSearchStatus('idle');
+      return;
+    }
+    const parsed = parseSearchQuery(q);
+    if (parsed.kind === 'coords') {
+      setSearchResults([
+        {
+          id: `coords:${String(parsed.ra)},${String(parsed.dec)}`,
+          name: formatPointTitle(lang, parsed.ra, parsed.dec),
+          kind: lang === 'es' ? 'Coordenadas' : 'Coordinates',
+          description: t(lang, 'tipRaDecBody'),
+          ra: parsed.ra,
+          dec: parsed.dec,
+          featured: false,
+        },
+      ]);
+      setSearchStatus('results');
+      return;
+    }
+    const ac = new AbortController();
+    searchAbortRef.current = ac;
+    setSearchStatus('searching');
+    void catalogRef.current
+      .search(q, ac.signal)
+      .then(rows => {
+        if (ac.signal.aborted) return;
+        setSearchResults(rows);
+        setSearchStatus(rows.length === 0 ? 'none' : 'results');
+      })
+      .catch((err: unknown) => {
+        if (isSearchAbort(err) || ac.signal.aborted) return;
+        setSearchResults([]);
+        setSearchStatus('error');
+      });
+    return () => {
+      ac.abort();
+    };
+  }, [query, lang]);
+
+  const loadSeries = (lookup: SeriesLookup, slug: string | null) => {
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+    setLastLookup(lookup);
+    setSeriesStatus('loading');
+    setError(null);
+    setLoaded(null);
+    setFrameIndex(0);
+    setAnnounce(t(lang, 'loading'));
+    void sourceRef.current
+      .load(lookup, ac.signal)
+      .then(result => {
+        if (ac.signal.aborted) return;
+        setLoaded({ ...result, demoSlug: result.demoSlug ?? slug ?? undefined });
+        setSeriesStatus('ready');
+        setPlaying(!prefersReducedMotion() && mode === 'loop');
+        const n = result.series.frames.length;
+        setAnnounce(n < 2 ? t(lang, 'noSeriesFriendly') : `OK · ${String(n)}`);
+      })
+      .catch((err: unknown) => {
+        if (ac.signal.aborted) return;
+        // Friendly empty-series state instead of a technical error when possible.
+        const isEmpty =
+          err instanceof SeriesSourceError &&
+          (err.status === 404 || /no comparable|not enough|no visits|sin visitas/i.test(err.detail ?? err.title));
+        if (isEmpty) {
+          setSeriesStatus('ready');
+          setLoaded(null);
+          setError(null);
+          setAnnounce(t(lang, 'noSeriesFriendly'));
+          return;
+        }
+        const message =
+          err instanceof SeriesSourceError
+            ? err.detail ?? err.title
+            : err instanceof Error
+              ? err.message
+              : t(lang, 'noSeriesFriendly');
+        setSeriesStatus('error');
+        setError(message);
+        setAnnounce(message);
+      });
+  };
+
+  const analyzeCoords = async (coords: SkyCoords) => {
+    dispatchSelection({ type: 'set_custom', coords });
+    setAnnounce(formatPointTitle(lang, coords.ra, coords.dec));
+    await mapRef.current?.flyTo(
+      { ra: coords.ra, dec: coords.dec, fov: ANALYZE_FOV_DEG },
+      { reducedMotion: prefersReducedMotion() },
+    );
+    loadSeries({ kind: 'coords', ra: coords.ra, dec: coords.dec, fov: FOV_ARCMIN }, null);
+  };
+
+  const analyzeCandidate = async () => {
+    const cand = selectionRef.current?.candidate;
+    if (!cand) return;
+    dispatchSelection({ type: 'analyze_candidate' });
+    setAnnounce(formatPointTitle(lang, cand.ra, cand.dec));
+    await mapRef.current?.flyTo(
+      { ra: cand.ra, dec: cand.dec, fov: ANALYZE_FOV_DEG },
+      { reducedMotion: prefersReducedMotion() },
+    );
+    loadSeries({ kind: 'coords', ra: cand.ra, dec: cand.dec, fov: FOV_ARCMIN }, null);
+  };
+
+  const selectEntry = async (entry: CatalogEntry) => {
+    setQuery('');
+    setSearchResults([]);
+    setSearchStatus('idle');
+    if (entry.featured && entry.slug) {
+      dispatchSelection({
+        type: 'select_target',
+        slug: entry.slug,
+        coords: { ra: entry.ra, dec: entry.dec },
+      });
+      setAnnounce(entry.name);
+      await mapRef.current?.flyTo(
+        { ra: entry.ra, dec: entry.dec, fov: ANALYZE_FOV_DEG },
+        { reducedMotion: prefersReducedMotion() },
+      );
+      const lookup = catalogRef.current.resolve(entry);
+      loadSeries(lookup, entry.slug);
+      return;
+    }
+    dispatchSelection({
+      type: 'select_named',
+      name: entry.name,
+      coords: { ra: entry.ra, dec: entry.dec },
+      kind: entry.kind,
+      description: entry.description,
+    });
+    setAnnounce(entry.name);
+    await mapRef.current?.flyTo(
+      { ra: entry.ra, dec: entry.dec, fov: ANALYZE_FOV_DEG },
+      { reducedMotion: prefersReducedMotion() },
+    );
+    loadSeries(catalogRef.current.resolve(entry), null);
+  };
+
+  const selectTarget = async (slug: string) => {
+    const entry = featured.find(f => f.slug === slug) ?? featuredEntries(lang).find(f => f.slug === slug);
+    if (entry) {
+      await selectEntry(entry);
+      return;
+    }
+    const target = targetBySlug(slug);
+    const canonical = canonicalNameForSlug(slug);
+    if (!target || !canonical) return;
+    await selectEntry({
+      id: slug,
+      name: target.name,
+      kind: '',
+      description: targetDescription(lang, slug),
+      ra: target.ra,
+      dec: target.dec,
+      featured: true,
+      slug,
+    });
+  };
+
+  const returnToLastTarget = async () => {
+    const slug = selection.lastTargetSlug ?? selection.slug;
+    if (!slug) return;
+    await selectTarget(slug);
+  };
+
+  const centerOnObject = async () => {
+    const c = selectionRef.current?.coords;
+    if (!c) return;
+    await mapRef.current?.flyTo(
+      { ra: c.ra, dec: c.dec, fov: ANALYZE_FOV_DEG },
+      { reducedMotion: prefersReducedMotion() },
+    );
+  };
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Escape') {
+        if (selectionRef.current?.candidate) {
+          e.preventDefault();
+          dispatchSelection({ type: 'clear_candidate' });
+          setAnnounce('');
+          return;
+        }
+        if (cutoutOpen) {
+          setCutoutOpen(false);
+          return;
+        }
+        if (detailsOpen) {
+          setDetailsOpen(false);
+          return;
+        }
+      }
+      if (e.key === 'Enter' && selectionRef.current?.candidate) {
+        e.preventDefault();
+        void analyzeCandidate();
+        return;
+      }
       if (e.key === '+' || e.key === '=') {
         e.preventDefault();
         engineRef.current?.zoomBy(1 / 1.25);
@@ -244,84 +586,40 @@ export function App() {
     return () => {
       window.removeEventListener('keydown', onKey);
     };
-  }, [seriesStatus, loaded]);
-
-  const loadSeries = (lookup: SeriesLookup, slug: string | null) => {
-    abortRef.current?.abort();
-    const ac = new AbortController();
-    abortRef.current = ac;
-    setLastLookup(lookup);
-    setActiveSlug(slug);
-    setSeriesStatus('loading');
-    setError(null);
-    setLoaded(null);
-    setFrameIndex(0);
-    setAnnounce(t(lang, 'loading'));
-    void sourceRef.current
-      .load(lookup, ac.signal)
-      .then(result => {
-        if (ac.signal.aborted) return;
-        setLoaded({ ...result, demoSlug: result.demoSlug ?? slug ?? undefined });
-        setSeriesStatus('ready');
-        setPlaying(!prefersReducedMotion() && mode === 'loop');
-        setAnnounce(
-          result.series.frames.length < 2 ? t(lang, 'noSeries') : `OK · ${String(result.series.frames.length)}`,
-        );
-      })
-      .catch((err: unknown) => {
-        if (ac.signal.aborted) return;
-        const message =
-          err instanceof SeriesSourceError
-            ? err.detail ?? err.title
-            : err instanceof Error
-              ? err.message
-              : t(lang, 'noSeries');
-        setSeriesStatus('error');
-        setError(message);
-        setAnnounce(message);
-      });
-  };
-
-  const analyzeCoords = async (ra: number, dec: number) => {
-    setPick({ ra, dec });
-    await mapRef.current?.flyTo({ ra, dec, fov: ANALYZE_FOV_DEG }, { reducedMotion: prefersReducedMotion() });
-    loadSeries({ kind: 'coords', ra, dec, fov: FOV_ARCMIN }, null);
-  };
-
-  const selectTarget = async (slug: string) => {
-    const target = targetBySlug(slug);
-    const canonical = canonicalNameForSlug(slug);
-    if (!target || !canonical) return;
-    setActiveSlug(slug);
-    setPick({ ra: target.ra, dec: target.dec });
-    setAnnounce(target.name);
-    await mapRef.current?.flyTo(
-      { ra: target.ra, dec: target.dec, fov: ANALYZE_FOV_DEG },
-      { reducedMotion: prefersReducedMotion() },
-    );
-    loadSeries({ kind: 'name', name: canonical }, slug);
-  };
-
-  const onSubmitQuery = (raw: string) => {
-    const q = parseSearchQuery(raw);
-    if (q.kind === 'target') void selectTarget(q.slug);
-    else if (q.kind === 'coords') void analyzeCoords(q.ra, q.dec);
-    else if (q.kind === 'name') {
-      setActiveSlug(null);
-      loadSeries({ kind: 'name', name: q.name }, null);
-    } else if (q.kind === 'invalid') {
-      setEngineStatus(q.reason);
-    }
-  };
+  }, [seriesStatus, loaded, cutoutOpen, detailsOpen, lang]);
 
   const bootstrapped = useRef(false);
   useEffect(() => {
     if (bootstrapped.current) return;
     if (!mapOff && !engineRef.current) return;
     bootstrapped.current = true;
-    if (initialParse.kind === 'invalid') return;
+    if (initialParse.kind === 'invalid' || nameParse.kind === 'invalid') return;
+    if (nameFromUrl) {
+      void (async () => {
+        try {
+          const hits = await catalogRef.current.search(nameFromUrl);
+          const exact = hits.find(h => h.name.toLowerCase() === nameFromUrl.toLowerCase());
+          const hit = exact ?? (hits.length > 0 ? hits[0] : undefined);
+          if (hit !== undefined) {
+            await selectEntry(hit);
+            return;
+          }
+        } catch {
+          /* fall through to name-only load */
+        }
+        dispatchSelection({
+          type: 'select_named',
+          name: nameFromUrl,
+          coords: selectionRef.current?.coords ?? { ra: 0, dec: 0 },
+        });
+        loadSeries({ kind: 'name', name: nameFromUrl }, null);
+      })();
+      return;
+    }
     if (bootState.target) void selectTarget(bootState.target);
-    else if (bootState.ra !== null && bootState.dec !== null) void analyzeCoords(bootState.ra, bootState.dec);
+    else if (bootState.ra !== null && bootState.dec !== null) {
+      void analyzeCoords({ ra: bootState.ra, dec: bootState.dec });
+    }
   });
 
   const series = seriesStatus === 'ready' && loaded ? loaded.series : null;
@@ -344,206 +642,342 @@ export function App() {
   const demoNotice =
     loaded?.sourceKind === 'demo' ||
     (loaded?.notice && /offline|unavailable|timed out|unreachable/i.test(loaded.notice));
-  const markerName =
-    activeSlug != null ? (targetBySlug(activeSlug)?.name ?? activeSlug) : pick ? `${pick.ra.toFixed(2)}°, ${pick.dec.toFixed(2)}°` : '';
+
+  const activeTarget = selection.mode === 'target' && selection.slug ? targetBySlug(selection.slug) : undefined;
+  const lastTarget = selection.lastTargetSlug ? targetBySlug(selection.lastTargetSlug) : undefined;
+
+  const titleName =
+    selection.mode === 'named' && selection.catalogName
+      ? selection.catalogName
+      : activeTarget
+        ? activeTarget.name
+        : selection.mode === 'custom'
+          ? formatPointTitle(lang, selection.coords.ra, selection.coords.dec)
+          : '';
+
+  const titleDesc = (() => {
+    if (selection.mode === 'named') {
+      const kind = selection.catalogKind?.trim() || '';
+      const desc = selection.catalogDescription?.trim() || '';
+      if (kind && desc && desc !== kind) return `${kind} — ${desc}`;
+      return kind || desc;
+    }
+    if (activeTarget) return targetDescription(lang, activeTarget.slug);
+    if (selection.mode === 'custom') return t(lang, 'statusIdle');
+    return '';
+  })();
+
+  const changeLine =
+    seriesStatus === 'ready' && series
+      ? describeChangeLineI18n(lang, series, titleName || '—', {
+          variableHint: isVariableFeatured(selection.slug),
+        })
+      : seriesStatus === 'ready' && !series
+        ? t(lang, 'noSeriesFriendly')
+        : seriesStatus === 'loading'
+          ? (progress ?? t(lang, 'loading'))
+          : seriesStatus === 'error'
+            ? (error ?? t(lang, 'noSeriesFriendly'))
+            : t(lang, 'statusIdle');
+
   const localizedEngine = localizeEngineStatus(lang, engineStatus);
   const showMapEngineNotice =
     Boolean(localizedEngine) && seriesStatus !== 'loading' && !localizedEngine.startsWith(t(lang, 'loading').slice(0, 12));
+  const showBands = lightOpen;
+  const returnName = lastTarget?.name ?? activeTarget?.name ?? '';
+  const frameCount = series?.frames.length ?? 0;
+  const frameMarkers = timeline ? timeline.markers.filter(m => m.kind === 'frame') : [];
+  const visibleDateIndices =
+    frameMarkers.length > 0
+      ? timelineDateVisibility(
+          frameMarkers.map(m => m.index),
+          frameMarkers.map(m => m.fraction),
+          frameIndex,
+          timelineWidth,
+        )
+      : new Set<number>();
+  const photoLabel =
+    frameCount > 0
+      ? `${t(lang, 'photoOf')} ${String(frameIndex + 1)} ${t(lang, 'photoOfOf')} ${String(frameCount)}`
+      : '';
 
-  const searchForm = (
-    <form
-      className="search-wrap"
-      onSubmit={e => {
-        e.preventDefault();
-        onSubmitQuery(query);
-        if (isMobile) setSearchOpen(false);
-      }}
-    >
-      <input
-        value={query}
-        onChange={e => {
-          setQuery(e.target.value);
-        }}
-        placeholder={t(lang, 'searchPlaceholder')}
-        aria-label={t(lang, 'searchPlaceholder')}
-        autoComplete="off"
-      />
-      <Tip title={t(lang, 'tipRaDecTitle')} body={t(lang, 'tipRaDecBody')} aboutLabel={t(lang, 'about')} />
-      <button type="submit" className="go">
-        {t(lang, 'searchSubmit')}
-      </button>
-    </form>
-  );
-
-  const explainBody = (
-    <>
-      {seriesStatus === 'idle' ? <p className="explain-copy">{t(lang, 'statusIdle')}</p> : null}
-      {seriesStatus === 'loading' ? (
-        <p className="explain-copy" role="status">
-          {progress ?? t(lang, 'loading')}
+  const catalogSearch = (
+    <div className="catalog-search" data-intro="catalog-search">
+      <label className="objects-label" htmlFor="copernix-catalog-q">
+        {t(lang, 'catalogSearchLabel')}
+      </label>
+      <div className="search-wrap catalog-search-wrap">
+        <input
+          id="copernix-catalog-q"
+          value={query}
+          onChange={e => {
+            setQuery(e.target.value);
+          }}
+          placeholder={t(lang, 'searchPlaceholder')}
+          aria-label={t(lang, 'searchPlaceholder')}
+          autoComplete="off"
+          data-testid="catalog-search"
+        />
+        <Tip title={t(lang, 'tipRaDecTitle')} body={t(lang, 'tipRaDecBody')} aboutLabel={t(lang, 'about')} />
+      </div>
+      {searchStatus === 'searching' ? (
+        <p className="search-status mono" role="status">
+          {t(lang, 'searchSearching')}
         </p>
       ) : null}
-      {seriesStatus === 'error' ? (
-        <div role="alert" className="explain-error">
-          <p className="explain-copy">{error}</p>
-          <p className="explain-copy mono">{t(lang, 'demoOffline')}</p>
-          <button
-            type="button"
-            className="go"
-            onClick={() => {
-              if (lastLookup) loadSeries(lastLookup, activeSlug);
-            }}
-          >
-            {t(lang, 'retry')}
-          </button>
+      {searchStatus === 'none' ? (
+        <p className="search-status" role="status">
+          {t(lang, 'searchNoResults')}
+        </p>
+      ) : null}
+      {searchStatus === 'error' ? (
+        <p className="search-status" role="alert">
+          {t(lang, 'searchError')}
+        </p>
+      ) : null}
+      {searchStatus === 'results' && searchResults.length > 0 ? (
+        <ul className="search-results" role="listbox" aria-label={t(lang, 'catalogSearchLabel')}>
+          {searchResults.map(row => (
+            <li key={row.id}>
+              <button
+                type="button"
+                className="search-hit"
+                role="option"
+                onClick={() => {
+                  void selectEntry(row);
+                }}
+              >
+                <span className="search-hit-name">{row.name}</span>
+                <span className="search-hit-kind mono">{row.kind}</span>
+                <span className="search-hit-desc">{row.description}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+
+  const featuredList = (
+    <div className="objects" role="toolbar" aria-label={t(lang, 'targetsLabel')} data-intro="catalog">
+      <p className="objects-label">{t(lang, 'targetsLabel')}</p>
+      {featured.map(entry => (
+        <button
+          key={entry.id}
+          type="button"
+          className="object-link"
+          aria-pressed={
+            (selection.mode === 'target' && selection.slug === entry.slug) ||
+            (selection.mode === 'named' && selection.catalogName === entry.name)
+          }
+          onClick={() => {
+            void selectEntry(entry);
+          }}
+        >
+          <i className="object-dot" aria-hidden="true" />
+          {entry.name}
+        </button>
+      ))}
+      {selection.mode !== 'target' && lastTarget ? (
+        <button
+          type="button"
+          className="text-link return-inline"
+          data-testid="return-to-target-inline"
+          onClick={() => {
+            void returnToLastTarget();
+          }}
+        >
+          {returnLabel(lang, lastTarget.name)}
+        </button>
+      ) : null}
+    </div>
+  );
+
+  const provenanceBody = seriesStatus === 'ready' && series && loaded ? (
+    <div className="prov-body">
+      <p className="explain-status mono" role="status">
+        {demoNotice ? t(lang, 'demoOffline') : t(lang, 'liveApi')}
+        {loaded.notice && demoNotice ? ` · ${loaded.notice}` : ''}
+      </p>
+      <div className="explain-text">
+        <p>{describeWavelengthI18n(lang, series)}</p>
+        <p>{describeTimeSpanI18n(lang, series.frames)}</p>
+        {motion ? <p>{motion}</p> : null}
+        {series.frames.length < 2 ? <p>{t(lang, 'noSeriesFriendly')}</p> : null}
+        <p className="explain-note">{t(lang, 'neverConfirmed')}</p>
+      </div>
+      <dl className="prov-list mono">
+        {frame ? (
+          <>
+            <div>
+              <dt>{t(lang, 'provenanceFile')}</dt>
+              <dd>{frame.obs_id}</dd>
+            </div>
+            <div>
+              <dt>{t(lang, 'provenanceDate')}</dt>
+              <dd>{frame.t_mid.slice(0, 19)}Z</dd>
+            </div>
+            <div>
+              <dt>{t(lang, 'provenanceBand')}</dt>
+              <dd>{formatLightLabel(frame.wavelength_um, lang)}</dd>
+            </div>
+            <div>
+              <dt>{t(lang, 'provenanceCollection')}</dt>
+              <dd>{frame.provenance.collection ?? 'n/a'}</dd>
+            </div>
+          </>
+        ) : null}
+        <div>
+          <dt>PM</dt>
+          <dd>{motionProvenanceI18n(lang, selection.slug ?? loaded.demoSlug)}</dd>
         </div>
+      </dl>
+      {frame ? (
+        <a href={frame.provenance.source_url} target="_blank" rel="noreferrer">
+          IRSA
+        </a>
       ) : null}
-      {seriesStatus === 'ready' && series && loaded ? (
-        <>
-          <p className="explain-status mono" role="status">
-            {demoNotice ? t(lang, 'demoOffline') : t(lang, 'liveApi')}
-            {loaded.notice && demoNotice ? ` · ${loaded.notice}` : ''}
-          </p>
-          <div className="cutout-block">
-            <SeriesCutout
-              loaded={loaded}
-              frameIndex={frameIndex}
-              mode={mode}
-              label={frame ? formatVisitLabelI18n(lang, frameIndex, series.frames.length, frame.t_mid) : 'cutout'}
-            />
-            <p className="cutout-cap mono">
-              {t(lang, 'cutoutBeforeAfter')}
-              {frame ? ` · ${frame.t_mid.slice(0, 10)}` : ''}
-            </p>
-          </div>
-          <div className="explain-text">
-            <p>{describeWavelengthI18n(lang, series)}</p>
-            <p>{describeTimeSpanI18n(lang, series.frames)}</p>
-            {motion ? <p>{motion}</p> : null}
-            {series.frames.length < 2 ? <p>{t(lang, 'noSeries')}</p> : null}
-          </div>
-          <div className="semaforo" aria-label="Interpretation levels">
-            {(
-              [
-                ['OBSERVED', 'observed', 'observedHint'],
-                ['EVALUATED', 'evaluated', 'evaluatedHint'],
-                ['CONFIRMED', 'confirmed', 'confirmedHint'],
-              ] as const
-            ).map(([code, labelKey, hintKey]) => {
-              const on = code === 'CONFIRMED' ? false : level === code;
-              return (
-                <div key={code} className={`semaforo-row${on ? ' on' : ''}`} data-on={on}>
-                  <span className="semaforo-dot" aria-hidden="true" />
-                  <div>
-                    <strong>{t(lang, labelKey)}</strong>
-                    <span>{t(lang, hintKey)}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <p className="explain-note">{t(lang, 'neverConfirmed')}</p>
-          <details className="prov-details">
-            <summary>{t(lang, 'provenance')}</summary>
-            <dl className="prov-list mono">
-              {frame ? (
-                <>
-                  <div>
-                    <dt>{t(lang, 'provenanceFile')}</dt>
-                    <dd>{frame.obs_id}</dd>
-                  </div>
-                  <div>
-                    <dt>{t(lang, 'provenanceDate')}</dt>
-                    <dd>{frame.t_mid.slice(0, 19)}Z</dd>
-                  </div>
-                  <div>
-                    <dt>{t(lang, 'provenanceBand')}</dt>
-                    <dd>λ {frame.wavelength_um.toFixed(3)} µm</dd>
-                  </div>
-                  <div>
-                    <dt>{t(lang, 'provenanceCollection')}</dt>
-                    <dd>{frame.provenance.collection ?? 'n/a'}</dd>
-                  </div>
-                </>
-              ) : null}
-              <div>
-                <dt>PM</dt>
-                <dd>{motionProvenanceI18n(lang, activeSlug ?? loaded.demoSlug)}</dd>
-              </div>
-            </dl>
-            {frame ? (
-              <a href={frame.provenance.source_url} target="_blank" rel="noreferrer">
-                IRSA
-              </a>
-            ) : null}
-          </details>
-          <a className="method-link" href="/#method">
-            {t(lang, 'howCalculated')}
-          </a>
-        </>
-      ) : null}
+      <a className="method-link" href="/#method">
+        {t(lang, 'howCalculated')}
+      </a>
+    </div>
+  ) : seriesStatus === 'error' ? (
+    <div role="alert" className="explain-error">
+      <p className="explain-copy">{error}</p>
+      <p className="explain-copy mono">{t(lang, 'demoOffline')}</p>
+      <button
+        type="button"
+        className="go"
+        onClick={() => {
+          if (lastLookup) loadSeries(lastLookup, selection.slug);
+        }}
+      >
+        {t(lang, 'retry')}
+      </button>
+    </div>
+  ) : seriesStatus === 'ready' && !series ? (
+    <p className="explain-copy">{t(lang, 'noSeriesFriendly')}</p>
+  ) : (
+    <p className="explain-copy">{progress ?? t(lang, 'statusIdle')}</p>
+  );
+
+  const cutoutCap =
+    frame != null
+      ? `${t(lang, 'cutoutBeforeAfter')} · ${formatVisitDate(frame.t_mid, lang)} · ${formatLightLabel(frame.wavelength_um, lang)}`
+      : '';
+
+  const cutoutCard =
+    seriesStatus === 'ready' && series && loaded && frame ? (
+      <button
+        type="button"
+        className="cutout-card"
+        data-testid="cutout-card"
+        data-intro="cutout"
+        aria-label={t(lang, 'expandCutout')}
+        onClick={e => {
+          stopUiBubble(e);
+          setCutoutOpen(true);
+        }}
+      >
+        <SeriesCutout
+          loaded={loaded}
+          frameIndex={frameIndex}
+          mode={mode}
+          label={formatVisitLabelI18n(lang, frameIndex, series.frames.length, frame.t_mid)}
+        />
+        <p className="cutout-cap mono">{cutoutCap}</p>
+      </button>
+    ) : (
+      <div className="cutout-anchor" data-intro="cutout" aria-hidden="true" />
+    );
+
+  const semaforoInline = (
+    <div className="semaforo-inline" aria-label="Interpretation levels">
+      {(
+        [
+          ['OBSERVED', 'observed', 'observedTip'],
+          ['EVALUATED', 'evaluated', 'evaluatedTip'],
+          ['CONFIRMED', 'confirmed', 'confirmedTip'],
+        ] as const
+      ).map(([code, labelKey, tipKey]) => {
+        const on = code === 'CONFIRMED' ? false : level === code;
+        return (
+          <span
+            key={code}
+            className={`semaforo-item${on ? ' on' : ''}`}
+            data-on={on}
+            title={t(lang, tipKey)}
+            tabIndex={0}
+          >
+            <i className="semaforo-dot" aria-hidden="true" />
+            <span>{t(lang, labelKey)}</span>
+            <span className="semaforo-tip" role="tooltip">
+              {t(lang, tipKey)}
+            </span>
+          </span>
+        );
+      })}
+    </div>
+  );
+
+  const columnBody = (
+    <>
+      <button
+        type="button"
+        className="hero-title"
+        onDoubleClick={() => {
+          void returnToLastTarget();
+        }}
+      >
+        {titleName}
+      </button>
+      {titleDesc ? <p className="hero-lead">{titleDesc}</p> : null}
+      {featuredList}
+      {catalogSearch}
+      <div className="change-block">
+        <p className="change-title">{t(lang, 'whatChanged')}</p>
+        <p className="change-line">{changeLine}</p>
+        {semaforoInline}
+        <button
+          type="button"
+          className="text-link"
+          onClick={() => {
+            setDetailsOpen(true);
+          }}
+        >
+          {t(lang, 'provenance')}
+        </button>
+      </div>
     </>
   );
 
   return (
     <div className={`viewer${mapOff || !engineOk ? ' map-off' : ''}${isMobile ? ' is-mobile' : ''}`}>
-      <header className="topbar" role="banner">
+      <header className="chrome" role="banner" onPointerDown={stopUiBubble} onClick={stopUiBubble}>
         <a className="brand" href="/">
           {t(lang, 'brand')}
         </a>
-        <div className="targets-scroll" role="toolbar" aria-label={t(lang, 'targetsLabel')}>
-          {CHALLENGE_TARGETS.map(target => (
-            <button
-              key={target.slug}
-              type="button"
-              className="chip-text"
-              aria-pressed={activeSlug === target.slug}
-              onClick={() => {
-                void selectTarget(target.slug);
-              }}
-            >
-              {target.name}
-            </button>
-          ))}
-        </div>
-        {isMobile ? (
-          <button
-            type="button"
-            className="search-toggle"
-            aria-expanded={searchOpen}
-            aria-label={t(lang, 'searchToggle')}
-            onClick={() => {
-              setSearchOpen(o => !o);
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-              <circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M12.2 12.2 16 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </button>
-        ) : (
-          searchForm
-        )}
-        <div className="lang" role="group" aria-label="Language">
-          {(['es', 'en'] as const).map(code => (
-            <button
-              key={code}
-              type="button"
-              data-lang={code}
-              aria-pressed={lang === code}
-              onClick={() => {
-                setLang(code);
-                persistLang(code);
-              }}
-            >
-              {code.toUpperCase()}
-            </button>
-          ))}
+        <div className="chrome-right">
+          <div className="lang" role="group" aria-label="Language">
+            {(['es', 'en'] as const).map(code => (
+              <button
+                key={code}
+                type="button"
+                data-lang={code}
+                aria-pressed={lang === code}
+                onClick={() => {
+                  setLang(code);
+                  persistLang(code);
+                }}
+              >
+                {code.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
-      {isMobile && searchOpen ? <div className="search-popover">{searchForm}</div> : null}
 
-      <div className="sky-layer" aria-hidden={mapOff || !engineOk}>
+      <div className="sky-layer" aria-hidden={mapOff || !engineOk} data-intro="map">
         <canvas
           ref={canvasRef}
           className="sky-canvas"
@@ -552,12 +986,83 @@ export function App() {
           data-testid="sky-map"
         />
         <div className="sky-vignette" aria-hidden="true" />
+        <div className="sky-scrim" aria-hidden="true" />
         {markerScreen ? (
-          <div className="marker" style={{ left: markerScreen.x, top: markerScreen.y }} aria-hidden="true">
+          <div
+            className="marker"
+            data-testid="target-marker"
+            style={{ left: markerScreen.x, top: markerScreen.y }}
+            aria-hidden="true"
+          >
             <span className="marker-dot" />
             <span className="marker-ring" />
-            {markerName ? <span className="marker-label mono">{markerName}</span> : null}
+            {titleName && selection.mode !== 'custom' ? (
+              <span className="marker-label mono">{titleName}</span>
+            ) : null}
           </div>
+        ) : null}
+        {candidateScreen && selection.candidate ? (
+          <div
+            className="candidate"
+            data-testid="candidate-marker"
+            style={{ left: candidateScreen.x, top: candidateScreen.y }}
+          >
+            <span className="candidate-cross" aria-hidden="true" />
+            <span className="candidate-meta mono">
+              {selection.candidate.ra.toFixed(4)}°, {selection.candidate.dec.toFixed(4)}°
+            </span>
+            <button
+              type="button"
+              className="text-link candidate-analyze"
+              data-testid="analyze-candidate"
+              onPointerDown={stopUiBubble}
+              onClick={e => {
+                stopUiBubble(e);
+                void analyzeCandidate();
+              }}
+            >
+              {t(lang, 'analyze')}
+            </button>
+          </div>
+        ) : null}
+
+        <div className="map-controls" onPointerDown={stopUiBubble} onClick={stopUiBubble}>
+          <button
+            type="button"
+            className="zoom-btn"
+            aria-label={t(lang, 'zoomInLabel')}
+            onClick={() => {
+              engineRef.current?.zoomBy(1 / 1.25);
+              setMapHintVisible(false);
+            }}
+          >
+            {t(lang, 'zoomIn')}
+          </button>
+          <button
+            type="button"
+            className="zoom-btn"
+            aria-label={t(lang, 'zoomOutLabel')}
+            onClick={() => {
+              engineRef.current?.zoomBy(1.25);
+              setMapHintVisible(false);
+            }}
+          >
+            {t(lang, 'zoomOut')}
+          </button>
+          <button
+            type="button"
+            className="text-link center-btn"
+            onClick={() => {
+              void centerOnObject();
+            }}
+          >
+            {t(lang, 'centerObject')}
+          </button>
+        </div>
+        {mapHintVisible && !mapOff ? (
+          <p className="map-hint mono" aria-hidden="true">
+            {t(lang, 'mapHint')}
+          </p>
         ) : null}
       </div>
 
@@ -579,23 +1084,49 @@ export function App() {
         </p>
       ) : null}
 
-      {pick && seriesStatus === 'idle' ? (
+      {!isMobile ? (
+        <aside className="left-col" aria-label={t(lang, 'targetsLabel')} onPointerDown={stopUiBubble} onClick={stopUiBubble}>
+          {columnBody}
+        </aside>
+      ) : null}
+
+      {!isMobile ? cutoutCard : null}
+
+      {offerReturn && returnName ? (
         <button
           type="button"
-          className="fab"
-          onClick={() => {
-            void analyzeCoords(pick.ra, pick.dec);
+          className="text-link return-fab"
+          data-testid="return-to-target"
+          onPointerDown={stopUiBubble}
+          onClick={e => {
+            stopUiBubble(e);
+            void returnToLastTarget();
           }}
         >
-          {t(lang, 'analyze')}
+          {returnLabel(lang, returnName)}
         </button>
       ) : null}
 
-      <aside
-        className={`explain${isMobile ? ' sheet' : ''}${isMobile && sheetOpen ? ' open' : ''}`}
-        aria-label={t(lang, 'whatChanged')}
+      <button
+        type="button"
+        className="text-link what-seeing"
+        data-testid="reopen-intro"
+        onPointerDown={stopUiBubble}
+        onClick={e => {
+          stopUiBubble(e);
+          setIntroOpen(true);
+        }}
       >
-        {isMobile ? (
+        {t(lang, 'whatAmISeeing')}
+      </button>
+
+      {isMobile ? (
+        <aside
+          className={`sheet glass-panel${sheetOpen ? ' open' : ''}`}
+          aria-label={t(lang, 'whatChanged')}
+          onPointerDown={stopUiBubble}
+          onClick={stopUiBubble}
+        >
           <button
             type="button"
             className="sheet-handle"
@@ -605,14 +1136,8 @@ export function App() {
             }}
           >
             <span className="sheet-grip" aria-hidden="true" />
-            <span className="sheet-title">{t(lang, 'whatChanged')}</span>
-            {seriesStatus === 'ready' && series ? (
-              <span className="sheet-line mono">
-                {demoNotice ? t(lang, 'demoOffline') : t(lang, 'liveApi')}
-              </span>
-            ) : (
-              <span className="sheet-line">{progress ?? t(lang, seriesStatus === 'idle' ? 'statusIdle' : 'loading')}</span>
-            )}
+            <span className="sheet-title">{titleName || t(lang, 'whatChanged')}</span>
+            <span className="sheet-line">{changeLine}</span>
             <span className="semaforo-dots" aria-hidden="true">
               <i data-on={level === 'OBSERVED'} />
               <i data-on={level === 'EVALUATED'} />
@@ -620,141 +1145,249 @@ export function App() {
             </span>
             <span className="sr-only">{sheetOpen ? t(lang, 'sheetCollapse') : t(lang, 'sheetExpand')}</span>
           </button>
-        ) : (
-          <h2>{t(lang, 'whatChanged')}</h2>
-        )}
-        <div className="explain-scroll">{explainBody}</div>
-      </aside>
-
-      <section className="dock" aria-label={t(lang, 'mapMenu')}>
-        <div className="dock-body">
-          <div className="dock-row timeline-row">
-            <button
-              type="button"
-              className="pp"
-              aria-label={playing ? t(lang, 'pause') : t(lang, 'play')}
-              aria-pressed={playing}
-              disabled={mode !== 'loop' || seriesStatus !== 'ready'}
-              onClick={() => {
-                setPlaying(p => !p);
-                setMode('loop');
-              }}
-            >
-              {playing ? (
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
-                  <rect x="2" y="1" width="3.5" height="12" rx="1" />
-                  <rect x="8.5" y="1" width="3.5" height="12" rx="1" />
-                </svg>
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
-                  <path d="M3 1.5v11l9-5.5z" />
-                </svg>
-              )}
-            </button>
-            <div className="timeline" role="list">
-              <div className="timeline-track" />
-              {timeline?.markers.map(m =>
-                m.kind === 'frame' ? (
-                  <button
-                    key={`f-${String(m.index)}`}
-                    type="button"
-                    className={`timeline-mark${m.index === frameIndex ? ' on' : ''}`}
-                    style={{ left: `${String(m.fraction * 100)}%` }}
-                    title={m.label}
-                    aria-label={m.label}
-                    aria-current={m.index === frameIndex ? 'true' : undefined}
-                    onClick={() => {
-                      setPlaying(false);
-                      setFrameIndex(m.index);
-                    }}
-                  >
-                    <span className="timeline-date mono">{m.label.slice(5)}</span>
-                  </button>
-                ) : (
-                  <span
-                    key={`r-${m.obs_id}`}
-                    className="timeline-mark rejected"
-                    style={{ left: `${String(m.fraction * 100)}%` }}
-                    title={`${m.reason}: ${m.detail}`}
-                  />
-                ),
-              )}
-            </div>
-          </div>
-          <div className="dock-row modes-row">
-            <div className="mode-chips" role="group" aria-label="View mode">
-              {(
-                [
-                  ['loop', 'modeLoop'],
-                  ['difference', 'modeDiff'],
-                  ['colour', 'modeColour'],
-                ] as const
-              ).map(([value, key], i, arr) => (
-                <span key={value} className="mode-item">
-                  <button
-                    type="button"
-                    className="chip-text"
-                    aria-pressed={mode === value}
-                    onClick={() => {
-                      setMode(value);
-                      setPlaying(value === 'loop');
-                    }}
-                  >
-                    {t(lang, key)}
-                  </button>
-                  {i < arr.length - 1 ? <span className="mode-sep" aria-hidden="true">·</span> : null}
-                </span>
+          <div className="sheet-scroll">
+            <div className="targets-scroll" role="toolbar" aria-label={t(lang, 'targetsLabel')}>
+              {featured.map(entry => (
+                <button
+                  key={entry.id}
+                  type="button"
+                  className="object-link horizontal"
+                  aria-pressed={selection.mode === 'target' && selection.slug === entry.slug}
+                  onClick={() => {
+                    void selectEntry(entry);
+                  }}
+                >
+                  {entry.name}
+                </button>
               ))}
             </div>
-            <details className="map-menu" ref={mapMenuRef}>
-              <summary>{t(lang, 'mapMenu')}</summary>
-              <div className="menu-panel" role="group">
-                <span className="menu-label">{t(lang, 'projection')}</span>
-                {(['SIN', 'TAN', 'AIT'] as const).map(p => (
-                  <button
-                    key={p}
-                    type="button"
-                    aria-pressed={proj === p}
-                    onClick={() => {
-                      setProj(p);
-                      engineRef.current?.setProjection(p);
-                      mapRef.current?.setProjection(p);
-                    }}
-                  >
-                    {p}
-                  </button>
-                ))}
-                <span className="menu-label">{t(lang, 'zoom')}</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    engineRef.current?.zoomBy(1 / 1.25);
-                  }}
-                >
-                  {t(lang, 'zoomIn')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    engineRef.current?.zoomBy(1.25);
-                  }}
-                >
-                  {t(lang, 'zoomOut')}
-                </button>
-              </div>
-            </details>
+            {catalogSearch}
+            {titleDesc ? <p className="hero-lead">{titleDesc}</p> : null}
+            <div className="change-block">
+              <p className="change-title">{t(lang, 'whatChanged')}</p>
+              <p className="change-line">{changeLine}</p>
+              {semaforoInline}
+              <button
+                type="button"
+                className="text-link"
+                onClick={() => {
+                  setDetailsOpen(true);
+                }}
+              >
+                {t(lang, 'provenance')}
+              </button>
+            </div>
+            {cutoutCard}
           </div>
-          <BandBars
-            plane={plane}
-            label={t(lang, 'band')}
-            onChange={v => {
-              setPlane(v);
-              engineRef.current?.setPlane(v);
-              mapRef.current?.setPlane(v);
+        </aside>
+      ) : null}
+
+      {detailsOpen ? (
+        <div className="drawer-root" onPointerDown={stopUiBubble} onClick={stopUiBubble}>
+          <button
+            type="button"
+            className="drawer-scrim"
+            aria-label={t(lang, 'closeDrawer')}
+            onClick={() => {
+              setDetailsOpen(false);
             }}
           />
+          <aside className="drawer glass-panel" aria-label={t(lang, 'provenance')}>
+            <header className="drawer-head">
+              <h2>{t(lang, 'provenance')}</h2>
+              <button
+                type="button"
+                className="text-link"
+                onClick={() => {
+                  setDetailsOpen(false);
+                }}
+              >
+                {t(lang, 'closeDrawer')}
+              </button>
+            </header>
+            <div className="drawer-scroll">{provenanceBody}</div>
+          </aside>
         </div>
+      ) : null}
+
+      {cutoutOpen && seriesStatus === 'ready' && series && loaded && frame ? (
+        <div className="modal-root" onPointerDown={stopUiBubble} onClick={stopUiBubble}>
+          <button
+            type="button"
+            className="drawer-scrim"
+            aria-label={t(lang, 'closeCutout')}
+            onClick={() => {
+              setCutoutOpen(false);
+            }}
+          />
+          <div className="cutout-modal glass-panel" role="dialog" aria-modal="true">
+            <header className="drawer-head">
+              <h2>{t(lang, 'cutoutBeforeAfter')}</h2>
+              <button
+                type="button"
+                className="text-link"
+                onClick={() => {
+                  setCutoutOpen(false);
+                }}
+              >
+                {t(lang, 'closeCutout')}
+              </button>
+            </header>
+            <SeriesCutout
+              loaded={loaded}
+              frameIndex={frameIndex}
+              mode={mode}
+              label={formatVisitLabelI18n(lang, frameIndex, series.frames.length, frame.t_mid)}
+            />
+            <p className="cutout-cap mono">{cutoutCap}</p>
+          </div>
+        </div>
+      ) : null}
+
+      <section className="dock glass-panel" aria-label="Timeline" onPointerDown={stopUiBubble} onClick={stopUiBubble}>
+        {showBands ? (
+          <div className="dock-bands">
+            <BandBars
+              plane={plane}
+              lang={lang}
+              label={t(lang, 'band')}
+              hint={t(lang, 'lightTypeHint')}
+              onChange={v => {
+                setPlane(v);
+                engineRef.current?.setPlane(v);
+                mapRef.current?.setPlane(v);
+              }}
+            />
+          </div>
+        ) : null}
+        <div className="dock-row">
+          <button
+            type="button"
+            className="pp pp-text"
+            aria-label={playing ? t(lang, 'pause') : t(lang, 'play')}
+            aria-pressed={playing}
+            disabled={mode !== 'loop' || seriesStatus !== 'ready' || frameCount < 2}
+            onClick={() => {
+              setPlaying(p => !p);
+              setMode('loop');
+            }}
+          >
+            {playing ? t(lang, 'pause') : t(lang, 'play')}
+          </button>
+          {photoLabel ? <span className="photo-index mono">{photoLabel}</span> : null}
+          <div className="timeline" role="list" ref={timelineRef}>
+            <div className="timeline-track" />
+            {timeline?.markers.map(m =>
+              m.kind === 'frame' ? (
+                <button
+                  key={`f-${String(m.index)}`}
+                  type="button"
+                  className={`timeline-mark${m.index === frameIndex ? ' on' : ''}`}
+                  style={{ left: `${String(m.fraction * 100)}%` }}
+                  title={formatVisitDate(series?.frames[m.index]?.t_mid ?? m.label, lang)}
+                  aria-label={formatVisitDate(series?.frames[m.index]?.t_mid ?? m.label, lang)}
+                  aria-current={m.index === frameIndex ? 'true' : undefined}
+                  onClick={() => {
+                    setPlaying(false);
+                    setFrameIndex(m.index);
+                  }}
+                >
+                  <span
+                    className={`timeline-date mono${visibleDateIndices.has(m.index) ? '' : ' is-muted'}`}
+                    aria-hidden={!visibleDateIndices.has(m.index)}
+                  >
+                    {formatVisitDate(series?.frames[m.index]?.t_mid ?? m.label, lang)}
+                  </span>
+                </button>
+              ) : (
+                <span
+                  key={`r-${m.obs_id}`}
+                  className="timeline-mark rejected"
+                  style={{ left: `${String(m.fraction * 100)}%` }}
+                  title={`${m.reason}: ${m.detail}`}
+                />
+              ),
+            )}
+            {timeline && timeline.markers.some(m => m.kind === 'frame') ? (
+              <>
+                <span className="timeline-end left mono">{t(lang, 'oldest')}</span>
+                <span className="timeline-end right mono">{t(lang, 'newest')}</span>
+              </>
+            ) : null}
+          </div>
+          <div className="mode-chips" role="group" aria-label="View mode">
+            {(
+              [
+                ['loop', 'modeLoop'],
+                ['difference', 'modeDiff'],
+                ['colour', 'modeColour'],
+              ] as const
+            ).map(([value, key]) => (
+              <button
+                key={value}
+                type="button"
+                className="chip-text"
+                aria-pressed={mode === value}
+                onClick={() => {
+                  setMode(value);
+                  setPlaying(value === 'loop');
+                  if (value === 'colour') setLightOpen(true);
+                }}
+              >
+                {t(lang, key)}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="chip-text colours-toggle"
+              aria-pressed={lightOpen}
+              onClick={() => {
+                setLightOpen(o => !o);
+              }}
+            >
+              {t(lang, 'lightType')}
+            </button>
+          </div>
+          <details className="map-menu">
+            <summary aria-label={t(lang, 'mapMenuLabel')}>{t(lang, 'advanced')}</summary>
+            <div className="menu-panel" role="group">
+              <p className="menu-hint">{t(lang, 'advancedHint')}</p>
+              <span className="menu-label">{t(lang, 'projection')}</span>
+              {(
+                [
+                  ['SIN', 'projSin'],
+                  ['TAN', 'projTan'],
+                  ['AIT', 'projAit'],
+                ] as const
+              ).map(([p, key]) => (
+                <button
+                  key={p}
+                  type="button"
+                  aria-pressed={proj === p}
+                  onClick={() => {
+                    setProj(p);
+                    engineRef.current?.setProjection(p);
+                    mapRef.current?.setProjection(p);
+                  }}
+                >
+                  {t(lang, key)}
+                </button>
+              ))}
+            </div>
+          </details>
+        </div>
+        <p className="mode-help" aria-live="polite" data-testid="mode-help">
+          {t(lang, modeHelpKey(mode))}
+        </p>
       </section>
+
+      <IntroGuide
+        lang={lang}
+        open={introOpen}
+        onClose={() => {
+          setIntroOpen(false);
+        }}
+      />
 
       <div className="sr-only" aria-live="polite">
         {announce}

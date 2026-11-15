@@ -140,6 +140,43 @@ export function describeExpectedMotionI18n(lang: Lang, series: Series): string |
   return `Expected motion ≈ ${m.pixels.toFixed(1)} px (${m.arcsec.toFixed(1)}″); SPHEREx pixel = ${m.pixelScaleArcsec.toFixed(2)}″`;
 }
 
+/**
+ * Concrete “what changed?” line for the left column.
+ * Uses real numbers from the series when motion is available;
+ * otherwise a brightness / short / generic phrase (no jargon).
+ */
+export function describeChangeLineI18n(
+  lang: Lang,
+  series: Series,
+  objectName: string,
+  opts?: { readonly variableHint?: boolean },
+): string {
+  const n = series.frames.length;
+  if (n < 2) {
+    return lang === 'es'
+      ? 'Aún no hay fotos suficientes para medir un cambio.'
+      : 'Not enough photos yet to measure a change.';
+  }
+  const m = motionFacts(series);
+  if (m && m.pixels >= 0.3) {
+    if (lang === 'es') {
+      return `En estas ${String(n)} fotos, ${objectName} se desplazó ≈ ${m.pixels.toFixed(1)} píxeles (≈ ${m.arcsec.toFixed(1)} segundos de arco).`;
+    }
+    return `Across these ${String(n)} photos, ${objectName} shifted by ≈ ${m.pixels.toFixed(1)} pixels (≈ ${m.arcsec.toFixed(1)} arcseconds).`;
+  }
+  // Comparability is OBSERVED | EVALUATED only (never CONFIRMED from software).
+  const preferBrightness = Boolean(opts?.variableHint) || series.comparability.level.length > 0;
+  if (preferBrightness) {
+    if (lang === 'es') {
+      return `En estas ${String(n)} fotos, su brillo cambia.`;
+    }
+    return `Across these ${String(n)} photos, its brightness changes.`;
+  }
+  return lang === 'es'
+    ? 'Las fotos muestran una diferencia aparente.'
+    : 'The photos show an apparent difference.';
+}
+
 export function motionProvenanceI18n(lang: Lang, slug: string | null | undefined): string {
   if (slug === 'wise-0855') {
     return lang === 'es'

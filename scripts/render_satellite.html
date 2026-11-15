@@ -15,12 +15,14 @@ if(!/swiftshader|llvmpipe|software/i.test(name))throw new Error('refusing to ren
 renderer.setPixelRatio(1);renderer.setSize(SIZE,SIZE,false);renderer.setClearColor(0x000000,0);
 renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
 const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(28,1,.1,200);cam.position.set(0,0,30);
+const rig=new THREE.Group();scene.add(rig);rig.add(cam);   // camera and lights orbit together, so the lighting stays the same at every elevation
 const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(new RoomEnvironment(),.04).texture;scene.environmentIntensity=.55;
-const sun=new THREE.DirectionalLight(0xffffff,3.2);sun.position.set(-6,7,9);scene.add(sun);
-const rim=new THREE.DirectionalLight(0x9fc3e8,1.4);rim.position.set(8,-3,-7);scene.add(rim);
+const sun=new THREE.DirectionalLight(0xffffff,3.2);sun.position.set(-6,7,9);rig.add(sun);
+const rim=new THREE.DirectionalLight(0x9fc3e8,1.4);rim.position.set(8,-3,-7);rig.add(rim);
 scene.add(new THREE.HemisphereLight(0x9fb4ff,0x030e22,.5));
 const holder=new THREE.Group();scene.add(holder);
-const base=new THREE.Quaternion().setFromEuler(new THREE.Euler(.38,-.95,.12));
+const B=(q.get('base')||'0.38,-0.95,0.12').split(',').map(Number),ORDER=q.get('order')||'XYZ';
+const base=new THREE.Quaternion().setFromEuler(new THREE.Euler(B[0],B[1],B[2],ORDER));
 const g=await new GLTFLoader().loadAsync('/landing/model/spherex.gltf');
 const model=g.scene,box=new THREE.Box3().setFromObject(model),c=box.getCenter(new THREE.Vector3()),radius=box.getSize(new THREE.Vector3()).length()/2;
 model.position.sub(c);holder.add(model);
@@ -28,8 +30,9 @@ const worldH=2*Math.tan(THREE.MathUtils.degToRad(cam.fov/2))*cam.position.z;
 holder.scale.setScalar(.9*worldH/(2*radius));          // the bounding sphere fills 90 % of the frame, as in the page
 const AX=new THREE.Vector3(1,0,0),AY=new THREE.Vector3(0,1,0),qx=new THREE.Quaternion(),qy=new THREE.Quaternion();
 for(let p=0;p<PITCH.length;p++)for(let y=0;y<YAW;y++){
-  qy.setFromAxisAngle(AY,y*2*Math.PI/YAW);qx.setFromAxisAngle(AX,THREE.MathUtils.degToRad(PITCH[p]));
-  holder.quaternion.copy(base).premultiply(qy).premultiply(qx);
+  qy.setFromAxisAngle(AY,y*2*Math.PI/YAW);
+  holder.quaternion.copy(base).premultiply(qy);                       // turntable about the model's own axis
+  rig.rotation.x=-THREE.MathUtils.degToRad(PITCH[p]);                  // positive elevation looks down on the cone
   renderer.render(scene,cam);
   const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
   await post(`/save?name=${p}-${String(y).padStart(2,'0')}`,blob);

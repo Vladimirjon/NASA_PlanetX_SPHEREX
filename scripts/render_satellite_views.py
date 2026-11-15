@@ -36,10 +36,14 @@ def to_webp(job: tuple[str, str, int]) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--yaw", type=int, default=180)
-    ap.add_argument("--pitch", default="-48,-36,-24,-12,0,12,24,36,48")
+    ap.add_argument("--pitch", default="-36,-24,-12,0,12,24,36,48,60")
     ap.add_argument("--size", type=int, default=448)
     ap.add_argument("--quality", type=int, default=82)
     ap.add_argument("--port", type=int, default=4477)
+    ap.add_argument("--base", default="0,-0.95,0", help="rest orientation, Euler radians x,y,z (keep x and z at 0: the model turns about its own axis)")
+    ap.add_argument("--start-deg", type=float, default=22.0, help="camera elevation the page opens at")
+    ap.add_argument("--order", default="XYZ")
+    ap.add_argument("--out", type=Path, help="write previews here and leave the live views untouched")
     a = ap.parse_args()
     pitches = [float(v) for v in a.pitch.split(",")]
 
@@ -70,7 +74,7 @@ def main() -> None:
     threading.Thread(target=srv.serve_forever, daemon=True).start()
 
     profile = tempfile.mkdtemp(prefix="sat-chrome-")
-    url = f"http://127.0.0.1:{a.port}/scripts/render_satellite.html?yaw={a.yaw}&pitch={a.pitch}&size={a.size}"
+    url = f"http://127.0.0.1:{a.port}/scripts/render_satellite.html?yaw={a.yaw}&pitch={a.pitch}&size={a.size}&base={a.base}&order={a.order}"
     chrome = subprocess.Popen([
         "google-chrome", "--headless=new", "--no-sandbox", "--disable-gpu", "--use-gl=angle", "--use-angle=swiftshader",
         "--enable-unsafe-swiftshader", f"--user-data-dir={profile}", "--window-size=600,600", url,
@@ -90,6 +94,13 @@ def main() -> None:
         chrome.terminate()
         srv.shutdown()
         shutil.rmtree(profile, ignore_errors=True)
+
+    if a.out:
+        a.out.mkdir(parents=True, exist_ok=True)
+        for png in sorted(raw.glob("*.png")):
+            shutil.copy(png, a.out / png.name)
+        print(f"previews in {a.out}")
+        return
 
     # Build next to the live folder and swap at the end, so the page never sees a half-written set.
     staging = VIEWS.with_name(VIEWS.name + ".new")
@@ -113,8 +124,10 @@ def main() -> None:
         VIEWS.rename(old)
     staging.rename(VIEWS)
     # keep the player's grid in step with the files it will request
+    # fractional row index of the opening elevation
+    start = next((i + (a.start_deg - pitches[i]) / (pitches[i + 1] - pitches[i]) for i in range(len(pitches) - 1) if pitches[i] <= a.start_deg <= pitches[i + 1]), float(len(pitches) // 2))
     pitch_js = "[" + ",".join(f"{v:g}" for v in pitches) + "]"
-    line = f"export const VIEWS={{yaw:{a.yaw},pitchDegrees:{pitch_js},start:{pitches.index(0.0)}}};"
+    line = f"export const VIEWS={{yaw:{a.yaw},pitchDegrees:{pitch_js},start:{start:.2f}}};"
     SAT3D.write_text(re.sub(r"^export const VIEWS=.*$", line, SAT3D.read_text(), count=1, flags=re.M))
     shutil.rmtree(old, ignore_errors=True)
     shutil.rmtree(raw, ignore_errors=True)
