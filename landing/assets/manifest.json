@@ -1,9 +1,16 @@
 {
   "objects": {
-    "wise": "obj-wise-0855.webp",
-    "barnard": "obj-barnard.webp",
-    "eps": "obj-epsilon-indi-b.webp",
-    "rw": "obj-rw-aurigae.webp",
-    "rdra": "obj-r-draconis.webp"
+    "wise": "portrait-wise-0855.png",
+    "barnard": "portrait-barnard.png",
+    "eps": "portrait-epsilon-indi-b.png",
+    "rw": "portrait-rw-aurigae.png",
+    "rdra": "portrait-r-draconis.png"
+  },
+  "rotation": {
+    "wise": "portrait-spin-wise-0855.webm",
+    "barnard": "portrait-spin-barnard.webm",
+    "eps": "portrait-spin-epsilon-indi-b.webm",
+    "rw": "portrait-spin-rw-aurigae.webm",
+    "rdra": "portrait-spin-r-draconis.webm"
   }
 }

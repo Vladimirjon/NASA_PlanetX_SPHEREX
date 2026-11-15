@@ -103,17 +103,49 @@ function pictogram(kind){
   return base+'<circle cx="70" cy="52" r="21" fill="none" stroke="var(--dim)" stroke-width="1.5" stroke-dasharray="3 5"/><circle cx="70" cy="52" r="12" fill="none" stroke="var(--dim)" stroke-width="1.5" stroke-dasharray="3 4"/><circle cx="70" cy="52" r="5" fill="var(--text)"/></svg>';
 }
 function whyFig(x){
-  const f=ART.objects&&ART.objects[x.id];
-  if(f)return `<div class="fig"><img src="assets/${f}" alt="${esc(t('who.alt').replace('{n}',t(x.k)[0]))}" width="560" height="420" loading="lazy" decoding="async"></div>`;
+  const f=ART.objects[x.id],spin=ART.rotation?.[x.id]||'';
+  if(f)return `<div class="fig portrait"><div class="portrait-preview" data-spin="${esc(spin)}"><img src="assets/${esc(f)}" alt="${esc(t('who.alt').replace('{n}',t(x.k)[0]))}" width="400" height="400" loading="lazy" decoding="async"><video class="portrait-spin" muted loop playsinline preload="none" aria-hidden="true"></video></div><span class="ai" aria-hidden="true">${esc(t('who.ai'))}</span></div>`;
   return `<div class="fig">${pictogram(x.kind)}</div>`;
 }
 function buildWho(){
-  let objectIndex=0;
   const grp=g=>TARGETS.filter(x=>(x.kind==='move')===(g===0));
-  $('#whoList').innerHTML=[0,1].map(g=>`<div class="grp"><h3>${esc(t('who.g'+g))}</h3>${grp(g).map(x=>
-    `<div class="obj${objectIndex++%2 ? ' image-right' : ''}">${whyFig(x)}<div><h4>${esc(t(x.k)[0])}</h4><p>${esc(t(WHO_TXT[x.id]))}</p><a class="viewer-link" href="/viewer/?target=${encodeURIComponent(TARGET_SLUG[x.id])}" data-cta="who-${x.id}">${esc(t('who.open'))}</a></div></div>`).join('')}</div>`).join('');
+  portraitObserver.disconnect();
+  $$('.portrait-spin').forEach(video=>video.pause());
+  $('#whoList').innerHTML=[0,1].map(g=>`<div class="grp${g===1?' grp-flicker':''}"><h3>${esc(t('who.g'+g))}</h3>${grp(g).map((x,i)=>
+    `<div class="obj${i%2 ? ' image-right' : ''}" data-object="${x.id}">${whyFig(x)}<div><h4>${esc(t(x.k)[0])}</h4><p>${esc(t(WHO_TXT[x.id]))}</p><a class="viewer-link" href="/viewer/?target=${encodeURIComponent(TARGET_SLUG[x.id])}" data-cta="who-${x.id}">${esc(t('who.open'))}</a></div></div>`).join('')}</div>`).join('');
+  $$('.portrait-preview[data-spin]:not([data-spin=""])').forEach(preview=>portraitObserver.observe(preview));
   measure();dirty();
 }
+const portraitMotion=$('#portraitMotion'),portraitGallery=$('#who');
+function syncPortraits(){
+  $$('.portrait-preview').forEach(target=>{
+    const video=target.querySelector('video');
+    const active=target.classList.contains('portrait-visible')&&!portraitsPaused&&!RM&&!document.hidden;
+    if(active){
+      if(!video.getAttribute('src')){
+        video.muted=true;
+        video.src=`assets/${target.dataset.spin}`;
+        video.addEventListener('loadeddata',()=>target.classList.add('spin-ready'),{once:true});
+        video.addEventListener('error',()=>target.classList.remove('spin-ready'));
+      }
+      video.play().then(()=>target.classList.add('spin-ready')).catch(()=>{
+        if(video.error)target.classList.remove('spin-ready');
+      });
+    }else video.pause();
+  });
+}
+const portraitObserver=new IntersectionObserver(entries=>{
+  for(const {target,isIntersecting} of entries)target.classList.toggle('portrait-visible',isIntersecting);
+  syncPortraits();
+});
+let portraitsPaused=false;
+portraitMotion.onclick=()=>{
+  portraitsPaused=!portraitsPaused;
+  portraitGallery.classList.toggle('portraits-paused',portraitsPaused);
+  portraitMotion.dataset.i=portraitsPaused?'who.play':'who.pause';
+  portraitMotion.textContent=t(portraitMotion.dataset.i);
+  syncPortraits();
+};
 
 function buildSources(){
   const groups=[['src.mission','s.mission'],['src.challenge','s.challenge'],['src.tools','s.tools'],['src.science','s.science'],['src.project','s.project'],['src.credits','s.credits']];
@@ -216,7 +248,12 @@ function drawBg(now){
 
 /* ===================== motor de escenas ===================== */
 let geo=[],vh=innerHeight;
-function measure(){vh=innerHeight;geo=scenes.map(s=>({top:s.offsetTop,h:s.offsetHeight}));measureSat();buildWave();}
+function measure(){
+  vh=innerHeight;geo=scenes.map(s=>({top:s.offsetTop,h:s.offsetHeight}));
+  const title=$('#blink .top');
+  $('#blink .stage').style.setProperty('--compare-line-top',title.offsetTop+title.offsetHeight+24+'px');
+  measureSat();buildWave();
+}
 const P=[];
 function prog(i){const g=geo[i];if(!g)return 0;return clamp((scrollY-g.top)/Math.max(1,g.h-vh));}
 const idx=id=>scenes.findIndex(s=>s.id===id);
@@ -253,9 +290,9 @@ function sWave(){
 }
 
 /* marcador plano: punto blanco + anillo fino. k (0..1) controla cuánto del anillo se ve. Sin halo ni brillo. */
-function mark(g,x,y,rad,k=1){
+function mark(g,x,y,rad,k=1,lineWidth=1.5){
   g.fillStyle=C.text;g.beginPath();g.arc(x,y,rad,0,7);g.fill();
-  if(k>.02){g.strokeStyle=C.violet;g.lineWidth=1.5;g.globalAlpha=clamp(k);g.beginPath();g.arc(x,y,rad+7+4*ease(clamp(k)),0,7);g.stroke();g.globalAlpha=1;}
+  if(k>.02){g.strokeStyle=C.violet;g.lineWidth=lineWidth;g.globalAlpha=clamp(k);g.beginPath();g.arc(x,y,rad+7+4*ease(clamp(k)),0,7);g.stroke();g.globalAlpha=1;}
 }
 function dot(g,x,y,rad){g.fillStyle=C.text;g.beginPath();g.arc(x,y,rad,0,7);g.fill();}
 function dashed(g,x0,y0,x1,y1,alpha){g.strokeStyle=C.text;g.globalAlpha=alpha;g.lineWidth=1.2;g.setLineDash([4,5]);g.beginPath();g.moveTo(x0,y0);g.lineTo(x1,y1);g.stroke();g.setLineDash([]);g.globalAlpha=1;}
@@ -276,16 +313,20 @@ function sProblem(p){
 }
 
 /* comparar: el cuerpo que cambió se marca cuando la línea se acerca */
-const cmpRange=$('#cmpRange'),cA=$('#cA'),cB=$('#cB'),pop=$('#pop'),knob=$('#knob'),stageB=$('#blink .stage');let manual=false;
+const cmpRange=$('#cmpRange'),cA=$('#cA'),cB=$('#cB'),pop=$('#pop'),knob=$('#knob'),stageB=$('#blink .stage');let manual=false,compareX=50,compareLast=null;
 const BA=[.30,.62],BB=[.68,.40];
-function setX(v){stageB.style.setProperty('--x',v+'%');cmpRange.value=v;}
+function setX(v){compareX=v;stageB.style.setProperty('--x',v+'%');cmpRange.value=v;}
 cmpRange.addEventListener('input',()=>{manual=true;knob.classList.add('used');setX(+cmpRange.value);dirty();});
 cmpRange.addEventListener('pointerdown',()=>NZ.track('cmp_drag'));
 cmpRange.addEventListener('keydown',()=>NZ.track('cmp_drag',{via:'key'}));
 let popShown=false;
 function sCompare(p,now){
-  if(!manual){const sway=(!RM&&now-lastMove>1500)?Math.sin(now/1700)*3.5:0;setX(Math.round(lerp(6,94,ease(clamp((p-.08)/.8)))+sway));}
-  const lx=+cmpRange.value/100,[gA,w,h]=fit(cA),[gB]=fit(cB);gA.clearRect(0,0,w,h);gB.clearRect(0,0,w,h);
+  if(!manual){const sway=(!RM&&now-lastMove>1500)?Math.sin(now/1700)*3.5:0;const target=lerp(6,94,ease(clamp((p-.08)/.8)))+sway;
+    const elapsed=compareLast===null?0:Math.min(70,now-compareLast);
+    setX(RM?target:compareX+(target-compareX)*(1-Math.exp(-elapsed/280)));
+  }
+  compareLast=now;
+  const lx=compareX/100,[gA,w,h]=fit(cA),[gB]=fit(cB);gA.clearRect(0,0,w,h);gB.clearRect(0,0,w,h);
   const prox=b=>clamp(1-Math.abs(lx-b[0])/.32),pa=lx>BA[0]?prox(BA):0,pb=lx<BB[0]?prox(BB):0;
   /* círculo punteado en la otra época: "estaba aquí / ahora está aquí" */
   const ghost=(g,b)=>{g.strokeStyle=C.dim;g.globalAlpha=.5;g.setLineDash([3,5]);g.lineWidth=1.2;g.beginPath();g.arc(b[0]*w,b[1]*h,14,0,7);g.stroke();g.setLineDash([]);g.globalAlpha=1;};
@@ -370,13 +411,14 @@ function sUse(p,now){
   const[g,w,h]=fit(cH);g.clearRect(0,0,w,h);
   const u=T,[x,y]=dotAt(u);dotXY=[x,y];
   const pulse=cur.kind==='flicker'?.5+.5*Math.sin(u*Math.PI*6):1;
-  const rad=cur.kind==='flicker'?2.4+2.6*pulse:3.6;
+  const rad=cur.kind==='flicker'?6+5*pulse:9;
   if(found){
     /* recorrido de las 8 visitas, como un mini rastro */
     if(cur.kind==='move'){const[a0,a1]=dotAt(0),[b0,b1]=dotAt(1);dashed(g,a0,a1,b0,b1,.4);
       g.fillStyle=C.text;g.globalAlpha=.6;for(let i=0;i<FR;i++){const[px,py]=dotAt(i/(FR-1));g.beginPath();g.arc(px,py,2.2,0,7);g.fill();}g.globalAlpha=1;}
-    mark(g,x,y,rad,1);
-    tagH.style.left=x+'px';tagH.style.top=y+'px';tagH.style.opacity=1;
+    mark(g,x,y,rad+6,1,2.5);
+    const tagWidth=tagH.offsetWidth;
+    tagH.style.left=Math.max(0,Math.min(x+8,w-tagWidth-30))+'px';tagH.style.top=y+'px';tagH.style.opacity=1;
   }else{
     dot(g,x,y,rad);
     tagH.style.opacity=0;
@@ -423,7 +465,7 @@ function frame(now){
   if(document.hidden)return false;
   scrollY=window.scrollY;const moved=scrollY!==lastY;lastY=scrollY;if(moved)lastMove=now;
   const iv=id=>inView(idx(id));
-  const anim=!RM&&(waveBusy||iv('blink')||iv('how')||iv('why')||iv('data')||iv('colors')||Math.abs(pan.x-pan.t)>.5);
+  const anim=!RM&&(iv('blink')||waveBusy||iv('how')||iv('why')||iv('data')||iv('colors')||Math.abs(pan.x-pan.t)>.5);
   const heavy=moved||needs||anim,bgDue=!RM;
   if(!(heavy||bgDue))return false;
   if(moved||needs||bgDue){const tb0=DEV?performance.now():0;drawBg(now);if(DEV)NZ.bgMs=Math.round((performance.now()-tb0)*100)/100;}
@@ -434,7 +476,7 @@ function frame(now){
   if(layoutChanged)sHero(P[idx('hero')]);
   if(iv('method')||waveBusy)sWave();
   if(iv('problem'))sProblem(P[idx('problem')]);
-  if(iv('blink'))sCompare(P[idx('blink')],now);
+  if(iv('blink'))sCompare(P[idx('blink')],now);else compareLast=null;
   if(geo[idx('data')]&&inView(idx('data')))startSat();
   if(iv('data'))sData(P[idx('data')],now);
   if(iv('colors'))sSpec(P[idx('colors')],now);
@@ -453,9 +495,10 @@ addEventListener('pagehide',()=>scheduler.suspend());
 addEventListener('pageshow',()=>{measure();scheduler.resume();});
 document.addEventListener('visibilitychange',()=>{
   document.body.classList.toggle('page-hidden',document.hidden);
+  syncPortraits();
   if(document.hidden)scheduler.suspend();else{lastT=performance.now();scheduler.resume();}
 });
-motionPreference.addEventListener('change',event=>{RM=event.matches;document.body.classList.toggle('rm',RM);measure();dirty();});
+motionPreference.addEventListener('change',event=>{RM=event.matches;syncPortraits();document.body.classList.toggle('rm',RM);measure();dirty();});
 addEventListener('resize',()=>{measure();dirty();});
 document.fonts&&document.fonts.ready.then(()=>{measure();dirty();});
 apply();measure();setBand(0);NZ.track('page_view',{rm:RM,lang,w:innerWidth});

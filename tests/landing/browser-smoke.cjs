@@ -13,13 +13,14 @@ const assert=require('node:assert/strict');const fs=require('node:fs');
  const errors=[],bad=[],urls=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)bad.push(r.url());});page.on('request',r=>urls.push(r.url()));
  const base=process.env.LANDING_URL||'http://127.0.0.1:4410/';
  const out=process.env.TEST_OUTPUT_DIR||'test-results/landing-restored';fs.mkdirSync(out,{recursive:true});
- await page.goto(base+'?lang=es');await page.waitForTimeout(600);
+ const url=new URL(base);url.searchParams.set('lang','es');url.searchParams.set('gl','0');
+ await page.goto(url.href);await page.waitForTimeout(600);
  await page.screenshot({path:out+'/hero.png',scale:'css'});
  assert.equal(await page.locator('#hero img, #heroArt').count(),0);
  assert.equal(urls.some(u=>u.includes('hero-deep-field')),false);
  const sections=await page.locator('.scene').evaluateAll(es=>es.map(e=>({id:e.id,len:e.style.getPropertyValue('--len')})));
- const original=[['hero','1.7'],['problem','2.6'],['blink','2.2'],['data','1.6'],['colors','2'],['method',''],['who',''],['how','2.4'],['why','1.6'],['go','1']];
- assert.deepEqual(sections.map(e=>[e.id,e.len]),original);
+ const expectedScenes=[['hero','1.7'],['problem','2.6'],['blink','2.2'],['data','1.6'],['colors','2'],['method',''],['how','2.4'],['why','1.6'],['who',''],['go','1']];
+ assert.deepEqual(sections.map(e=>[e.id,e.len]),expectedScenes);
  const start=await page.evaluate(()=>probe.frames);await page.waitForTimeout(1000);const fps=await page.evaluate(n=>probe.frames-n,start);assert.ok(fps<=65,'Visible animation frame budget exceeded: '+fps);
  const jump=async(id,p=.5)=>{await page.evaluate(({id,p})=>{const e=document.getElementById(id);window.scrollTo({top:e.offsetTop+Math.max(0,e.offsetHeight-innerHeight)*p,behavior:'instant'});},{id,p});await page.waitForTimeout(150);};
  await jump('hero',.7);assert.ok(Number(await page.locator('#heroTxt').evaluate(e=>getComputedStyle(e).opacity))<.1);
@@ -34,6 +35,13 @@ const assert=require('node:assert/strict');const fs=require('node:fs');
  const after=await page.locator('#satGL').evaluate(c=>c.toDataURL());assert.notEqual(before,after,'Satellite rotation did not change image');
  await page.keyboard.press('ArrowUp');await page.waitForTimeout(150);
  assert.notEqual(after,await page.locator('#satGL').evaluate(c=>c.toDataURL()));
+ // Newly requested satellite views may still invalidate the canvas after a tilt.
+ await page.waitForLoadState('networkidle');
+ await page.waitForFunction(()=>{
+   const now=performance.now();
+   if(probe.settledFrames!==probe.frames){probe.settledFrames=probe.frames;probe.settledAt=now;}
+   return now-probe.settledAt>=500;
+ },null,{polling:100,timeout:10000});
  const idle=await page.evaluate(()=>probe.frames);await page.waitForTimeout(300);assert.equal(await page.evaluate(()=>probe.frames),idle);
  await page.emulateMedia({reducedMotion:'no-preference'});await jump('colors');await page.locator('#bars').focus();await page.keyboard.press('End');assert.equal(await page.locator('#bars').getAttribute('aria-valuenow'),'102');
  await jump('how');await page.locator('#pp').click();await page.locator('#tm').focus();await page.keyboard.press('End');assert.equal(await page.locator('#tm').inputValue(),'1000');

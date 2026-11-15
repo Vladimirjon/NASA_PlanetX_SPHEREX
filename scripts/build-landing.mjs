@@ -29,7 +29,7 @@ const files = [
 ];
 for (const dir of ['assets', 'fonts', 'assets/spherex-views', 'model']) {
   for (const file of fs.readdirSync(path.join(source, dir))) {
-    if ((dir !== 'model' && /\.(webp|woff2)$/.test(file)) || (dir === 'model' && /\.webp$/.test(file)) || (dir.endsWith('spherex-views') && file === 'manifest.json')) {
+    if ((dir !== 'model' && /\.(webp|webm|woff2)$/.test(file)) || (dir === 'assets' && /^portrait-.*\.png$/.test(file)) || (dir === 'model' && /\.webp$/.test(file)) || (dir.endsWith('spherex-views') && file === 'manifest.json')) {
       files.push(`${dir}/${file}`);
     }
   }

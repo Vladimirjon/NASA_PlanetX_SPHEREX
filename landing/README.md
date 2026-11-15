@@ -48,6 +48,12 @@ uv run --no-project --with pillow==12.3.0 python scripts/prepare_landing_images.
 
 Después se registra en `assets/manifest.json` y se anota en `docs/AI_USAGE.md`. La página las rotula "AI illustration" y no las usa como datos.
 
+Los retratos transparentes de la galería giran sobre un eje fijo. Los vídeos WebM transparentes de 800 px a 60 fps se regeneran desde los PNG con `uv run --script scripts/render-landing-portraits.py`. Se necesita FFmpeg con libvpx-vp9 en PATH. El hemisferio oculto se aproxima reflejando la textura visible. La animación es ilustrativa.
+
+En ε Indi B las superficies tienen máscaras independientes y el muestreo evita la compañera que tapa parte de la esfera grande. En RW Aurigae se anima el detalle del polvo en un plano inclinado; la estrella y el contorno conservan su posición. El movimiento mezcla dos velocidades para producir un bucle continuo. Tanto los tiempos como la inclinación y las texturas son decisiones de ilustración. NASA documenta el disco de gas y polvo de RW Aur A. [Fuente NASA](https://www.nasa.gov/universe/chandra-may-have-first-evidence-of-a-young-star-devouring-a-planet/)
+
+Para regenerar únicamente estos retratos se usa `uv run --script scripts/render-landing-portraits.py epsilon-indi-b rw-aurigae`.
+
 ## Enlaces del visor
 
 Los CTA («Explorar el cielo», «Explorar este punto» y «Verlo en Copernix →» en cada objeto de prueba) navegan al visor en **`/viewer/`** con `?target=<slug>` o `?ra=` y `?dec=` según el contexto. Los slugs coinciden con `frontend/src/app/core/targets.ts` (`wise-0855`, `barnards-star`, `epsilon-indi-b`, `rw-aurigae`, `r-draconis`). El conteo local `NZ.cta` y el evento `cta_click` se conservan al pulsar cualquier `[data-cta]`.
