@@ -7,6 +7,7 @@ import { parseAppSearch, toAppSearch, type AppUrlState, type Projection, type Vi
 import { createSkyEngine, maxFov, type SkyEngine } from '../../src/engine/engine';
 import { ApiSeriesSource, FallbackSeriesSource } from '../../src/series/adapters/api-source';
 import { DemoSeriesSource } from '../../src/series/adapters/demo-source';
+import { PrefetchingSeriesSource } from './prefetch-source';
 import { BLINK_HZ_DEFAULT, blinkIntervalMs, nextBlinkIndex, prevBlinkIndex } from '../../src/series/core/blink';
 import type { LoadedSeries, SeriesLookup } from '../../src/series/ports/series-source';
 import { SeriesSourceError } from '../../src/series/ports/series-source';
@@ -40,6 +41,8 @@ import {
 import { featuredLabelVisibility } from './featured-marker-layout';
 import { delay, INTRO_DELAY_MS, INTRO_FLY_MS, INTRO_GLOBE } from './intro-flight';
 import { shouldShowIntro } from './intro';
+import { Journey } from './journey/Journey';
+import { GALACTIC_CENTER } from './journey/journey-math';
 import { timelineDateVisibility } from './timeline-labels';
 import { formatLightLabel, formatVisitDate } from './light-label';
 import { parseNameParam } from './name-url';
@@ -65,6 +68,27 @@ const ANALYZE_FOV_DEG = 0.5;
 const FOV_ARCMIN = 5;
 const DEFAULT_TARGET = 'wise-0855';
 const GLOBE_FOV_THRESHOLD = 45;
+
+/** `?journey=1` (landing "Explore the sky") plays the satellite → Milky Way intro before the globe. */
+function journeyFromSearch(search: string): boolean {
+  return new URLSearchParams(search).get('journey') === '1';
+}
+
+type Gate = { readonly promise: Promise<void>; readonly open: () => void };
+function createGate(open: boolean): Gate {
+  let release: () => void = () => undefined;
+  const promise = open
+    ? Promise.resolve()
+    : new Promise<void>(r => {
+        release = r;
+      });
+  return {
+    promise,
+    open: () => {
+      release();
+    },
+  };
+}
 
 function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -144,7 +168,9 @@ export function App() {
   const [timelineWidth, setTimelineWidth] = useState(0);
   const engineRef = useRef<SkyEngine | null>(null);
   const mapRef = useRef<EngineMapController | null>(null);
-  const sourceRef = useRef(new FallbackSeriesSource(new ApiSeriesSource(), new DemoSeriesSource(), 60_000));
+  const sourceRef = useRef(
+    new PrefetchingSeriesSource(new FallbackSeriesSource(new ApiSeriesSource(), new DemoSeriesSource(), 60_000)),
+  );
   const abortRef = useRef<AbortController | null>(null);
   const searchAbortRef = useRef<AbortController | null>(null);
   const catalogRef = useRef(createCompositeCatalog({ lang: detectLang(window.location.search) }));
@@ -155,6 +181,13 @@ export function App() {
   const nameParse = parseNameParam(window.location.search);
   const nameFromUrl = nameParse.kind === 'ok' ? nameParse.name : null;
   const mapOff = mapOffFromSearch(window.location.search);
+  const [journeyOn, setJourneyOn] = useState(
+    () => journeyFromSearch(window.location.search) && !mapOff && !prefersReducedMotion(),
+  );
+  const journeyGate = useRef<Gate | null>(null);
+  journeyGate.current ??= createGate(!journeyOn);
+  // after the journey the globe opens on the galactic centre, the view the journey ends on
+  const introGlobe = useRef(journeyOn ? { ...INTRO_GLOBE, ra: GALACTIC_CENTER.ra, dec: GALACTIC_CENTER.dec } : INTRO_GLOBE).current;
   const bootState: AppUrlState =
     initialParse.kind === 'invalid'
       ? { target: null, ra: null, dec: null, fov: 40, plane: 0, t: 0, mode: 'loop', proj: 'SIN' }
@@ -245,6 +278,23 @@ export function App() {
     void catalogRef.current.featured().then(setFeatured);
   }, [lang]);
 
+  // Warm the featured series one at a time (boot target first) so picking one is instant.
+  useEffect(() => {
+    if (featured.length === 0) return undefined;
+    const state = { cancelled: false };
+    const boot = bootState.target;
+    const ordered = [...featured].sort((a, b) => Number(b.slug === boot) - Number(a.slug === boot));
+    void (async () => {
+      for (const entry of ordered) {
+        if (state.cancelled) return;
+        await sourceRef.current.load(catalogRef.current.resolve(entry)).catch(() => undefined);
+      }
+    })();
+    return () => {
+      state.cancelled = true;
+    };
+  }, [featured]);
+
   useEffect(() => {
     const sky = engineRef.current;
     if (!sky) return;
@@ -264,11 +314,11 @@ export function App() {
       sky = createSkyEngine(canvasRef.current, {
         initialView: globeBoot
           ? {
-              ra: INTRO_GLOBE.ra,
-              dec: INTRO_GLOBE.dec,
-              fov: INTRO_GLOBE.fov,
+              ra: introGlobe.ra,
+              dec: introGlobe.dec,
+              fov: introGlobe.fov,
               plane: bootState.plane,
-              proj: INTRO_GLOBE.proj,
+              proj: introGlobe.proj,
             }
           : {
               ra: bootState.ra ?? target?.ra ?? 133.7952573,
@@ -666,13 +716,14 @@ export function App() {
     introFlyAbort.current = ac;
     setIntroFlying(true);
     sky.setView({
-      ra: INTRO_GLOBE.ra,
-      dec: INTRO_GLOBE.dec,
+      ra: introGlobe.ra,
+      dec: introGlobe.dec,
       fov: maxFov('SIN'),
       plane: sky.getView().plane,
       proj: 'SIN',
     });
     try {
+      await journeyGate.current?.promise;
       await delay(INTRO_DELAY_MS, ac.signal);
       await map.flyTo({ ra: target.ra, dec: target.dec, fov: ANALYZE_FOV_DEG }, { durationMs: INTRO_FLY_MS });
     } catch {
@@ -1681,10 +1732,27 @@ export function App() {
         </div>
       </section>
 
+      <div
+        className="load-bar load-bar-busy"
+        aria-hidden="true"
+        data-active={!journeyOn && (seriesStatus === 'loading' || engineStatus.startsWith('Loading sky images'))}
+      />
+
+      {journeyOn ? (
+        <Journey
+          lang={lang}
+          skipLabel={t(lang, 'skipIntroFly')}
+          onDone={() => {
+            setJourneyOn(false);
+            journeyGate.current?.open();
+          }}
+        />
+      ) : null}
+
       <IntroGuide
         lang={lang}
         open={introOpen}
-        allowShow={!introFlying}
+        allowShow={!introFlying && !journeyOn}
         onClose={() => {
           setIntroOpen(false);
         }}

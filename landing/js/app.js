@@ -3,6 +3,7 @@
 import {D} from './i18n.js';
 import {SAT3D} from './sat3d.js';
 import {createRenderScheduler} from './render-scheduler.js';
+import {schedulePrefetch} from './prefetch.js';
 
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
@@ -478,3 +479,4 @@ function animateHero(){
   }
  }
 }
+schedulePrefetch();
