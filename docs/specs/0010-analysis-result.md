@@ -5,7 +5,7 @@
 # Ficha de tarea para agente — Mediciones temporales (`AnalysisResult`)
 
 - Dueño humano: Mateo (rango de fichas 0010–0019)
-- Estado: **borrador listo para aprobación** del alcance de la sección 0. No se implementa hasta que un humano la apruebe (`AGENTS.md` §4.1).
+- Estado: **aprobada para la primera entrega** (alcance de la sección 0) por Sebastián, 14-nov-2026, noche (comunicado por Mateo). El resto de la ficha (brillo, otras regiones) sigue en borrador.
 - Revisores: Sebastián (ciencia), Johann (frontera con `Observation`), Dax (backend: integración y dependencias ya aprobadas el 14-nov)
 - Depende de: [0001 — Arquitectura de datos y `Observation`](0001-arquitectura-observation.md) (borrador de Johann, en `main`)
 - ADRs relacionados: 0003 (stack recomendado), 0010 (stack del módulo, propuesta). Pendiente: ADR de alcance MVP (guiado vs. libre).
